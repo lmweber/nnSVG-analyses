@@ -173,3 +173,6 @@ out_spnngp <- bplapply(seq_len(n_keep), function(i) {
 Sys.time()
 
 
+# to do: set tuning parameters more carefully
+
+
