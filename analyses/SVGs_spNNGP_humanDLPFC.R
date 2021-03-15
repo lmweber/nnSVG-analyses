@@ -47,9 +47,9 @@ spe <- computeSumFactors(spe, cluster = qclus)
 spe <- logNormCounts(spe)
 
 
-# ----------------
-# Fit spNNGP model
-# ----------------
+# -----------------
+# Fit spNNGP models
+# -----------------
 
 # fitting a single model for one gene for now for testing purposes
 # there are several tricks for speeding up a loop over all genes, including:
@@ -73,27 +73,30 @@ head(coords)
 n.samples <- 2000
 starting <- list("phi" = 3/0.5, "sigma.sq" = 50, "tau.sq" = 1)
 tuning <- list("phi" = 0.05, "sigma.sq" = 0.05, "tau.sq" = 0.05)
-
 p <- 1
 priors <- list("beta.Norm" = list(rep(0, p), diag(1000, p)), 
                "phi.Unif" = c(3/1, 3/0.1), "sigma.sq.IG" = c(2, 2), 
                "tau.sq.IG" = c(2, 0.1))
+
+
+# -------------------------------------------
+# Example: fit spNNGP model for a single gene
+# -------------------------------------------
 
 # extract responses for one gene
 ix <- which(rowData(spe)$gene_name == "PCP4")
 ix
 
 # convert to dense vector
-y <- y[ix, ]
+y_pcp4 <- y[ix, ]
 
 stopifnot(length(y) == nrow(coords))
 
-# fit spNNGP model
+# fit spNNGP model for a single gene
 # runtime: around 30 sec (for one gene - but scaling linearly in number of spots)
-out_spnngp <- spNNGP(y ~ 1, coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
+out_spnngp <- spNNGP(y_pcp4 ~ 1, coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
                      tuning = tuning, priors = priors, cov.model = "exponential", 
                      n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
-
 
 # some outputs
 # see documentation ?spNNGP for complete list
@@ -109,18 +112,14 @@ str(out_spnngp$neighbor.info, max.level = 1)
 out_spnngp$run.time
 
 
-# outputs that can possibly be used for ranking SVGs
+# outputs that can be used for ranking SVGs
 
-# mean (or median or MAP etc) of posterior samples for spatial random effects per spot
-post_mean_sp_raneff <- rowMeans(out_spnngp$p.w.samples)
-length(post_mean_sp_raneff)
-# sum across spots
-sum_post_mean_sp_raneff <- sum(rowMeans(out_spnngp$p.w.samples))
-sum_post_mean_sp_raneff
-
-# can this value (or something similar, or absolute value) be used to rank genes?
-# how does this compare to a gene with random spatial distribution? (is the value higher?)
-
-# or squared so all positive?
+# sum of absolute values of medians of posterior samples for spatial random effects
+library(matrixStats)
+med_spraneff <- rowMedians(out_spnngp$p.w.samples)
+length(med_spraneff)
+# sum of absolute values across spots
+sum_abs_med_spraneff <- sum(abs(med_spraneff))
+sum_abs_med_spraneff
 
 
