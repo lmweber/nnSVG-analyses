@@ -111,11 +111,14 @@ out_spnngp$run.time
 
 # outputs that can possibly be used for ranking SVGs
 
-# mean of posterior samples for spatial random effects per spot
+# mean (or median or MAP etc) of posterior samples for spatial random effects per spot
 post_mean_sp_raneff <- rowMeans(out_spnngp$p.w.samples)
 length(post_mean_sp_raneff)
-# sum
+# sum across spots
 sum_post_mean_sp_raneff <- sum(rowMeans(out_spnngp$p.w.samples))
 sum_post_mean_sp_raneff
+
+# can this value (or something similar, or absolute value) be used to rank genes?
+# how does this compare to a gene with random spatial distribution? (is the value higher?)
 
 
