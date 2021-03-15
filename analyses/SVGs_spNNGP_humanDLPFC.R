@@ -121,4 +121,6 @@ sum_post_mean_sp_raneff
 # can this value (or something similar, or absolute value) be used to rank genes?
 # how does this compare to a gene with random spatial distribution? (is the value higher?)
 
+# or squared so all positive?
+
 
