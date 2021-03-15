@@ -123,3 +123,53 @@ sum_abs_med_spraneff <- sum(abs(med_spraneff))
 sum_abs_med_spraneff
 
 
+# compare to some random gene
+head(rowData(spe))
+sum(y[4, ])
+out_spnngp <- spNNGP(y_pcp4 ~ y[4, ], coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
+                     tuning = tuning, priors = priors, cov.model = "exponential", 
+                     n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
+# sum of absolute values of medians of posterior samples for spatial random effects
+med_spraneff <- rowMedians(out_spnngp$p.w.samples)
+length(med_spraneff)
+# sum of absolute values across spots
+sum_abs_med_spraneff <- sum(abs(med_spraneff))
+sum_abs_med_spraneff
+
+
+# ----------------------------------
+# Parallelized loop across all genes
+# ----------------------------------
+
+# first filter out low-expressed genes
+
+# number of genes: 33,538
+nrow(spe)
+# keep genes with at least the following UMI count in at least one spot
+minmax_count <- 5
+ix_keep <- apply(counts(spe), 1, function(row) any(row >= minmax_count))
+# number of genes remaining: 3,180
+table(ix_keep)
+spe_sub <- spe[ix_keep, ]
+n_keep <- nrow(spe_sub)
+
+# parallelized loop
+library(BiocParallel)
+library(spNNGP)
+library(matrixStats)
+y <- logcounts(spe_sub)
+dim(y)
+n_threads = 20
+
+Sys.time()
+out_spnngp <- bplapply(seq_len(n_keep), function(i) {
+  # fit spNNGP model for one gene
+  out_i <- spNNGP(y[i, ], coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
+                  tuning = tuning, priors = priors, cov.model = "exponential", 
+                  n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
+  # sum of absolute values of medians of posterior samples for spatial random effects
+  sum(abs(rowMedians(out_i$p.w.samples)))
+}, BPPARAM = MulticoreParam(workers = n_threads))
+Sys.time()
+
+
