@@ -94,10 +94,28 @@ out_spnngp <- spNNGP(y ~ 1, coords = coords, starting = starting, method = "late
                      tuning = tuning, priors = priors, cov.model = "exponential", 
                      n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
 
+
 # some outputs
+# see documentation ?spNNGP for complete list
 
 # matrix of posterior samples for spatial random effects (rows = spots, columns = posterior samples)
 dim(out_spnngp$p.w.samples)
 out_spnngp$p.w.samples[1:6, 1995:2000]
+
+# nearest neighbor info that can be re-used in loop (may only be a small fraction of total runtime though)
+str(out_spnngp$neighbor.info, max.level = 1)
+
+# total runtime (for one gene)
+out_spnngp$run.time
+
+
+# outputs that can possibly be used for ranking SVGs
+
+# mean of posterior samples for spatial random effects per spot
+post_mean_sp_raneff <- rowMeans(out_spnngp$p.w.samples)
+length(post_mean_sp_raneff)
+# sum
+sum_post_mean_sp_raneff <- sum(rowMeans(out_spnngp$p.w.samples))
+sum_post_mean_sp_raneff
 
 
