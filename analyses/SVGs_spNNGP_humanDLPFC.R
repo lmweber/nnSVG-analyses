@@ -126,7 +126,7 @@ sum_abs_med_spraneff
 # compare to some random gene
 head(rowData(spe))
 sum(y[4, ])
-out_spnngp <- spNNGP(y_pcp4 ~ y[4, ], coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
+out_spnngp <- spNNGP(y[4, ] ~ 1, coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
                      tuning = tuning, priors = priors, cov.model = "exponential", 
                      n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
 # sum of absolute values of medians of posterior samples for spatial random effects
@@ -164,7 +164,7 @@ n_threads = 20
 Sys.time()
 out_spnngp <- bplapply(seq_len(n_keep), function(i) {
   # fit spNNGP model for one gene
-  out_i <- spNNGP(y[i, ], coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
+  out_i <- spNNGP(y[i, ] ~ 1, coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
                   tuning = tuning, priors = priors, cov.model = "exponential", 
                   n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
   # sum of absolute values of medians of posterior samples for spatial random effects
