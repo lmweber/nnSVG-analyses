@@ -198,19 +198,19 @@ runtime_spnngp
 
 
 # top genes
-rowData(spe_sub)[rowData(spe_sub)$rank_spnngp <= 10, ]
+rowData(spe_sub)[rowData(spe_sub)$rank_spnngp <= 10, c(1, 2, 4, 5)]
 # PCP4
-rowData(spe_sub)[rowData(spe_sub)$gene_name == "PCP4", ]
+rowData(spe_sub)[rowData(spe_sub)$gene_name == "PCP4", c(1, 2, 4, 5)]
 # favorites
 favorites <- c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY")
-rowData(spe_sub)[rowData(spe_sub)$gene_name %in% favorites, ]
+rowData(spe_sub)[rowData(spe_sub)$gene_name %in% favorites, c(1, 2, 4, 5)]
 
 
 # -----------------
 # Compare with HVGs
 # -----------------
 
-rowData(spe_sub)[head(top_hvgs, 40), c(1, 2, 4, 5)]
+as.data.frame(rowData(spe_sub)[head(top_hvgs, 40), c(1, 2, 4, 5)])
 
 
 # to do:
