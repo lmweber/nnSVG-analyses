@@ -172,6 +172,21 @@ out_spnngp <- bplapply(seq_len(n_keep), function(i) {
 }, BPPARAM = MulticoreParam(workers = n_threads))
 Sys.time()
 
+# outputs
+stopifnot(length(out_spnngp) == nrow(spe_sub))
+stopifnot(length(unlist(out_spnngp)) == nrow(spe_sub))
+
+rowData(spe_sub)$out_spnngp <- unlist(out_spnngp)
+# reverse ranks
+rowData(spe_sub)$rank_spnngp <- rank(-1 * unlist(out_spnngp))
+
+head(rowData(spe_sub))
+
+# top genes
+rowData(spe_sub)[rowData(spe_sub)$rank_spnngp <= 10, ]
+# PCP4
+rowData(spe_sub)[rowData(spe_sub)$gene_name == "PCP4", ]
+
 
 # to do:
 # - set tuning parameters more carefully
