@@ -46,6 +46,15 @@ spe <- computeSumFactors(spe, cluster = qclus)
 # calculate logcounts (log-transformed normalized counts)
 spe <- logNormCounts(spe)
 
+# FEATURE SELECTION
+
+# remove mitochondrial genes
+spe <- spe[!is_mito, ]
+# fit mean-variance relationship
+dec <- modelGeneVar(spe)
+# select top HVGs
+top_hvgs <- getTopHVGs(dec, prop = 0.1)
+
 
 # -----------------
 # Fit spNNGP models
@@ -161,16 +170,17 @@ y <- logcounts(spe_sub)
 dim(y)
 n_threads = 20
 
-Sys.time()
-out_spnngp <- bplapply(seq_len(n_keep), function(i) {
-  # fit spNNGP model for one gene
-  out_i <- spNNGP(y[i, ] ~ 1, coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
-                  tuning = tuning, priors = priors, cov.model = "exponential", 
-                  n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
-  # sum of absolute values of medians of posterior samples for spatial random effects
-  sum(abs(rowMedians(out_i$p.w.samples)))
-}, BPPARAM = MulticoreParam(workers = n_threads))
-Sys.time()
+runtime_spnngp <- system.time({
+  out_spnngp <- bplapply(seq_len(n_keep), function(i) {
+    # fit spNNGP model for one gene
+    out_i <- spNNGP(y[i, ] ~ 1, coords = coords, starting = starting, method = "latent", n.neighbors = 5, 
+                    tuning = tuning, priors = priors, cov.model = "exponential", 
+                    n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
+    # sum of absolute values of medians of posterior samples for spatial random effects
+    sum(abs(rowMedians(out_i$p.w.samples)))
+  }, BPPARAM = MulticoreParam(workers = n_threads))
+})
+
 
 # outputs
 stopifnot(length(out_spnngp) == nrow(spe_sub))
@@ -182,6 +192,11 @@ rowData(spe_sub)$rank_spnngp <- rank(-1 * unlist(out_spnngp))
 
 head(rowData(spe_sub))
 
+
+# runtime
+runtime_spnngp
+
+
 # top genes
 rowData(spe_sub)[rowData(spe_sub)$rank_spnngp <= 10, ]
 # PCP4
@@ -189,6 +204,13 @@ rowData(spe_sub)[rowData(spe_sub)$gene_name == "PCP4", ]
 # favorites
 favorites <- c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY")
 rowData(spe_sub)[rowData(spe_sub)$gene_name %in% favorites, ]
+
+
+# -----------------
+# Compare with HVGs
+# -----------------
+
+rowData(spe_sub)[head(top_hvgs, 40), c(1, 2, 4, 5)]
 
 
 # to do:
