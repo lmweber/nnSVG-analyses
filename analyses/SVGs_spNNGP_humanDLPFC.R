@@ -186,6 +186,9 @@ head(rowData(spe_sub))
 rowData(spe_sub)[rowData(spe_sub)$rank_spnngp <= 10, ]
 # PCP4
 rowData(spe_sub)[rowData(spe_sub)$gene_name == "PCP4", ]
+# favorites
+favorites <- c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY")
+rowData(spe_sub)[rowData(spe_sub)$gene_name %in% favorites, ]
 
 
 # to do:
