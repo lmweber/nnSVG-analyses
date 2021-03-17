@@ -99,7 +99,7 @@ ix
 # convert to dense vector
 y_pcp4 <- y[ix, ]
 
-stopifnot(length(y) == nrow(coords))
+stopifnot(length(y_pcp4) == nrow(coords))
 
 # fit spNNGP model for a single gene
 # runtime: around 30 sec (for one gene - but scaling linearly in number of spots)
