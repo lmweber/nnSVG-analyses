@@ -260,6 +260,11 @@ rowData(spe_sub)$rank_gam_sq <- rank(-1 * rowData(spe_sub)$gam_resid_sq)
 rowData(spe_sub)
 
 
+# compare with HVGs
+rowData(spe_sub)$hvgs_bio <- dec[rownames(spe_sub), "bio"]
+rowData(spe_sub)$hvgs_rank <- rank(-1 * rowData(spe_sub)$hvgs_bio)
+
+
 # top genes
 rowData(spe_sub)[rowData(spe_sub)$rank_gam_abs <= 10, ]
 rowData(spe_sub)[rowData(spe_sub)$rank_gam_sq <= 10, ]
@@ -325,7 +330,38 @@ ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_gam_abs, y = spnngp_abs)) +
 dev.off()
 
 
-# previous plots
+# compare with and without subtracting from loess
+png("loesscomparison_loess_resid_abs_vs_spnngp_abs.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = spnngp_abs, y = loess_resid_abs)) + 
+  geom_point() + 
+  theme_bw()
+dev.off()
+
+
+# compare with HVGs
+
+png("HVGScomparison_loess_resid_abs_vs_hvgs_bio.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = hvgs_bio, y = loess_resid_abs)) + 
+  geom_point() + 
+  theme_bw()
+dev.off()
+
+png("HVGScomparison_rank_loess_abs_vs_hvgs_rank.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = hvgs_rank, y = rank_loess_abs)) + 
+  geom_point() + 
+  theme_bw()
+dev.off()
+
+
+png("HVGScomparison_spnngp_abs_vs_hvgs_bio.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = hvgs_bio, y = spnngp_abs)) + 
+  geom_point() + 
+  theme_bw()
+dev.off()
+
+
+# old plots
+
 png("testing.png")
 ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = out_spnngp)) + 
   geom_point() + 
