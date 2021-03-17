@@ -77,6 +77,8 @@ dim(y)
 coords <- spatialCoords(spe)
 dim(coords)
 head(coords)
+# scale coordinates
+coords <- apply(coords, 2, function(col) (col - min(col)) / (max(col) - min(col)))
 
 # parameters from example in spatial statistics course
 n.samples <- 2000
@@ -152,12 +154,12 @@ sum_abs_med_spraneff
 
 # first filter out low-expressed genes
 
-# number of genes: 33,538
+# number of genes: 33,525
 nrow(spe)
 # keep genes with at least the following UMI count in at least one spot
 minmax_count <- 5
 ix_keep <- apply(counts(spe), 1, function(row) any(row >= minmax_count))
-# number of genes remaining: 3,180
+# number of genes remaining: 3,167
 table(ix_keep)
 spe_sub <- spe[ix_keep, ]
 n_keep <- nrow(spe_sub)
