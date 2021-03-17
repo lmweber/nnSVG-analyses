@@ -179,18 +179,30 @@ runtime_spnngp <- system.time({
                     tuning = tuning, priors = priors, cov.model = "exponential", 
                     n.samples = n.samples, return.neighbor.info = TRUE, n.omp.threads = 1)
     # sum of absolute values of medians of posterior samples for spatial random effects
-    sum(abs(rowMedians(out_i$p.w.samples)))
+    list(
+      spnngp_abs = sum(abs(rowMedians(out_i$p.w.samples))), 
+      spnngp_sq = sum((rowMedians(out_i$p.w.samples))^2)
+    )
   }, BPPARAM = MulticoreParam(workers = n_threads))
 })
 
+# collapse list
+mat_spnngp <- do.call("rbind", out_spnngp)
+mat_spnngp <- apply(mat_spnngp, 2, as.numeric)
+head(mat_spnngp)
+dim(mat_spnngp)
+str(mat_spnngp)
+
 
 # outputs
-stopifnot(length(out_spnngp) == nrow(spe_sub))
-stopifnot(length(unlist(out_spnngp)) == nrow(spe_sub))
+stopifnot(nrow(mat_spnngp) == nrow(spe_sub))
 
-rowData(spe_sub)$out_spnngp <- unlist(out_spnngp)
+rowData(spe_sub) <- cbind(rowData(spe_sub), mat_spnngp)
+rowData(spe_sub)
+
 # reverse ranks
-rowData(spe_sub)$rank_spnngp <- rank(-1 * unlist(out_spnngp))
+rowData(spe_sub)$rank_abs <- rank(-1 * rowData(spe_sub)$spnngp_abs)
+rowData(spe_sub)$rank_sq <- rank(-1 * rowData(spe_sub)$spnngp_sq)
 
 head(rowData(spe_sub))
 
@@ -213,6 +225,81 @@ rowData(spe_sub)[rowData(spe_sub)$gene_name %in% favorites, c(1, 2, 4, 5)]
 # -----------------
 
 as.data.frame(rowData(spe_sub)[head(top_hvgs, 40), c(1, 2, 4, 5)])
+
+
+# -----------------------
+# Compare with total UMIs
+# -----------------------
+
+library(ggplot2)
+
+# total UMIs
+rowData(spe_sub)$sum <- rowSums(counts(spe_sub))
+head(rowData(spe_sub))
+# mean log-expression
+rowData(spe_sub)$meanlogexp <- rowMeans(logcounts(spe_sub))
+head(rowData(spe_sub))
+# loess fit
+rowData(spe_sub)$loess_fit_abs <- predict(loess(rowData(spe_sub)$spnngp_abs ~ rowData(spe_sub)$meanlogexp))
+rowData(spe_sub)$loess_fit_sq <- predict(loess(rowData(spe_sub)$spnngp_sq ~ rowData(spe_sub)$meanlogexp))
+rowData(spe_sub)$loess_resid_abs <- rowData(spe_sub)$spnngp_abs - rowData(spe_sub)$loess_fit_abs
+rowData(spe_sub)$loess_resid_sq <- rowData(spe_sub)$spnngp_sq - rowData(spe_sub)$loess_fit_sq
+# rank by residuals for loess fit
+rowData(spe_sub)$rank_loess_abs <- rank(-1 * rowData(spe_sub)$loess_resid_abs)
+rowData(spe_sub)$rank_loess_sq <- rank(-1 * rowData(spe_sub)$loess_resid_sq)
+
+rowData(spe_sub)
+
+
+# top genes
+rowData(spe_sub)[rowData(spe_sub)$rank_loess_abs <= 10, ]
+rowData(spe_sub)[rowData(spe_sub)$rank_loess_sq <= 10, ]
+
+
+# plots
+png("spnngp_abs_vs_meanlogexp.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = spnngp_abs)) + 
+  geom_point() + 
+  geom_line(aes(x = meanlogexp, y = loess_fit_abs), color = "blue", size = 1.5) + 
+  theme_bw()
+dev.off()
+
+png("spnngp_sq_vs_meanlogexp.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = spnngp_sq)) + 
+  geom_point() + 
+  geom_line(aes(x = meanlogexp, y = loess_fit_sq), color = "red", size = 1.5) + 
+  theme_bw()
+dev.off()
+
+png("loess_resid_abs_vs_rank.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_loess_abs, y = loess_resid_abs)) + 
+  geom_point() + 
+  scale_x_reverse() + 
+  theme_bw()
+dev.off()
+
+png("spnngp_abs_vs_rank.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_loess_abs, y = spnngp_abs)) + 
+  geom_point() + 
+  scale_x_reverse() + 
+  theme_bw()
+dev.off()
+
+
+# plots
+png("testing.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = out_spnngp)) + 
+  geom_point() + 
+  geom_smooth() + 
+  theme_bw()
+dev.off()
+
+png("testing.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_spnngp, y = out_spnngp)) + 
+  geom_point() + 
+  scale_x_reverse() + 
+  theme_bw()
+dev.off()
 
 
 # to do:
