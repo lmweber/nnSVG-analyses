@@ -219,5 +219,6 @@ as.data.frame(rowData(spe_sub)[head(top_hvgs, 40), c(1, 2, 4, 5)])
 # - set tuning parameters more carefully
 # - try count-based spNNGP model
 # - try squared instead of absolute value
+# - try elbow instead of formal significance
 
 
