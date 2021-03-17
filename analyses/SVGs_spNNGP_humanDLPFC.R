@@ -247,24 +247,33 @@ rowData(spe_sub)$loess_resid_sq <- rowData(spe_sub)$spnngp_sq - rowData(spe_sub)
 # rank by residuals for loess fit
 rowData(spe_sub)$rank_loess_abs <- rank(-1 * rowData(spe_sub)$loess_resid_abs)
 rowData(spe_sub)$rank_loess_sq <- rank(-1 * rowData(spe_sub)$loess_resid_sq)
+# gam fit
+library(mgcv)
+rowData(spe_sub)$gam_fit_abs <- as.numeric(predict(gam(rowData(spe_sub)$spnngp_abs ~ s(rowData(spe_sub)$meanlogexp), bs = "cs")))
+rowData(spe_sub)$gam_fit_sq <- as.numeric(predict(gam(rowData(spe_sub)$spnngp_sq ~ s(rowData(spe_sub)$meanlogexp), bs = "cs")))
+rowData(spe_sub)$gam_resid_abs <- rowData(spe_sub)$spnngp_abs - rowData(spe_sub)$gam_fit_abs
+rowData(spe_sub)$gam_resid_sq <- rowData(spe_sub)$spnngp_sq - rowData(spe_sub)$gam_fit_sq
+# rank by residuals for gam fit
+rowData(spe_sub)$rank_gam_abs <- rank(-1 * rowData(spe_sub)$gam_resid_abs)
+rowData(spe_sub)$rank_gam_sq <- rank(-1 * rowData(spe_sub)$gam_resid_sq)
 
 rowData(spe_sub)
 
 
 # top genes
-rowData(spe_sub)[rowData(spe_sub)$rank_loess_abs <= 10, ]
-rowData(spe_sub)[rowData(spe_sub)$rank_loess_sq <= 10, ]
+rowData(spe_sub)[rowData(spe_sub)$rank_gam_abs <= 10, ]
+rowData(spe_sub)[rowData(spe_sub)$rank_gam_sq <= 10, ]
 
 
 # plots
-png("spnngp_abs_vs_meanlogexp.png")
+png("spnngp_abs_vs_meanlogexp_loess.png")
 ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = spnngp_abs)) + 
   geom_point() + 
   geom_line(aes(x = meanlogexp, y = loess_fit_abs), color = "blue", size = 1.5) + 
   theme_bw()
 dev.off()
 
-png("spnngp_sq_vs_meanlogexp.png")
+png("spnngp_sq_vs_meanlogexp_loess.png")
 ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = spnngp_sq)) + 
   geom_point() + 
   geom_line(aes(x = meanlogexp, y = loess_fit_sq), color = "red", size = 1.5) + 
@@ -278,7 +287,7 @@ ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_loess_abs, y = loess_resid_
   theme_bw()
 dev.off()
 
-png("spnngp_abs_vs_rank.png")
+png("spnngp_abs_vs_rank_loess.png")
 ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_loess_abs, y = spnngp_abs)) + 
   geom_point() + 
   scale_x_reverse() + 
@@ -286,7 +295,37 @@ ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_loess_abs, y = spnngp_abs))
 dev.off()
 
 
-# plots
+# alternative using gam
+png("spnngp_abs_vs_meanlogexp_gam.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = spnngp_abs)) + 
+  geom_point() + 
+  geom_line(aes(x = meanlogexp, y = gam_fit_abs), color = "blue", size = 1.5) + 
+  theme_bw()
+dev.off()
+
+png("spnngp_sq_vs_meanlogexp_gam.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = spnngp_sq)) + 
+  geom_point() + 
+  geom_line(aes(x = meanlogexp, y = gam_fit_sq), color = "red", size = 1.5) + 
+  theme_bw()
+dev.off()
+
+png("gam_resid_abs_vs_rank.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_gam_abs, y = gam_resid_abs)) + 
+  geom_point() + 
+  scale_x_reverse() + 
+  theme_bw()
+dev.off()
+
+png("spnngp_abs_vs_rank_gam.png")
+ggplot(as.data.frame(rowData(spe_sub)), aes(x = rank_gam_abs, y = spnngp_abs)) + 
+  geom_point() + 
+  scale_x_reverse() + 
+  theme_bw()
+dev.off()
+
+
+# previous plots
 png("testing.png")
 ggplot(as.data.frame(rowData(spe_sub)), aes(x = meanlogexp, y = out_spnngp)) + 
   geom_point() + 
