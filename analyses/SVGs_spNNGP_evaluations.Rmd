@@ -83,7 +83,7 @@ ggplot(df[!ix_nas, ], aes(x = mean, y = stat)) +
     title = "spNNGP SVGs statistic"
   ) + 
   theme_bw()
-ggsave("plots/spNNGP_vs_logcounts.png", width = 5.5, height = 5)
+ggsave("../plots/spNNGP_vs_logcounts.png", width = 5.5, height = 5)
 
 # spNNGP statistic rank vs. trend
 ix_nas <- is.na(df$rank_trend)
@@ -95,7 +95,7 @@ ggplot(df[!ix_nas, ], aes(x = difftrend, y = rank_trend)) +
     title = "spNNGP SVGs statistic"
   ) + 
   theme_bw()
-ggsave("plots/spNNGP_rank_vs_difftrend.png", width = 5.5, height = 5)
+ggsave("../plots/spNNGP_rank_vs_difftrend.png", width = 5.5, height = 5)
 
 # spNNGP statistic rank vs. HVGs rank
 ix_nas <- is.na(df$rank_trend) | is.na(df$rank_hvgs)
@@ -107,7 +107,7 @@ ggplot(df[!ix_nas, ], aes(x = rank_hvgs, y = rank_trend)) +
     title = "spNNGP SVGs ranks"
   ) + 
   theme_bw()
-ggsave("plots/spNNGP_rank_vs_HVGs_rank.png", width = 5.5, height = 5)
+ggsave("../plots/spNNGP_rank_vs_HVGs_rank.png", width = 5.5, height = 5)
 ```
 
 
