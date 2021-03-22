@@ -84,6 +84,23 @@ spe <- rankSVGsNNGP(spe, n_threads = 10)
 # Store HVGs for comparison
 # -------------------------
 
+library(dplyr)
+
+# store HVGs data frame and match to correct rows
+colnames(dec) <- paste0("hvgs_", colnames(dec))
+dec$gene_id <- rownames(dec)
+
+all(rownames(dec) %in% rowData(spe)$gene_id)
+rowdata <- left_join(as.data.frame(rowData(spe)), as.data.frame(dec), by = "gene_id")
+rowdata <- DataFrame(rowdata)
+rownames(rowdata) <- rownames(rowData(spe))
+
+identical(rowData(spe), rowdata[, 1:6])
+stopifnot(nrow(rowdata) == nrow(spe))
+
+rowData(spe) <- rowdata
+
+# calculate HVGs ranks
 rank_hvgs <- seq_along(top_hvgs)
 names(rank_hvgs) <- top_hvgs
 
@@ -101,6 +118,7 @@ ix_svgs <- which(rowData(spe)$rank <= 10)
 ix_hvgs <- which(rowData(spe)$rank_hvgs <= 10)
 ix <- union(ix_svgs, ix_hvgs)
 
+length(ix)
 as.data.frame(rowData(spe)[ix, -3])
 
 
@@ -108,6 +126,6 @@ as.data.frame(rowData(spe)[ix, -3])
 # Save object
 # -----------
 
-save(spe, file = "outputs/spe_spnngp.RData")
+saveRDS(spe, file = "outputs/spe_spnngp.rds")
 
 
