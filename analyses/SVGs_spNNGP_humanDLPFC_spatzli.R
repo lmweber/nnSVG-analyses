@@ -102,3 +102,10 @@ ix <- union(ix_svgs, ix_hvgs)
 as.data.frame(rowData(spe)[ix, -3])
 
 
+# -----------
+# Save object
+# -----------
+
+save(spe, file = "spe_spnngp.RData")
+
+
