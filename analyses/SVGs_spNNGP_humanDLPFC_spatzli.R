@@ -73,6 +73,8 @@ top_hvgs <- getTopHVGs(dec, prop = 0.1)
 # using implementation in spatzli package
 # stores statistics, ranks, and runtimes in rowData of spe object
 
+# runtime: approx. 4-8 hours with 10 cores
+
 library(spatzli)
 
 spe <- rankSVGsNNGP(spe, n_threads = 10)
