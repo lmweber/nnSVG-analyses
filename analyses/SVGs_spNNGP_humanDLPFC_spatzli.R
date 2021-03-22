@@ -78,3 +78,27 @@ library(spatzli)
 spe <- rankSVGsNNGP(spe, n_threads = 10)
 
 
+# -------------------------
+# Store HVGs for comparison
+# -------------------------
+
+rank_hvgs <- seq_along(top_hvgs)
+names(rank_hvgs) <- top_hvgs
+
+rank_hvgs_all <- rep(NA, nrow(spe))
+names(rank_hvgs_all) <- rownames(spe)
+rank_hvgs_all[names(rank_hvgs)] <- rank_hvgs
+
+stopifnot(length(rank_hvgs_all) == nrow(spe))
+
+rowData(spe)$rank_hvgs <- unname(rank_hvgs_all)
+
+
+# check some top genes
+ix_svgs <- which(rowData(spe)$rank <= 10)
+ix_hvgs <- which(rowData(spe)$rank_hvgs <= 10)
+ix <- union(ix_svgs, ix_hvgs)
+
+as.data.frame(rowData(spe)[ix, -3])
+
+
