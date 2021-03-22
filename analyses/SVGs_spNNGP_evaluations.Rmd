@@ -27,7 +27,7 @@ Load results saved in object from script `SVGs_spNNGP_humanDLPFC_spatzli.R`. The
 library(SpatialExperiment)
 library(spatzli)
 
-load("outputs/spe_spnngp.RData")
+load("../outputs/spe_spnngp.RData")
 ```
 
 
