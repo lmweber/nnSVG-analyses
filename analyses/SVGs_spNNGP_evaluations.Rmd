@@ -1,0 +1,37 @@
+---
+title: "SVGs spNNGP analyses"
+author: "Lukas Weber"
+date: "`R Sys.Date()`"
+output: html_document
+---
+
+# Introduction
+
+Analyses for SVGs spNNGP method - including evaluations of test statistic properties, comparisons with HVGs, and runtimes.
+
+```{r, eval=FALSE}
+# start session on cluster
+screen -S svgs_analyses
+qrsh -l mem_free=10G,h_vmem=12G,h_fsize=100G
+cd /dcs04/hicks/data/lweber/SVGs_spNNGP
+module load conda_R/devel
+R
+```
+
+
+## Load results
+
+Load results saved in object from script `SVGs_spNNGP_humanDLPFC_spatzli.R`. The results are stored in the `rowData` of the `SpatialExperiment` object.
+
+```{r, message=FALSE}
+library(SpatialExperiment)
+library(spatzli)
+
+spe <- load("spe_spnngp.RData")
+```
+
+
+## Evaluations of statistic
+
+Evaluations of the properties of the statistic across genes.
+
