@@ -27,7 +27,7 @@ Load results saved in object from script `SVGs_spNNGP_humanDLPFC_spatzli.R`. The
 library(SpatialExperiment)
 library(spatzli)
 
-load("../outputs/spe_spnngp.RData")
+spe <- readRDS("../outputs/spe_spnngp.rds")
 ```
 
 
@@ -68,9 +68,11 @@ as.data.frame(rowData(spe)[ix, ])
 ```
 
 ```{r, fig.width=4.5, fig.height=4}
+# plots
 df <- as.data.frame(rowData(spe))
 
-# plots
+
+# properties of spNNGP statistic
 
 # spNNGP statistic vs. mean logcounts
 ix_nas <- is.na(df$stat)
@@ -79,32 +81,52 @@ ggplot(df[!ix_nas, ], aes(x = mean, y = stat)) +
   geom_line(aes(x = mean, y = trend), color = "blue", size = 1) + 
   labs(
     x = "mean logcounts", 
-    y = "statistic", 
+    y = "statistic (raw)", 
     title = "spNNGP SVGs statistic"
   ) + 
   theme_bw()
-ggsave("../plots/spNNGP_vs_logcounts.png", width = 5.5, height = 5)
+ggsave("../plots/spNNGP_stat_vs_logcounts.png", width = 5.5, height = 5)
 
 # spNNGP statistic rank vs. trend
-ix_nas <- is.na(df$rank_trend)
-ggplot(df[!ix_nas, ], aes(x = difftrend, y = rank_trend)) + 
+which_zero <- max(df$rank_trend[!ix_nas][df$difftrend[!ix_nas] > 0])
+ix_nas <- is.na(df$difftrend)
+ggplot(df[!ix_nas, ], aes(x = rank_trend, y = difftrend)) + 
   geom_point() + 
+  geom_vline(xintercept = 500, color = "red") + 
+  geom_vline(xintercept = which_zero, color = "blue") + 
   labs(
-    x = "statistic (difference vs. trend)", 
-    y = "rank (difference vs. trend)", 
+    x = "rank (difference vs. trend)", 
+    y = "statistic (difference vs. trend)", 
     title = "spNNGP SVGs statistic"
   ) + 
   theme_bw()
-ggsave("../plots/spNNGP_rank_vs_difftrend.png", width = 5.5, height = 5)
+ggsave("../plots/spNNGP_difftrend_vs_rank.png", width = 5.5, height = 5)
 
-# spNNGP statistic rank vs. HVGs rank
+
+# comparison with HVGs
+
+# spNNGP statistic vs. HVGs statistic
+ix_nas <- is.na(df$stat) | is.na(df$hvgs_bio)
+ggplot(df[!ix_nas, ], aes(x = hvgs_bio, y = difftrend)) + 
+  geom_point() + 
+  labs(
+    x = "HVGs statistic (biological variation)", 
+    y = "spNNGP statistic (difference vs. trend)", 
+    title = "SVGs and HVGs"
+  ) + 
+  theme_bw()
+ggsave("../plots/spNNGP_difftrend_vs_HVGs_bio.png", width = 5.5, height = 5)
+
+# spNNGP rank vs. HVGs rank
 ix_nas <- is.na(df$rank_trend) | is.na(df$rank_hvgs)
 ggplot(df[!ix_nas, ], aes(x = rank_hvgs, y = rank_trend)) + 
   geom_point() + 
+  xlim(c(0, 1000)) + 
+  ylim(c(0, 1000)) + 
   labs(
-    x = "rank of HVGs", 
-    y = "rank of SVGs (difference vs. trend)", 
-    title = "spNNGP SVGs ranks"
+    x = "HVGs rank (biological variation) (top 1000)", 
+    y = "spNNGP rank (difference vs. trend) (top 1000)", 
+    title = "SVGs and HVGs"
   ) + 
   theme_bw()
 ggsave("../plots/spNNGP_rank_vs_HVGs_rank.png", width = 5.5, height = 5)
