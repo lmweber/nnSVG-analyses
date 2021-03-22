@@ -37,6 +37,7 @@ Evaluations of the properties of the statistic across genes.
 
 ```{r, message=FALSE}
 library(ggplot2)
+library(ggrepel)
 ```
 
 ```{r}
@@ -130,6 +131,65 @@ ggplot(df[!ix_nas, ], aes(x = rank_hvgs, y = rank_trend)) +
   ) + 
   theme_bw()
 ggsave("../plots/spNNGP_rank_vs_HVGs_rank.png", width = 5.5, height = 5)
+
+# spNNGP rank vs. HVGs rank
+ix_nas <- is.na(df$rank_trend) | is.na(df$rank_hvgs)
+ix_svgs_trend <- which(rowData(spe)$rank_trend <= 10)
+ix_hvgs <- which(rowData(spe)$rank_hvgs <= 10)
+ix_top <- union(ix_svgs_trend, ix_hvgs)
+df_top <- df[ix_top, ]
+ggplot(df[!ix_nas, ], aes(x = rank_hvgs, y = rank_trend)) + 
+  geom_point() + 
+  geom_point(data = df_top, aes(x = rank_hvgs, y = rank_trend), color = "maroon") + 
+  geom_text_repel(data = df_top, mapping = aes(label = gene_name), color = "maroon") + 
+  xlim(c(0, 30)) + 
+  ylim(c(0, 30)) + 
+  labs(
+    x = "HVGs rank (biological variation) (top 30)", 
+    y = "spNNGP rank (difference vs. trend) (top 30)", 
+    title = "SVGs and HVGs"
+  ) + 
+  theme_bw()
+ggsave("../plots/spNNGP_rank_vs_HVGs_rank_zoom.png", width = 5.5, height = 5)
+
+
+# interesting genes from previous work
+
+# spNNGP statistic vs. HVGs statistic
+ix_nas <- is.na(df$stat) | is.na(df$hvgs_bio)
+ix_interesting <- which(df$gene_name %in% c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY"))
+df_interesting <- df[ix_interesting, ]
+ggplot(df[!ix_nas, ], aes(x = hvgs_bio, y = difftrend)) + 
+  geom_point() + 
+  geom_point(data = df_interesting, color = "blue") + 
+  geom_text_repel(data = df_interesting, mapping = aes(label = gene_name), color = "blue") + 
+  xlim(c(min(df$hvgs_bio, na.rm = TRUE), 0.8)) + 
+  ylim(c(min(df$difftrend, na.rm = TRUE), 2000)) + 
+  labs(
+    x = "HVGs statistic (biological variation)", 
+    y = "spNNGP statistic (difference vs. trend)", 
+    title = "SVGs and HVGs"
+  ) + 
+  theme_bw()
+ggsave("../plots/spNNGP_difftrend_vs_HVGs_bio_interesting.png", width = 5.5, height = 5)
+
+# spNNGP rank vs. HVGs rank
+ix_nas <- is.na(df$rank_trend) | is.na(df$rank_hvgs)
+ix_interesting <- which(df$gene_name %in% c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY"))
+df_interesting <- df[ix_interesting, ]
+ggplot(df[!ix_nas, ], aes(x = rank_hvgs, y = rank_trend)) + 
+  geom_point() + 
+  geom_point(data = df_interesting, color = "blue") + 
+  geom_text_repel(data = df_interesting, mapping = aes(label = gene_name), color = "blue") + 
+  xlim(c(0, 200)) + 
+  ylim(c(0, 200)) + 
+  labs(
+    x = "HVGs rank (biological variation) (top 200)", 
+    y = "spNNGP rank (difference vs. trend) (top 200)", 
+    title = "SVGs and HVGs"
+  ) + 
+  theme_bw()
+ggsave("../plots/spNNGP_rank_vs_HVGs_rank_interesting.png", width = 5.5, height = 5)
 ```
 
 
