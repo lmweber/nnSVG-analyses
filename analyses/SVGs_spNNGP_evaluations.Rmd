@@ -13,7 +13,7 @@ Analyses for SVGs spNNGP method - including evaluations of test statistic proper
 # start session on cluster
 screen -S svgs_analyses
 qrsh -l mem_free=10G,h_vmem=12G,h_fsize=100G
-cd /dcs04/hicks/data/lweber/SVGs_spNNGP
+cd /dcs04/hicks/data/lweber/SVGs_spNNGP/SVGs-spNNGP-analyses
 module load conda_R/devel
 R
 ```
@@ -27,11 +27,44 @@ Load results saved in object from script `SVGs_spNNGP_humanDLPFC_spatzli.R`. The
 library(SpatialExperiment)
 library(spatzli)
 
-spe <- load("spe_spnngp.RData")
+load("outputs/spe_spnngp.RData")
 ```
 
 
 ## Evaluations of statistic
 
 Evaluations of the properties of the statistic across genes.
+
+```{r, message=FALSE}
+library(ggplot2)
+```
+
+```{r}
+# calculate total UMIs per gene
+rowData(spe)$sum <- rowSums(counts(spe))
+# calculate mean logcounts per gene
+rowData(spe)$mean <- rowMeans(logcounts(spe))
+
+# loess fit to mean logcounts
+# note: handle NAs
+is_nas <- is.na(rowData(spe)$stat)
+trend <- predict(loess(rowData(spe)$stat[!is_nas] ~ rowData(spe)$mean[!is_nas]))
+rowData(spe)$trend <- NA
+rowData(spe)$trend[!is_nas] <- trend
+
+# calculate difference above trend
+rowData(spe)$difftrend <- rowData(spe)$stat - rowData(spe)$trend
+# ranking by difference above trend
+rowData(spe)$rank_trend <- rank(-1 * rowData(spe)$difftrend)
+
+# check for top genes
+ix_svgs <- which(rowData(spe)$rank <= 10)
+ix_svgs_trend <- which(rowData(spe)$rank_trend <= 10)
+ix_hvgs <- which(rowData(spe)$rank_hvgs <= 10)
+
+ix <- union(union(ix_svgs, ix_svgs_trend), ix_hvgs)
+length(ix)
+as.data.frame(rowData(spe)[ix, ])
+```
+
 
