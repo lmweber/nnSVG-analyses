@@ -67,7 +67,7 @@ length(ix)
 as.data.frame(rowData(spe)[ix, ])
 ```
 
-```{r, fig.width=4.5, fig.height=4}
+```{r, fig.width=4.25, fig.height=4}
 # plots
 df <- as.data.frame(rowData(spe))
 
