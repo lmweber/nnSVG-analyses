@@ -80,9 +80,9 @@ head(coords)
 coords <- apply(coords, 2, function(col) (col - min(col)) / (max(col) - min(col)))
 
 
-# -------------------------------------------
-# Example: fit spNNGP model for a single gene
-# -------------------------------------------
+# ------------------------------------------
+# Example: fit BRISC model for a single gene
+# ------------------------------------------
 
 # extract responses for one gene
 ix <- which(rowData(spe)$gene_name == "PCP4")
