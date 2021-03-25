@@ -110,8 +110,17 @@ str(out_brisc, max.level = 1)
 # estimated parameters
 out_brisc$Theta
 
-# tau squared parameter to estimate fraction of spatial variance
+# tau squared parameter
 out_brisc$Theta["tau.sq"]
+# sigma squared parameter
+out_brisc$Theta["sigma.sq"]
+
+# fraction of spatial variance (FSV) using this parameterization (analogous to FSV in SpatialDE)
+tau_sq <- out_brisc$Theta["tau.sq"]
+sigma_sq <- out_brisc$Theta["sigma.sq"]
+fsv <- sigma_sq / (sigma_sq + tau_sq)
+fsv
+
 
 # BRISC object
 str(out_brisc$BRISC_Object)
