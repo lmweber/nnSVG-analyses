@@ -126,6 +126,16 @@ fsv
 str(out_brisc$BRISC_Object)
 
 
+# ------------
+# Significance
+# ------------
+
+# bootstrap with BRISC
+runtime_bootstrap <- system.time({
+  out_brisc_boot <- BRISC_bootstrap(out_brisc)
+})
+
+
 # to do:
 # - extract model likelihood
 # - fit equivalent model without spatial variance term
