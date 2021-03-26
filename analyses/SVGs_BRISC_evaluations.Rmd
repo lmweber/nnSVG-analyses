@@ -78,7 +78,7 @@ df <- as.data.frame(rowData(spe))
 # BRISC statistic vs. mean logcounts
 ix_nas <- is.na(df$sigma.sq)
 ggplot(df[!ix_nas, ], aes(x = mean, y = sigma.sq)) + 
-  geom_point() + 
+  geom_point(pch = 1) + 
   geom_line(aes(x = mean, y = trend), color = "blue", size = 1) + 
   labs(
     x = "mean logcounts", 
@@ -188,6 +188,27 @@ ggplot(df[!ix_nas, ], aes(x = rank_hvgs, y = rank_trend)) +
   ) + 
   theme_bw()
 ggsave("../plots/BRISC_rank_vs_HVGs_rank_interesting.png", width = 5.5, height = 5)
+
+
+# mean-variance relationship in HVGs
+rowData(spe)$var <- rowVars(as.matrix(logcounts(spe)))
+is_nas <- is.na(rowData(spe)$var)
+trend_var <- predict(loess(rowData(spe)$var[!is_nas] ~ rowData(spe)$mean[!is_nas]))
+rowData(spe)$trend_var <- NA
+rowData(spe)$trend_var[!is_nas] <- trend_var
+df <- as.data.frame(rowData(spe))
+# exclude same genes as for previous plots
+ix_nas <- is.na(df$sigma.sq)
+ggplot(df[!ix_nas, ], aes(x = mean, y = var)) + 
+  geom_point(pch = 1, color = "darkgreen") + 
+  #geom_line(aes(x = mean, y = trend_var), color = "forestgreen", size = 1) + 
+  labs(
+    x = "mean logcounts", 
+    y = "variance of logcounts", 
+    title = "HVGs"
+  ) + 
+  theme_bw()
+ggsave("../plots/HVGS_mean_var.png", width = 5.5, height = 5)
 ```
 
 
