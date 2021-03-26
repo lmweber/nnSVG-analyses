@@ -70,8 +70,8 @@ top_hvgs <- getTopHVGs(dec, prop = 0.1)
 
 library(spatzli)
 
-spe <- system.time({
-  rankSVGsBRISC(spe, n_threads = 6)
+runtime <- system.time({
+  spe <- rankSVGsBRISC(spe, n_threads = 6)
 })
 
 
