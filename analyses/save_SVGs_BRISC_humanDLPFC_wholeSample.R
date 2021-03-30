@@ -73,7 +73,7 @@ spe <- spe[, !is.na(colData(spe)$ground_truth)]
 dim(spe)
 
 runtime <- system.time({
-  spe <- rankSVGsBRISC(spe, n_threads = 10)
+  spe <- rankSVGsBRISC(spe, n_threads = 6)
 })
 
 

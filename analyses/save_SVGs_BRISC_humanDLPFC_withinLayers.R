@@ -78,7 +78,7 @@ x <- model.matrix(~ colData(spe)$ground_truth)
 dim(x)
 
 runtime <- system.time({
-  spe <- rankSVGsBRISC(spe, x = x, n_threads = 10)
+  spe <- rankSVGsBRISC(spe, x = x, n_threads = 6)
 })
 
 
