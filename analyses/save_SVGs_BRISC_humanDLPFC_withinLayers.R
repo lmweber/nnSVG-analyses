@@ -119,6 +119,6 @@ rowData(spe)$rank_hvgs <- unname(rank_hvgs_all)
 # Save object
 # -----------
 
-saveRDS(spe, file = "outputs/spe_svgs_brisc_withinlayers.rds")
+saveRDS(spe, file = "../outputs/spe_svgs_brisc_withinlayers.rds")
 
 
