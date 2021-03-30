@@ -67,6 +67,7 @@ top_hvgs <- getTopHVGs(dec, prop = 0.1)
 # runtime: ~1.5 hours using 6 cores
 
 library(spatzli)
+library(BiocParallel)
 
 # remove NA labeled spots
 spe <- spe[, !is.na(colData(spe)$ground_truth)]
