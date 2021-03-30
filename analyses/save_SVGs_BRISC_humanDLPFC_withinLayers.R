@@ -1,16 +1,14 @@
-#########################
-# SVGs BRISC example
-# Lukas Weber, March 2021
-#########################
+################################################
+# R script to calculate SVGs across whole sample
+# using BRISC method
+################################################
 
-# qrsh -pe local 6 -l mem_free=1G,h_vmem=2G,h_fsize=100G
-# module load conda_R/devel
 
 # ---------------------------------------------
 # Load data, preprocessing, calculate logcounts
 # ---------------------------------------------
 
-# Code copied from current version of OSTA
+# Code from current version of OSTA
 
 # LOAD DATA
 
@@ -70,8 +68,17 @@ top_hvgs <- getTopHVGs(dec, prop = 0.1)
 
 library(spatzli)
 
+# remove NA labeled spots
+spe <- spe[, !is.na(colData(spe)$ground_truth)]
+dim(spe)
+
+# create model matrix from manually annotated layer labels
+sum(is.na(colData(spe)$ground_truth))
+x <- model.matrix(~ colData(spe)$ground_truth)
+dim(x)
+
 runtime <- system.time({
-  spe <- rankSVGsBRISC(spe, n_threads = 6)
+  spe <- rankSVGsBRISC(spe, x = x, n_threads = 10)
 })
 
 
@@ -108,19 +115,10 @@ stopifnot(length(rank_hvgs_all) == nrow(spe))
 rowData(spe)$rank_hvgs <- unname(rank_hvgs_all)
 
 
-# check some top genes
-ix_svgs <- which(rowData(spe)$rank <= 10)
-ix_hvgs <- which(rowData(spe)$rank_hvgs <= 10)
-ix <- union(ix_svgs, ix_hvgs)
-
-length(ix)
-as.data.frame(rowData(spe)[ix, -3])
-
-
 # -----------
 # Save object
 # -----------
 
-saveRDS(spe, file = "outputs/spe_brisc.rds")
+saveRDS(spe, file = "outputs/spe_svgs_brisc_withinlayers.rds")
 
 
