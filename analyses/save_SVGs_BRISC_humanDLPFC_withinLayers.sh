@@ -2,7 +2,7 @@
 #$ -V
 #$ -cwd
 #$ -pe local 6
-#$ -l mem_free=3G,h_vmem=4G,h_fsize=50G
+#$ -l mem_free=4G,h_vmem=5G,h_fsize=100G
 
 # submit to cluster with 'qsub <filename.sh>'
 
