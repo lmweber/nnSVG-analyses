@@ -64,7 +64,7 @@ top_hvgs <- getTopHVGs(dec, prop = 0.1)
 # using implementation in spatzli package
 # stores outputs in rowData of spe object
 
-# runtime: ~1.5 hours using 6 cores
+# runtime: ~30 min using 6 cores
 
 library(spatzli)
 
