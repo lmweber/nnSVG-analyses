@@ -5,4 +5,7 @@
 .DS_Store
 outputs
 plots
+plots_new
 *.html
+analyses/SVGs_BRISC_evaluations_HVGs_cache
+analyses/SVGs_BRISC_evaluations_HVGs_files
