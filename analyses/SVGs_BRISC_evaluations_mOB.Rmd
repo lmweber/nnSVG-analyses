@@ -219,6 +219,9 @@ rowData(spe)$rank_svgs_I <- rank(-1 * rowData(spe)$I, na.last = "keep")
 
 # HVGs
 rowData(spe)$rank_hvgs_bio <- rank(-1 * rowData(spe)$bio, na.last = "keep")
+
+# SPARK-X (using p-values instead of statistic)
+rowData(spe)$rank_svgs_sparkx <- rank(rowData(spe)$combinedPval, na.last = "keep")
 ```
 
 
@@ -328,6 +331,22 @@ rowData(spe)$gene_name[ix_top_hvgs]
 rowData(spe)$gene_name[ix_top_sparkx]
 
 rowData(spe_covariates)$gene_name[ix_top_brisc_covariates]
+```
+
+
+Top 10 genes from each method
+
+```{r}
+# identify top gene for each method
+ix_top10_brisc <- which(rowData(spe)$rank_svgs_sigmasq <= 10)
+ix_top10_meringue <- which(rowData(spe)$rank_svgs_I <= 10)
+ix_top10_hvgs <- which(rowData(spe)$rank_hvgs_bio <= 10)
+ix_top10_sparkx <- which(rowData(spe)$rank_svgs_sparkx <= 10)
+
+rowData(spe)$gene_name[ix_top10_brisc]
+rowData(spe)$gene_name[ix_top10_meringue]
+rowData(spe)$gene_name[ix_top10_hvgs]
+rowData(spe)$gene_name[ix_top10_sparkx]
 ```
 
 
