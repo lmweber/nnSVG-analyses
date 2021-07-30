@@ -1,0 +1,245 @@
+---
+title: "SVGs BRISC analyses: DLPFC subset with covariates"
+author: "Lukas Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+
+# Introduction
+
+Analyses for SVGs BRISC method: human DLPFC dataset (subset) with covariates
+
+Note: installation of MERINGUE and SPARK both require compilation
+
+```{r, message=FALSE}
+library(SpatialExperiment)
+library(dplyr)
+library(ggplot2)
+```
+
+
+## Load data
+
+Load dataset and subset spots.
+
+```{r, message=FALSE}
+# load dataset
+#library(STexampleData)
+#spe <- Visium_humanDLPFC()
+
+# temporary until new objects added to Bioc-devel
+spe <- readRDS("../../../STexampleData/ExperimentHub_files/Bioc_3_14/Visium_humanDLPFC.rds")
+dim(spe)
+```
+
+```{r}
+# keep only spots in tissue
+spe <- spe[, spatialData(spe)$in_tissue == 1]
+dim(spe)
+
+# subset small number of spots
+n <- 200
+set.seed(123)
+ix <- sample(seq_len(ncol(spe)), 200)
+
+spe <- spe[, ix]
+dim(spe)
+```
+
+```{r}
+# check
+colData(spe)
+spatialData(spe)
+head(spatialCoords(spe))
+```
+
+
+## Preprocessing
+
+Re-using code from OSTA
+
+```{r, message=FALSE}
+# QUALITY CONTROL (QC)
+
+library(scater)
+# identify mitochondrial genes
+is_mito <- grepl("(^MT-)|(^mt-)", rowData(spe)$gene_name)
+table(is_mito)
+# spot-level filtering
+spe <- addPerCellQC(spe, subsets = list(mito = is_mito))
+qc_lib_size <- colData(spe)$sum < 500
+qc_detected <- colData(spe)$detected < 250
+qc_mito <- colData(spe)$subsets_mito_percent > 30
+qc_cell_count <- colData(spe)$cell_count > 12
+# filter low-quality spots
+colData(spe)$discard <- qc_lib_size | qc_detected | qc_mito | qc_cell_count
+table(colData(spe)$discard)
+spe <- spe[, !colData(spe)$discard]
+dim(spe)
+
+# NORMALIZATION
+
+library(scran)
+# calculate size factors
+spe <- computeSumFactors(spe)
+# calculate logcounts (log-transformed normalized counts)
+spe <- logNormCounts(spe)
+
+# FEATURE SELECTION
+
+# fit mean-variance relationship
+dec <- modelGeneVar(spe)
+# select top HVGs
+top_hvgs <- getTopHVGs(dec, prop = 0.1)
+str(top_hvgs)
+# keep HVG statistics
+rowData(spe) <- DataFrame(left_join(
+  as.data.frame(rowData(spe)), as.data.frame(cbind(dec, gene_id = rownames(dec))), 
+  by = "gene_id"
+))
+head(rowData(spe))
+
+# keep only HVGs for now
+spe <- spe[top_hvgs, ]
+dim(spe)
+```
+
+
+## Run SVGs methods
+
+### Run BRISC
+
+Using parallelized wrapper function in `spatzli` package.
+
+notes:
+- runtime for bootstrapping to get confidence intervals is ~100x slower
+- to do: add slower version to rank SVGs by significance of `sigma.sq` parameter (using bootstrap confidence intervals)
+
+```{r}
+library(spatzli)
+```
+
+```{r}
+# run BRISC to calculate statistics for each gene
+runtime_brisc <- system.time({
+  spe_base <- rankSVGsBRISC(spe, n_threads = 4)
+})
+
+runtime_brisc
+```
+
+
+### Run BRISC with covariates
+
+Include covariates for manually annotated ground truth layers
+
+```{r}
+# run BRISC to calculate statistics for each gene
+runtime_brisc_covariates <- system.time({
+  spe_covariates <- rankSVGsBRISC(spe, x = model.matrix(~ colData(spe)$ground_truth), n_threads = 4)
+})
+
+runtime_brisc_covariates
+```
+
+
+### Compare gene lists
+
+```{r}
+# calculate ranks
+
+# BRISC
+rowData(spe_base)$rank_svgs_sigmasq <- rank(-1 * rowData(spe_base)$sigma.sq, na.last = "keep")
+rowData(spe_covariates)$rank_svgs_sigmasq <- rank(-1 * rowData(spe_covariates)$sigma.sq, na.last = "keep")
+
+# HVGs
+rowData(spe_base)$rank_hvgs_bio <- rank(-1 * rowData(spe_base)$bio, na.last = "keep")
+rowData(spe_covariates)$rank_hvgs_bio <- rank(-1 * rowData(spe_covariates)$bio, na.last = "keep")
+```
+
+```{r}
+# top genes
+rowData(spe_base)$gene_name[rowData(spe_base)$rank_svgs_sigmasq <= 10]
+rowData(spe_covariates)$gene_name[rowData(spe_covariates)$rank_svgs_sigmasq <= 10]
+```
+
+
+### BRISC vs. non-spatial HVGs
+
+```{r, fig.width=4.25, fig.height=4}
+ggplot(as.data.frame(rowData(spe_base)), 
+       aes(x = bio, y = sigma.sq)) + 
+  geom_point(pch = 1) + 
+  geom_smooth() + 
+  labs(x = "HVGs: bio", 
+       y = "BRISC: sigma.sq") + 
+  ggtitle("Statistics") + 
+  theme_bw()
+```
+
+
+### Plot top SVGs
+
+```{r}
+# identify top SVGs
+ix_top_brisc_base <- which.max(rowData(spe_base)$sigma.sq)
+ix_top_brisc_covariates <- which.max(rowData(spe_covariates)$sigma.sq)
+```
+
+```{r, fig.width=5, fig.height=4}
+ggplot(as.data.frame(cbind(spatialCoords(spe_base), 
+                           counts = counts(spe_base)[ix_top_brisc_base, ])), 
+       aes(x = x, y = y, color = counts)) + 
+  coord_fixed() + 
+  geom_point(pch = 16, size = 2.5) + 
+  scale_y_reverse() + 
+  scale_color_gradient(low = "gray90", high = "blue") + 
+  ggtitle(paste0("BRISC (base): ", rowData(spe)$gene_name[ix_top_brisc_base])) + 
+  theme_bw()
+```
+
+```{r, fig.width=5, fig.height=4}
+ggplot(as.data.frame(cbind(spatialCoords(spe_covariates), 
+                           counts = counts(spe_covariates)[ix_top_brisc_covariates, ])), 
+       aes(x = x, y = y, color = counts)) + 
+  coord_fixed() + 
+  geom_point(pch = 16, size = 2.5) + 
+  scale_y_reverse() + 
+  scale_color_gradient(low = "gray90", high = "blue") + 
+  ggtitle(paste0("BRISC (covariates): ", rowData(spe)$gene_name[ix_top_brisc_covariates])) + 
+  theme_bw()
+```
+
+
+### Plot layers
+
+Plot ground truth layer labels for reference
+
+```{r, fig.width=5, fig.height=4}
+ggplot(as.data.frame(cbind(spatialCoords(spe_base), colData(spe))), 
+       aes(x = x, y = y, color = ground_truth)) + 
+  coord_fixed() + 
+  scale_y_reverse() + 
+  geom_point(pch = 16, size = 2.5) + 
+  ggtitle(paste0("Ground truth layers")) + 
+  theme_bw()
+```
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```
+
