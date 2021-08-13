@@ -480,6 +480,7 @@ ggplot(df_overlaps_HVGs,
   geom_line() + 
   geom_point() + 
   scale_color_manual(values = pal_okabeito) + 
+  ylim(0, 1) + 
   xlab("Top k genes (HVGs)") + 
   ylab("Overlap proportion") + 
   ggtitle("Overlap with HVGs") + 
@@ -541,7 +542,8 @@ ggplot(df_overlaps_sparkX,
        aes(x = size, y = prop, color = method)) + 
   geom_line() + 
   geom_point() + 
-  scale_color_manual(values = pal_okabeito[c(1, 2, 8, 4)]) + 
+  scale_color_manual(values = pal_okabeito[c(1, 2, 6, 3)]) + 
+  ylim(0, 1) + 
   xlab("Top k genes (SPARK-X)") + 
   ylab("Overlap proportion") + 
   ggtitle("Overlap with SPARK-X") + 
@@ -597,6 +599,7 @@ ggplot(df_overlaps_BRISC,
   geom_line() + 
   geom_point() + 
   scale_color_manual(values = pal_okabeito[c(6, 3, 4)]) + 
+  ylim(0, 1) + 
   xlab("Top k genes (BRISC)") + 
   ylab("Overlap proportion") + 
   ggtitle("Overlap with BRISC") + 
