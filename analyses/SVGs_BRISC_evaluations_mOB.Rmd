@@ -473,23 +473,23 @@ df_overlaps_HVGs <-
 colnames(df_overlaps_HVGs)[1] <- "method"
 df_overlaps_HVGs$method <- as.factor(df_overlaps_HVGs$method)
 df_overlaps_HVGs$size <- rep(c(10, 50, 100, 200, 500), times = 4)
+df_overlaps_HVGs$prop <- df_overlaps_HVGs$overlap / df_overlaps_HVGs$size
 
 ggplot(df_overlaps_HVGs, 
-       aes(x = size, y = overlap, color = method)) + 
+       aes(x = size, y = prop, color = method)) + 
   geom_line() + 
   geom_point() + 
   scale_color_manual(values = pal_okabeito) + 
   xlab("Top k genes (HVGs)") + 
-  ylab("Overlap size") + 
+  ylab("Overlap proportion") + 
   ggtitle("Overlap with HVGs") + 
   theme_bw()
 
-ggsave("../plots/overlaps_HVGs.pdf", width = 6, height = 4)
+ggsave("../plots/overlaps_HVGs.png", width = 6, height = 4)
 ```
 
 
 ### Overlap with SPARK-X as baseline
-
 
 ```{r}
 df_overlaps_sparkX <- data.frame(
@@ -535,18 +535,74 @@ df_overlaps_sparkX <-
 colnames(df_overlaps_sparkX)[1] <- "method"
 df_overlaps_sparkX$method <- as.factor(df_overlaps_sparkX$method)
 df_overlaps_sparkX$size <- rep(c(10, 50, 100, 200, 500), times = 4)
+df_overlaps_sparkX$prop <- df_overlaps_sparkX$overlap / df_overlaps_sparkX$size
 
 ggplot(df_overlaps_sparkX, 
-       aes(x = size, y = overlap, color = method)) + 
+       aes(x = size, y = prop, color = method)) + 
   geom_line() + 
   geom_point() + 
   scale_color_manual(values = pal_okabeito[c(1, 2, 8, 4)]) + 
   xlab("Top k genes (SPARK-X)") + 
-  ylab("Overlap size") + 
+  ylab("Overlap proportion") + 
   ggtitle("Overlap with SPARK-X") + 
   theme_bw()
 
-ggsave("../plots/overlaps_sparkX.pdf", width = 6, height = 4)
+ggsave("../plots/overlaps_sparkX.png", width = 6, height = 4)
+```
+
+
+### Overlap with BRISC as baseline
+
+```{r}
+df_overlaps_BRISC <- data.frame(
+  BRISC = c(10, 50, 100, 200, 500), 
+  HVGs = c(
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 10, ]$rank_hvgs_bio <= 10), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 50, ]$rank_hvgs_bio <= 50), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 100, ]$rank_hvgs_bio <= 100), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 200, ]$rank_hvgs_bio <= 200), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 500, ]$rank_hvgs_bio <= 500)
+  ), 
+  moransI = c(
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 10, ]$rank_svgs_I <= 10, na.rm = TRUE), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 50, ]$rank_svgs_I <= 50, na.rm = TRUE), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 100, ]$rank_svgs_I <= 100, na.rm = TRUE), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 200, ]$rank_svgs_I <= 200, na.rm = TRUE), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 500, ]$rank_svgs_I <= 500, na.rm = TRUE)
+  ), 
+  sparkX = c(
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 10, ]$rank_svgs_sparkx <= 10), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 50, ]$rank_svgs_sparkx <= 50), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 100, ]$rank_svgs_sparkx <= 100), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 200, ]$rank_svgs_sparkx <= 200), 
+    sum(rowData(spe)[rowData(spe)$rank_svgs_sigmasq <= 500, ]$rank_svgs_sparkx <= 500)
+  )
+)
+```
+
+
+```{r, fig.width=6, fig.height=4}
+library(tidyr)
+
+df_overlaps_BRISC <- 
+  df_overlaps_BRISC %>% 
+  gather("BRISC", "overlap")
+colnames(df_overlaps_BRISC)[1] <- "method"
+df_overlaps_BRISC$method <- as.factor(df_overlaps_BRISC$method)
+df_overlaps_BRISC$size <- rep(c(10, 50, 100, 200, 500), times = 3)
+df_overlaps_BRISC$prop <- df_overlaps_BRISC$overlap / df_overlaps_BRISC$size
+
+ggplot(df_overlaps_BRISC, 
+       aes(x = size, y = prop, color = method)) + 
+  geom_line() + 
+  geom_point() + 
+  scale_color_manual(values = pal_okabeito[c(6, 3, 4)]) + 
+  xlab("Top k genes (BRISC)") + 
+  ylab("Overlap proportion") + 
+  ggtitle("Overlap with BRISC") + 
+  theme_bw()
+
+ggsave("../plots/overlaps_BRISC.png", width = 6, height = 4)
 ```
 
 
