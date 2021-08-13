@@ -35,12 +35,16 @@ Load dataset and subset spots.
 
 ```{r, message=FALSE}
 # load dataset
-#library(STexampleData)
-#spe <- Visium_humanDLPFC()
+# library(STexampleData)
+# spe <- Visium_humanDLPFC()
 
-# temporary until new objects added to Bioc-devel
-spe <- readRDS("../../../STexampleData/ExperimentHub_files/Bioc_3_14/Visium_humanDLPFC.rds")
+# temporary using STexampleData version from GitHub installed in Bioc-release
+spe <- load_data("Visium_humanDLPFC")
 dim(spe)
+
+# alternatively load from local files
+# spe <- readRDS("../../../STexampleData/ExperimentHub_files/Bioc_3_14/Visium_humanDLPFC.rds")
+# dim(spe)
 ```
 
 ```{r}
