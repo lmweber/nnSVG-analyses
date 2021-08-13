@@ -426,6 +426,10 @@ Plot number of overlapping genes for increasing number of genes.
 ### Overlap with HVGs as baseline
 
 ```{r}
+pal_okabeito <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+```
+
+```{r}
 df_overlaps_HVGs <- data.frame(
   HVGs = c(10, 50, 100, 200, 500), 
   BRISC = c(
@@ -474,6 +478,7 @@ ggplot(df_overlaps_HVGs,
        aes(x = size, y = overlap, color = method)) + 
   geom_line() + 
   geom_point() + 
+  scale_color_manual(values = pal_okabeito) + 
   xlab("Top k genes (HVGs)") + 
   ylab("Overlap size") + 
   ggtitle("Overlap with HVGs") + 
@@ -535,6 +540,7 @@ ggplot(df_overlaps_sparkX,
        aes(x = size, y = overlap, color = method)) + 
   geom_line() + 
   geom_point() + 
+  scale_color_manual(values = pal_okabeito[c(1, 2, 8, 4)]) + 
   xlab("Top k genes (SPARK-X)") + 
   ylab("Overlap size") + 
   ggtitle("Overlap with SPARK-X") + 
