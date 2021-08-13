@@ -39,6 +39,7 @@ Load dataset and subset spots.
 # spe <- Visium_humanDLPFC()
 
 # temporary using STexampleData version from GitHub installed in Bioc-release
+library(STexampleData)
 spe <- load_data("Visium_humanDLPFC")
 dim(spe)
 
