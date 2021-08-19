@@ -1,0 +1,75 @@
+---
+title: "Analyses SVGs using BRISC: human DLPFC"
+author: "Lukas Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+
+# Introduction
+
+Analyses for SVGs using BRISC methodology, spatzli wrapper, human DLPFC dataset.
+
+```{r, message = FALSE}
+library(SpatialExperiment)
+library(STexampleData)
+library(spatzli)
+```
+
+
+## Load data
+
+```{r}
+spe <- Visium_humanDLPFC()
+dim(spe)
+assayNames(spe)
+```
+
+
+## Preprocessing
+
+Preprocessing steps: filter low-expressed genes, filter mitochondrial genes, normalization, and logcounts. Using convenience function in `spatzli` package.
+
+```{r}
+spe <- preprocessSVGs(spe)
+dim(spe)
+assayNames(spe)
+```
+
+
+## Identify SVGs
+
+Run SVGs method using BRISC, parallelized implementation in `spatzli` package.
+
+```{r}
+runtime_brisc <- system.time({
+  spe <- runSVGsBRISC(spe, x = NULL, n_threads = 4)
+})
+```
+
+```{r}
+runtime_brisc
+```
+
+```{r}
+file <- "../outputs/spe_brisc_spatzli.rds"
+saveRDS(spe, file = file)
+```
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```
+
