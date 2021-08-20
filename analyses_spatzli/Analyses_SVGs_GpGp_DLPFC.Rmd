@@ -1,0 +1,75 @@
+---
+title: "Analyses SVGs using GpGp: human DLPFC"
+author: "Lukas Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+
+# Introduction
+
+Analyses for SVGs using GpGp methodology, spatzli wrapper, human DLPFC dataset.
+
+```{r, message = FALSE}
+library(SpatialExperiment)
+library(STexampleData)
+library(spatzli)
+```
+
+
+## Load data
+
+```{r}
+spe <- Visium_humanDLPFC()
+dim(spe)
+assayNames(spe)
+```
+
+
+## Preprocessing
+
+Preprocessing steps: filter low-expressed genes, filter mitochondrial genes, normalization, and logcounts. Using convenience function in `spatzli` package.
+
+```{r}
+spe <- preprocessSVGs(spe)
+dim(spe)
+assayNames(spe)
+```
+
+
+## Identify SVGs
+
+Run SVGs method using GpGp, and calculate likelihood ratio tests comparing models with and without spatial terms.
+
+```{r}
+runtime_gpgp <- system.time({
+  spe <- runSVGsGpGp(spe, x = NULL, n_threads = 4)
+})
+```
+
+```{r}
+runtime_gpgp
+```
+
+```{r}
+file <- "../outputs/spe_gpgp_spatzli.rds"
+saveRDS(spe, file = file)
+```
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```
+
