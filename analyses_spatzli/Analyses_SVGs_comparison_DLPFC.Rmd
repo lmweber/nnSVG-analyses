@@ -122,10 +122,14 @@ dim(df)
 
 **GpGp statistic vs. HVGs statistic**
 
+Using log(1 + x) transformation for improved visibility.
+
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = bio, y = sigmasq)) + 
   geom_point(pch = 1) + 
   geom_smooth() + 
+  scale_x_continuous(trans = "log1p") + 
+  scale_y_continuous(trans = "log1p") + 
   labs(x = "HVGs statistic (bio)", 
        y = "GpGp statistic (sigmasq)") + 
   ggtitle("GpGp statistic vs. HVGs statistic") + 
