@@ -187,7 +187,7 @@ table(df$padj == 0, df$prop_sv >= 0.2)
 # print gene names
 sig <- df$padj == 0 & df$prop_sv >= 0.2
 sig_names <- rowData(spe)$gene_name[sig]
-sig_names
+sort(sig_names)
 
 # check known interesting genes in this dataset
 interesting <- c("SNAP25", "PCP4", "MOBP", "HBB", "IGKC", "NPY")
