@@ -1,0 +1,194 @@
+---
+title: "Analyses SVGs: human DLPFC"
+author: "Lukas Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+
+# Introduction
+
+Analyses for SVGs: comparison of methods including BRISC, GpGp, HVGs, using spatzli wrappers, human DLPFC dataset.
+
+```{r, message = FALSE}
+library(SpatialExperiment)
+library(STexampleData)
+library(spatzli)
+library(scran)
+library(dplyr)
+library(ggplot2)
+```
+
+
+## Load data
+
+```{r}
+spe <- Visium_humanDLPFC()
+dim(spe)
+assayNames(spe)
+```
+
+
+## Preprocessing
+
+Preprocessing steps: filter low-expressed genes, filter mitochondrial genes, normalization, and logcounts. Using convenience function in `spatzli` package.
+
+```{r}
+spe <- preprocessSVGs(spe)
+dim(spe)
+assayNames(spe)
+```
+
+
+## Identify SVGs
+
+### HVGs (non-spatial)
+
+Non-spatial HVGs for baseline comparison.
+
+```{r}
+# fit mean-variance relationship
+dec <- modelGeneVar(spe)
+
+# store in object
+stopifnot(all(rownames(dec) == rowData(spe)$gene_id))
+dec_keep <- dec[, c("bio", "p.value", "FDR")]
+colnames(dec_keep) <- c("bio", "hvgs_pval", "hvgs_fdr")
+rowData(spe) <- cbind(rowData(spe), dec_keep)
+```
+
+
+### BRISC
+
+To do: return log-likelihoods from BRISC fork to enable likelihood ratio tests.
+
+
+### GpGp
+
+Run SVGs method using GpGp, and calculate likelihood ratio tests comparing models with and without spatial terms.
+
+Runtime: ~5 hours using 4 cores on laptop.
+
+Note: either run code in first couple of code blocks below (5 hours runtime) or load pre-saved results object in next code block.
+
+```{r}
+# runtime_gpgp <- system.time({
+#   spe_gpgp <- runSVGsGpGp(spe, x = NULL, n_threads = 4)
+# })
+```
+
+```{r}
+# runtime_gpgp
+```
+
+```{r}
+# file <- "../outputs/spe_gpgp_spatzli.rds"
+# saveRDS(spe_gpgp, file = file)
+```
+
+```{r}
+# alternatively: load previously saved results
+spe_gpgp <- readRDS("../outputs/spe_gpgp_spatzli.rds")
+```
+
+
+## Comparison
+
+### Some plots
+
+Set up data frame for plotting
+
+```{r}
+# data frame for plotting
+stopifnot(all(rowData(spe)$gene_id == rowData(spe_gpgp)$gene_id))
+dim(rowData(spe))
+dim(rowData(spe_gpgp))
+
+df <- full_join(as.data.frame(rowData(spe)), as.data.frame(rowData(spe_gpgp)))
+dim(df)
+```
+
+
+GpGp statistic vs. HVGs statistic
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = bio, y = sigmasq)) + 
+  geom_point(pch = 1) + 
+  geom_smooth() + 
+  labs(x = "HVGs statistic (bio)", 
+       y = "GpGp statistic (sigmasq)") + 
+  ggtitle("GpGp statistic vs. HVGs statistic") + 
+  theme_bw()
+```
+
+
+Significance (adjusted p-values) vs. effect size (proportion spatial variance) for GpGp method
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = prop_sv, y = padj)) + 
+  geom_point(pch = 1) + 
+  labs(x = "proportion spatial variance", 
+       y = "adjusted p-value") + 
+  ggtitle("Significance vs. effect size: GpGp method") + 
+  theme_bw()
+```
+
+
+Effect sizes (proportion spatial variance) for genes with p-values exactly equal to zero for GpGp method
+
+```{r, fig.width = 5, fig.height = 4}
+# number of genes with p-value == 0
+table(df$padj == 0)
+
+df_sub <- df[df$padj == 0, ]
+dim(df_sub)
+
+ggplot(df_sub, aes(x = prop_sv)) + 
+  geom_histogram(bins = 40, color = "black", fill = "navy") + 
+  geom_vline(xintercept = 0.2, color = "red") + 
+  labs(x = "proportion spatial variance") + 
+  ggtitle("Effect sizes for genes with p-values == 0: GpGp") + 
+  theme_bw()
+```
+
+
+Example of overall significance rule using both statistical significance and effect size. Six known interesting genes in this dataset (SNAP25, PCP4, MOBP, HBB, IGKC, NPY) are all detected by this rule.
+
+```{r, fig.width = 5, fig.height = 4}
+# number of genes with p-value == 0
+table(df$padj == 0)
+# number of genes with effect size >= 0.2
+table(df$prop_sv >= 0.2)
+
+# number of genes with 'p-value == 0' & 'effect size >= 0.2'
+table(df$padj == 0 & df$prop_sv >= 0.2)
+# contingency table
+table(df$padj == 0, df$prop_sv >= 0.2)
+
+# print gene names
+sig <- df$padj == 0 & df$prop_sv >= 0.2
+sig_names <- rowData(spe)$gene_name[sig]
+sig_names
+
+# check known interesting genes in this dataset
+interesting <- c("SNAP25", "PCP4", "MOBP", "HBB", "IGKC", "NPY")
+interesting %in% sig_names
+```
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```
+

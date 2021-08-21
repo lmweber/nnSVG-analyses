@@ -66,6 +66,11 @@ file <- "../outputs/spe_gpgp_spatzli.rds"
 saveRDS(spe, file = file)
 ```
 
+```{r}
+# load previously saved results
+# spe <- readRDS("../outputs/spe_gpgp_spatzli.rds")
+```
+
 
 ## Session info
 
