@@ -151,6 +151,18 @@ ggplot(df, aes(x = prop_sv, y = padj)) +
 
 ---
 
+**Histogram of p-values**
+
+```{r, fig.width = 5, fig.height = 4}
+ggplot(df, aes(x = padj)) + 
+  geom_histogram(bins = 40, color = "black", fill = "darkorange2") + 
+  labs(x = "adjusted p-values") + 
+  ggtitle("Histogram of adjusted p-values") + 
+  theme_bw()
+```
+
+---
+
 **Effect sizes (proportion spatial variance) for genes with p-values exactly equal to zero for GpGp method**
 
 ```{r, fig.width = 5, fig.height = 4}
