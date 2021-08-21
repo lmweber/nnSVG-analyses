@@ -104,7 +104,7 @@ spe_gpgp <- readRDS("../outputs/spe_gpgp_spatzli.rds")
 
 ## Comparison
 
-### Some plots
+### Plots
 
 **Set up data frame for plotting**
 
@@ -118,6 +118,7 @@ df <- full_join(as.data.frame(rowData(spe)), as.data.frame(rowData(spe_gpgp)))
 dim(df)
 ```
 
+---
 
 **GpGp statistic vs. HVGs statistic**
 
@@ -131,6 +132,7 @@ ggplot(df, aes(x = bio, y = sigmasq)) +
   theme_bw()
 ```
 
+---
 
 **Significance (adjusted p-values) vs. effect size (proportion spatial variance) for GpGp method**
 
@@ -143,6 +145,7 @@ ggplot(df, aes(x = prop_sv, y = padj)) +
   theme_bw()
 ```
 
+---
 
 **Effect sizes (proportion spatial variance) for genes with p-values exactly equal to zero for GpGp method**
 
@@ -161,6 +164,8 @@ ggplot(df_sub, aes(x = prop_sv)) +
   theme_bw()
 ```
 
+
+### Significance rule
 
 **Example of overall significance rule using both statistical significance and effect size. Six known interesting genes in this dataset (SNAP25, PCP4, MOBP, HBB, IGKC, NPY) are all detected by this rule.**
 
