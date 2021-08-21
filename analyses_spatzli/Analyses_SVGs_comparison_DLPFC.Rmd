@@ -106,7 +106,7 @@ spe_gpgp <- readRDS("../outputs/spe_gpgp_spatzli.rds")
 
 ### Some plots
 
-Set up data frame for plotting
+**Set up data frame for plotting**
 
 ```{r}
 # data frame for plotting
@@ -119,7 +119,7 @@ dim(df)
 ```
 
 
-GpGp statistic vs. HVGs statistic
+**GpGp statistic vs. HVGs statistic**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = bio, y = sigmasq)) + 
@@ -132,7 +132,7 @@ ggplot(df, aes(x = bio, y = sigmasq)) +
 ```
 
 
-Significance (adjusted p-values) vs. effect size (proportion spatial variance) for GpGp method
+**Significance (adjusted p-values) vs. effect size (proportion spatial variance) for GpGp method**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = prop_sv, y = padj)) + 
@@ -144,7 +144,7 @@ ggplot(df, aes(x = prop_sv, y = padj)) +
 ```
 
 
-Effect sizes (proportion spatial variance) for genes with p-values exactly equal to zero for GpGp method
+**Effect sizes (proportion spatial variance) for genes with p-values exactly equal to zero for GpGp method**
 
 ```{r, fig.width = 5, fig.height = 4}
 # number of genes with p-value == 0
@@ -162,7 +162,7 @@ ggplot(df_sub, aes(x = prop_sv)) +
 ```
 
 
-Example of overall significance rule using both statistical significance and effect size. Six known interesting genes in this dataset (SNAP25, PCP4, MOBP, HBB, IGKC, NPY) are all detected by this rule.
+**Example of overall significance rule using both statistical significance and effect size. Six known interesting genes in this dataset (SNAP25, PCP4, MOBP, HBB, IGKC, NPY) are all detected by this rule.**
 
 ```{r, fig.width = 5, fig.height = 4}
 # number of genes with p-value == 0
