@@ -25,6 +25,7 @@ library(SpatialExperiment)
 library(STexampleData)
 library(spatzli)
 library(scran)
+library(SPARK)
 library(dplyr)
 library(ggplot2)
 ```
@@ -114,6 +115,29 @@ rowData(spe_gpgp)$rank_gpgp_pval <- rank(rowData(spe_gpgp)$pval, ties.method = "
 # calculate ranks according to effect sizes
 rowData(spe_gpgp)$rank_gpgp_sigmasq <- rank(-1 * rowData(spe_gpgp)$sigmasq, ties.method = "first")
 rowData(spe_gpgp)$rank_gpgp_prop_sv <- rank(-1 * rowData(spe_gpgp)$prop_sv, ties.method = "first")
+```
+
+
+### SPARK-X
+
+Note: not performing any additional filtering with SPARK functions
+
+```{r}
+# run SPARK-X
+runtime_sparkx <- system.time({
+  out_sparkx <- sparkx(
+    counts(spe), 
+    spatialCoords(spe), 
+    numCores = 1, 
+    option="mixture"
+  )
+})
+
+# SPARK-X runtime
+runtime_sparkx
+
+# SPARK-X results
+head(out_sparkx$res_mtest)
 ```
 
 
