@@ -497,6 +497,46 @@ for (gene in sig_names_alph) {
 }
 ```
 
+---
+
+**Plot expression of top genes from SPARK-X for comparison**
+
+```{r, fig.width = 2.5, fig.height = 2.5}
+stopifnot(all(df$gene_name == rowData(spe)$gene_name))
+stopifnot(all(df$gene_name == rowData(spe_sparkx)$gene_name))
+
+ix_keep <- which(rowData(spe_sparkx)$rank_sparkx_pval %in% 1:100)
+df_sub <- df[ix_keep, ]
+ix_sort <- order(df_sub$rank_sparkx_pval)
+df_sub <- df_sub[ix_sort, ]
+top_genes_sparkx <- df_sub$gene_name
+
+# top genes (in order)
+print(top_genes_sparkx)
+
+for (gene in top_genes_sparkx) {
+  ix_gene <- which(rowData(spe)$gene_name == gene)
+  df_spots <- as.data.frame(cbind(
+    spatialCoords(spe), 
+    logexpr = logcounts(spe)[ix_gene, ]
+  ))
+  
+  p <- ggplot(df_spots, aes(x = x, y = y, color = logexpr)) + 
+    geom_point(size = 0.1) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient(low = "gray95", high = "purple4") + 
+    ggtitle(gene) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
+```
+
 
 ## Session info
 
