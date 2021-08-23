@@ -140,6 +140,18 @@ runtime_sparkx
 head(out_sparkx$res_mtest)
 ```
 
+```{r}
+# store in SPE object
+spe_sparkx <- spe
+stopifnot(all(rownames(out_sparkx$res_mtest) == rowData(spe)$gene_id))
+rowData(spe_sparkx) <- cbind(rowData(spe), out_sparkx$res_mtest)
+```
+
+```{r}
+# calculate ranks according to p-values
+rowData(spe_sparkx)$rank_sparkx_pval <- rank(rowData(spe_sparkx)$combinedPval, ties.method = "first")
+```
+
 
 ## Comparison
 
@@ -150,10 +162,16 @@ head(out_sparkx$res_mtest)
 ```{r}
 # data frame for plotting
 stopifnot(all(rowData(spe)$gene_id == rowData(spe_gpgp)$gene_id))
+stopifnot(all(rowData(spe)$gene_id == rowData(spe_sparkx)$gene_id))
+
 dim(rowData(spe))
 dim(rowData(spe_gpgp))
+dim(rowData(spe_sparkx))
 
-df <- full_join(as.data.frame(rowData(spe)), as.data.frame(rowData(spe_gpgp)))
+df <- as.data.frame(rowData(spe))
+df <- full_join(df, as.data.frame(rowData(spe_gpgp)))
+df <- full_join(df, as.data.frame(rowData(spe_sparkx)))
+
 dim(df)
 head(df, 3)
 ```
@@ -236,6 +254,106 @@ Comments:
 - the top genes from GpGp are highly overlapping with the top HVGs in this dataset (e.g top 50 genes)
 - we see larger differences in the rankings at lower ranks (e.g. top 1000 genes)
 - check differences vs. SPARK-X
+
+
+---
+
+**Significance (adjusted p-values) from SPARK-X vs. significance (adjusted p-values) from HVGs**
+
+Zoomed in to adjusted p-values < 0.05
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = hvgs_fdr, y = adjustedPval)) + 
+  geom_point(pch = 1) + 
+  lims(x = c(0, 0.05), 
+       y = c(0, 0.05)) + 
+  labs(x = "HVGs: adjusted p-values", 
+       y = "SPARK-X: adjusted p-values") + 
+  ggtitle("Significance: SPARK-X vs. HVGs") + 
+  theme_bw()
+```
+
+Ranks: zoomed in to top 200 genes from each method
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_hvgs_pval, y = rank_sparkx_pval)) + 
+  geom_point(pch = 1) + 
+  lims(x = c(0, 200), 
+       y = c(0, 200)) + 
+  labs(x = "HVGs: rank (p-values)", 
+       y = "SPARK-X: rank (p-values)") + 
+  ggtitle("Ranks: SPARK-X vs. HVGs") + 
+  theme_bw()
+```
+
+Ranks: zoomed in to top 200 genes from each method
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_hvgs_bio, y = rank_sparkx_pval)) + 
+  geom_point(pch = 1) + 
+  lims(x = c(0, 200), 
+       y = c(0, 200)) + 
+  labs(x = "HVGs: rank (statistic)", 
+       y = "SPARK-X: rank (p-values)") + 
+  ggtitle("Ranks: SPARK-X vs. HVGs") + 
+  theme_bw()
+```
+
+Ranks: zoomed in to top 50 genes from each method
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_hvgs_pval, y = rank_sparkx_pval)) + 
+  geom_point(pch = 1) + 
+  lims(x = c(0, 50), 
+       y = c(0, 50)) + 
+  labs(x = "HVGs: rank (p-values)", 
+       y = "SPARK-X: rank (p-values)") + 
+  ggtitle("Ranks: SPARK-X vs. HVGs") + 
+  theme_bw()
+```
+
+Ranks: zoomed in to top 50 genes from each method
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_hvgs_bio, y = rank_sparkx_pval)) + 
+  geom_point(pch = 1) + 
+  lims(x = c(0, 50), 
+       y = c(0, 50)) + 
+  labs(x = "HVGs: rank (statistic)", 
+       y = "SPARK-X: rank (p-values)") + 
+  ggtitle("Ranks: SPARK-X vs. HVGs") + 
+  theme_bw()
+```
+
+---
+
+**Significance (adjusted p-values) from SPARK-X vs. significance (adjusted p-values) from GpGp**
+
+Zoomed in to adjusted p-values < 0.05
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = padj, y = adjustedPval)) + 
+  geom_point(pch = 1) + 
+  lims(x = c(0, 0.05), 
+       y = c(0, 0.05)) + 
+  labs(x = "GpGp: adjusted p-values", 
+       y = "SPARK-X: adjusted p-values") + 
+  ggtitle("Significance: SPARK-X vs. GpGp") + 
+  theme_bw()
+```
+
+Ranks: Zoomed in to top 200 genes
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_gpgp_pval, y = rank_sparkx_pval)) + 
+  geom_point(pch = 1) + 
+  lims(x = c(0, 200), 
+       y = c(0, 200)) + 
+  labs(x = "GpGp: ranks (p-values)", 
+       y = "SPARK-X: ranks (p-values)") + 
+  ggtitle("Ranks: SPARK-X vs. GpGp") + 
+  theme_bw()
+```
 
 
 ---
