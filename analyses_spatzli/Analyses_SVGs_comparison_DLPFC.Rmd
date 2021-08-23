@@ -67,6 +67,13 @@ colnames(dec_keep) <- c("bio", "hvgs_pval", "hvgs_fdr")
 rowData(spe) <- cbind(rowData(spe), dec_keep)
 ```
 
+```{r}
+# calculate ranks according to p-values
+rowData(spe)$rank_hvgs_pval <- rank(dec$p.value, ties.method = "first")
+# calculate ranks according to statistic value
+rowData(spe)$rank_hvgs_bio <- rank(-1 * dec$bio, ties.method = "first")
+```
+
 
 ### BRISC
 
@@ -101,6 +108,14 @@ Note: either run code in first couple of code blocks below (5 hours runtime) or 
 spe_gpgp <- readRDS("../outputs/spe_gpgp_spatzli.rds")
 ```
 
+```{r}
+# calculate ranks according to p-values
+rowData(spe_gpgp)$rank_gpgp_pval <- rank(rowData(spe_gpgp)$pval, ties.method = "first")
+# calculate ranks according to effect sizes
+rowData(spe_gpgp)$rank_gpgp_sigmasq <- rank(-1 * rowData(spe_gpgp)$sigmasq, ties.method = "first")
+rowData(spe_gpgp)$rank_gpgp_prop_sv <- rank(-1 * rowData(spe_gpgp)$prop_sv, ties.method = "first")
+```
+
 
 ## Comparison
 
@@ -116,11 +131,11 @@ dim(rowData(spe_gpgp))
 
 df <- full_join(as.data.frame(rowData(spe)), as.data.frame(rowData(spe_gpgp)))
 dim(df)
+head(df, 3)
 ```
 
----
 
-**GpGp statistic vs. HVGs statistic**
+**GpGp statistic vs. HVGs statistic (values)**
 
 Using log(1 + x) transformation for improved visibility.
 
@@ -138,7 +153,72 @@ ggplot(df, aes(x = bio, y = sigmasq)) +
 
 ---
 
+**GpGp statistic vs. HVGs statistic (ranks)**
+
+All genes
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) + 
+  geom_point(pch = 1) + 
+  geom_smooth() + 
+  labs(x = "Rank of HVGs statistic (bio)", 
+       y = "Rank of GpGp statistic (sigmasq)") + 
+  ggtitle("Ranks GpGp statistic vs. rank HVGs statistic") + 
+  theme_bw()
+```
+
+Zoomed in to top 1000 genes from each method
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) + 
+  geom_point(pch = 1) + 
+  geom_smooth() + 
+  lims(x = c(0, 1000), 
+       y = c(0, 1000)) + 
+  labs(x = "Rank of HVGs statistic (bio)", 
+       y = "Rank of GpGp statistic (sigmasq)") + 
+  ggtitle("Ranks GpGp statistic vs. rank HVGs statistic (top 1000)") + 
+  theme_bw()
+```
+
+Zoomed in to top 200 genes from each method
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) + 
+  geom_point(pch = 1) + 
+  geom_smooth() + 
+  lims(x = c(0, 200), 
+       y = c(0, 200)) + 
+  labs(x = "Rank of HVGs statistic (bio)", 
+       y = "Rank of GpGp statistic (sigmasq)") + 
+  ggtitle("Ranks GpGp statistic vs. rank HVGs statistic (top 200)") + 
+  theme_bw()
+```
+
+Zoomed in to top 50 genes from each method
+
+```{r, fig.width = 5, fig.height = 5}
+ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) + 
+  geom_point(pch = 1, size = 2, stroke = 1.5) + 
+  lims(x = c(0, 50), 
+       y = c(0, 50)) + 
+  labs(x = "Rank of HVGs statistic (bio)", 
+       y = "Rank of GpGp statistic (sigmasq)") + 
+  ggtitle("Ranks GpGp statistic vs. rank HVGs statistic (top 50)") + 
+  theme_bw()
+```
+
+Comments:
+- the top genes from GpGp are highly overlapping with the top HVGs in this dataset (e.g top 50 genes)
+- we see larger differences in the rankings at lower ranks (e.g. top 1000 genes)
+- check differences vs. SPARK-X
+
+
+---
+
 **Significance (adjusted p-values) vs. effect size (proportion spatial variance) for GpGp method**
+
+All genes
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = prop_sv, y = padj)) + 
@@ -148,6 +228,38 @@ ggplot(df, aes(x = prop_sv, y = padj)) +
   ggtitle("Significance vs. effect size: GpGp method") + 
   theme_bw()
 ```
+
+Top-ranked genes from GpGp (according to significance)
+
+```{r, fig.width = 5, fig.height = 5}
+ix_keep <- df$rank_gpgp_pval <= 500
+table(ix_keep)
+
+ggplot(df[ix_keep, ], aes(x = prop_sv, y = padj)) + 
+  geom_point(pch = 1) + 
+  labs(x = "proportion spatial variance", 
+       y = "adjusted p-value") + 
+  ggtitle("Significance vs. effect size: GpGp method") + 
+  theme_bw()
+```
+
+Top-ranked genes from GpGp (according to statistic)
+
+```{r, fig.width = 5, fig.height = 5}
+ix_keep <- df$rank_gpgp_sigmasq <= 500
+table(ix_keep)
+
+ggplot(df[ix_keep, ], aes(x = prop_sv, y = padj)) + 
+  geom_point(pch = 1) + 
+  labs(x = "proportion spatial variance", 
+       y = "adjusted p-value") + 
+  ggtitle("Significance vs. effect size: GpGp method") + 
+  theme_bw()
+```
+
+Comments:
+- top-ranked genes from GpGp all have p-value == 0, so cannot distinguish these easily using GpGp; may be possible with BRISC instead
+
 
 ---
 
@@ -160,6 +272,10 @@ ggplot(df, aes(x = padj)) +
   ggtitle("Histogram of adjusted p-values") + 
   theme_bw()
 ```
+
+Comments:
+- large numbers of genes with p-values == 0 or 1 with GpGp method
+
 
 ---
 
