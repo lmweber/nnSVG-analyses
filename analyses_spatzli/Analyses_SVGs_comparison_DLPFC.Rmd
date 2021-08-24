@@ -1,5 +1,5 @@
 ---
-title: "Analyses SVGs: human DLPFC"
+title: "Comparison of SVGs methods: human DLPFC"
 author: "Lukas Weber"
 date: "`r Sys.Date()`"
 output:
@@ -31,7 +31,7 @@ library(ggplot2)
 ```
 
 
-## Load data
+# Load data
 
 ```{r}
 spe <- Visium_humanDLPFC()
@@ -40,7 +40,7 @@ assayNames(spe)
 ```
 
 
-## Preprocessing
+# Preprocessing
 
 Preprocessing steps: filter low-expressed genes, filter mitochondrial genes, normalization, and logcounts. Using convenience function in `spatzli` package.
 
@@ -51,9 +51,9 @@ assayNames(spe)
 ```
 
 
-## Identify SVGs
+# Identify SVGs
 
-### HVGs (non-spatial)
+## HVGs (non-spatial)
 
 Non-spatial HVGs for baseline comparison.
 
@@ -76,12 +76,14 @@ rowData(spe)$rank_hvgs_bio <- rank(-1 * dec$bio, ties.method = "first")
 ```
 
 
-### BRISC
+## BRISC
 
-To do: return log-likelihoods from BRISC fork to enable likelihood ratio tests.
+To do:
+- extract log-likelihoods from BRISC to enable likelihood ratio tests
+- alternatively: use statistic values and effect estimates only
 
 
-### GpGp
+## GpGp
 
 Run SVGs method using GpGp, and calculate likelihood ratio tests comparing models with and without spatial terms.
 
@@ -118,7 +120,7 @@ rowData(spe_gpgp)$rank_gpgp_prop_sv <- rank(-1 * rowData(spe_gpgp)$prop_sv, ties
 ```
 
 
-### SPARK-X
+## SPARK-X
 
 Note: not performing any additional filtering with SPARK functions
 
@@ -153,11 +155,11 @@ rowData(spe_sparkx)$rank_sparkx_pval <- rank(rowData(spe_sparkx)$combinedPval, t
 ```
 
 
-## Comparison
+# Comparison
 
-### Plots
+## Plots
 
-**Set up data frame for plotting**
+### **Set up data frame for plotting**
 
 ```{r}
 # data frame for plotting
@@ -176,8 +178,9 @@ dim(df)
 head(df, 3)
 ```
 
+---
 
-**GpGp statistic vs. HVGs statistic (values)**
+### **GpGp statistic vs. HVGs statistic (values)**
 
 Using log(1 + x) transformation for improved visibility.
 
@@ -195,9 +198,9 @@ ggplot(df, aes(x = bio, y = sigmasq)) +
 
 ---
 
-**GpGp statistic vs. HVGs statistic (ranks)**
+### **GpGp statistic vs. HVGs statistic (ranks)**
 
-All genes
+**All genes**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) + 
@@ -209,7 +212,7 @@ ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) +
   theme_bw()
 ```
 
-Zoomed in to top 1000 genes from each method
+**Zoomed in to top 1000 genes from each method**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) + 
@@ -223,7 +226,7 @@ ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) +
   theme_bw()
 ```
 
-Zoomed in to top 200 genes from each method
+**Zoomed in to top 200 genes from each method**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) + 
@@ -237,7 +240,7 @@ ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) +
   theme_bw()
 ```
 
-Zoomed in to top 50 genes from each method
+**Zoomed in to top 50 genes from each method**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_hvgs_bio, y = rank_gpgp_sigmasq)) + 
@@ -258,9 +261,9 @@ Comments:
 
 ---
 
-**Significance (adjusted p-values) from SPARK-X vs. significance (adjusted p-values) from HVGs**
+### **Significance (adjusted p-values) from SPARK-X vs. significance (adjusted p-values) from HVGs**
 
-Zoomed in to adjusted p-values < 0.05
+**Zoomed in to adjusted p-values < 0.05**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = hvgs_fdr, y = adjustedPval)) + 
@@ -273,7 +276,7 @@ ggplot(df, aes(x = hvgs_fdr, y = adjustedPval)) +
   theme_bw()
 ```
 
-Ranks: zoomed in to top 200 genes from each method
+**Ranks: zoomed in to top 200 genes from each method**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_hvgs_pval, y = rank_sparkx_pval)) + 
@@ -286,7 +289,7 @@ ggplot(df, aes(x = rank_hvgs_pval, y = rank_sparkx_pval)) +
   theme_bw()
 ```
 
-Ranks: zoomed in to top 200 genes from each method
+**Ranks: zoomed in to top 200 genes from each method**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_hvgs_bio, y = rank_sparkx_pval)) + 
@@ -299,7 +302,7 @@ ggplot(df, aes(x = rank_hvgs_bio, y = rank_sparkx_pval)) +
   theme_bw()
 ```
 
-Ranks: zoomed in to top 50 genes from each method
+**Ranks: zoomed in to top 50 genes from each method**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_hvgs_pval, y = rank_sparkx_pval)) + 
@@ -312,7 +315,7 @@ ggplot(df, aes(x = rank_hvgs_pval, y = rank_sparkx_pval)) +
   theme_bw()
 ```
 
-Ranks: zoomed in to top 50 genes from each method
+**Ranks: zoomed in to top 50 genes from each method**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_hvgs_bio, y = rank_sparkx_pval)) + 
@@ -327,9 +330,9 @@ ggplot(df, aes(x = rank_hvgs_bio, y = rank_sparkx_pval)) +
 
 ---
 
-**Significance (adjusted p-values) from SPARK-X vs. significance (adjusted p-values) from GpGp**
+### **Significance (adjusted p-values) from SPARK-X vs. significance (adjusted p-values) from GpGp**
 
-Zoomed in to adjusted p-values < 0.05
+**Zoomed in to adjusted p-values < 0.05**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = padj, y = adjustedPval)) + 
@@ -342,7 +345,7 @@ ggplot(df, aes(x = padj, y = adjustedPval)) +
   theme_bw()
 ```
 
-Ranks: Zoomed in to top 200 genes
+**Ranks: Zoomed in to top 200 genes**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = rank_gpgp_pval, y = rank_sparkx_pval)) + 
@@ -358,9 +361,9 @@ ggplot(df, aes(x = rank_gpgp_pval, y = rank_sparkx_pval)) +
 
 ---
 
-**Significance (adjusted p-values) vs. effect size (proportion spatial variance) for GpGp method**
+### **Significance (adjusted p-values) vs. effect size (proportion spatial variance) for GpGp method**
 
-All genes
+**All genes**
 
 ```{r, fig.width = 5, fig.height = 5}
 ggplot(df, aes(x = prop_sv, y = padj)) + 
@@ -371,7 +374,7 @@ ggplot(df, aes(x = prop_sv, y = padj)) +
   theme_bw()
 ```
 
-Top-ranked genes from GpGp (according to significance)
+**Top-ranked genes from GpGp (according to significance)**
 
 ```{r, fig.width = 5, fig.height = 5}
 ix_keep <- df$rank_gpgp_pval <= 500
@@ -385,7 +388,7 @@ ggplot(df[ix_keep, ], aes(x = prop_sv, y = padj)) +
   theme_bw()
 ```
 
-Top-ranked genes from GpGp (according to statistic)
+**Top-ranked genes from GpGp (according to statistic)**
 
 ```{r, fig.width = 5, fig.height = 5}
 ix_keep <- df$rank_gpgp_sigmasq <= 500
@@ -405,7 +408,7 @@ Comments:
 
 ---
 
-**Histogram of p-values**
+### **Histogram of p-values**
 
 ```{r, fig.width = 5, fig.height = 4}
 ggplot(df, aes(x = padj)) + 
@@ -421,7 +424,7 @@ Comments:
 
 ---
 
-**Effect sizes (proportion spatial variance) for genes with p-values exactly equal to zero for GpGp method**
+### **Effect sizes (proportion spatial variance) for genes with p-values exactly equal to zero for GpGp method**
 
 ```{r, fig.width = 5, fig.height = 4}
 # number of genes with p-value == 0
@@ -439,7 +442,7 @@ ggplot(df_sub, aes(x = prop_sv)) +
 ```
 
 
-### Significance rule
+## Significance rule
 
 **Example of overall significance rule using both statistical significance and effect size. Six known interesting genes in this dataset (SNAP25, PCP4, MOBP, HBB, IGKC, NPY) are all detected by this rule.**
 
@@ -466,11 +469,11 @@ interesting %in% sig_names
 ```
 
 
-### Plot significant genes
+## Plot significant genes
 
-**Plot expression for all genes that meet the overall significance rule**
+### **Plot expression for all genes that meet the overall significance rule**
 
-Ordered alphabetically
+**Ordered alphabetically**
 
 ```{r, fig.width = 2.5, fig.height = 2.5}
 stopifnot(all(df$gene_name == rowData(spe)$gene_name))
@@ -499,7 +502,7 @@ for (gene in sig_names_alph) {
 }
 ```
 
-Ordered by effect size
+**Ordered by effect size**
 
 ```{r, fig.width = 2.5, fig.height = 2.5}
 stopifnot(all(df$gene_name == rowData(spe)$gene_name))
@@ -537,7 +540,7 @@ for (i in seq_len(nrow(df_sub))) {
 
 ---
 
-**Plot expression of top genes from SPARK-X for comparison**
+### **Plot expression of top genes from SPARK-X for comparison**
 
 ```{r, fig.width = 2.5, fig.height = 2.5}
 stopifnot(all(df$gene_name == rowData(spe)$gene_name))
@@ -578,9 +581,9 @@ for (gene in top_genes_sparkx) {
 
 ---
 
-**Plot expression of top HVGs for comparison**
+### **Plot expression of top HVGs for comparison**
 
-Top ranks by p-value
+**Top ranks by p-value**
 
 ```{r, fig.width = 2.5, fig.height = 2.5}
 stopifnot(all(df$gene_name == rowData(spe)$gene_name))
@@ -618,7 +621,7 @@ for (gene in top_genes_hvgs) {
 }
 ```
 
-Top ranks by statistic value
+**Top ranks by statistic value**
 
 ```{r, fig.width = 2.5, fig.height = 2.5}
 stopifnot(all(df$gene_name == rowData(spe)$gene_name))
@@ -658,7 +661,7 @@ for (gene in top_genes_hvgs) {
 
 ---
 
-## Session info
+# Session info
 
 ```{r}
 sessionInfo()
