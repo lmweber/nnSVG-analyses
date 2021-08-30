@@ -28,6 +28,7 @@ library(scran)
 library(SPARK)
 library(dplyr)
 library(ggplot2)
+library(tidyr)
 ```
 
 
@@ -624,6 +625,73 @@ for (gene in top_genes_hvgs) {
     scale_y_reverse() + 
     scale_color_gradient(low = "gray95", high = "forestgreen") + 
     ggtitle(gene) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
+```
+
+
+---
+
+## Gene clustering
+
+**Clustering genes from GpGp with adjusted p-values <= 0.05**
+
+```{r, fig.width = 2.5, fig.height = 2.5}
+# number of genes with adjusted p-value == 0
+table(df$padj == 0)
+# number of genes with adjusted p-value <= 0.05
+table(df$padj <= 0.05)
+
+stopifnot(all(df$gene_id == rowData(spe)$gene_id))
+ix_sig <- df$padj <= 0.05
+
+# subset genes
+spe_sig <- spe[ix_sig, ]
+dim(spe_sig)
+
+# z-score normalize logcounts from these genes
+znorm <- t(apply(logcounts(spe_sig), 1, scale, center = TRUE, scale = TRUE))
+dim(znorm)
+znorm[1:3, 1:3]
+
+# cluster on genes
+k <- 10
+kmeans_out <- kmeans(znorm, centers = k)
+clus <- kmeans_out$cluster
+length(clus)
+table(clus)
+
+# cluster centers
+centers <- kmeans_out$centers
+dim(centers)
+centers[1:3, 1:3]
+
+# plot cluster centers
+df_centers <- t(centers)
+rownames(df_centers) <- colnames(spe_sig)
+colnames(df_centers) <- paste0("profile", seq_len(k))
+df_centers <- cbind(df_centers, spatialCoords(spe_sig))
+df_centers <- as.data.frame(df_centers)
+df_centers <- gather(df_centers, key = "profile", value = "znorm", paste0("profile", seq_len(k)))
+df_centers$profile <- as.factor(df_centers$profile)
+head(df_centers)
+str(df_centers)
+
+for (g in seq_len(k)) {
+  df_centers_sub <- df_centers[df_centers$profile == paste0("profile", g), ]
+  
+  p <- ggplot(df_centers_sub, aes(x = x, y = y, color = znorm)) + 
+    geom_point(size = 0.1) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient2(low = "blue", mid = "white", high = "red") + 
+    ggtitle(paste0("profile", g)) + 
     theme_bw() + 
     theme(panel.grid = element_blank(), 
           axis.title = element_blank(), 
