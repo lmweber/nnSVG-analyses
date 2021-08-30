@@ -473,34 +473,6 @@ interesting %in% sig_names
 
 ### Plot expression for all genes that meet the overall significance rule
 
-**Ordered alphabetically**
-
-```{r, fig.width = 2.5, fig.height = 2.5}
-stopifnot(all(df$gene_name == rowData(spe)$gene_name))
-stopifnot(all(df$gene_name == rowData(spe_gpgp)$gene_name))
-
-for (gene in sig_names_alph) {
-  ix_gene <- which(rowData(spe)$gene_name == gene)
-  df_spots <- as.data.frame(cbind(
-    spatialCoords(spe), 
-    logexpr = logcounts(spe)[ix_gene, ]
-  ))
-  
-  p <- ggplot(df_spots, aes(x = x, y = y, color = logexpr)) + 
-    geom_point(size = 0.1) + 
-    coord_fixed() + 
-    scale_y_reverse() + 
-    scale_color_gradient(low = "gray95", high = "blue") + 
-    ggtitle(gene) + 
-    theme_bw() + 
-    theme(panel.grid = element_blank(), 
-          axis.title = element_blank(), 
-          axis.text = element_blank(), 
-          axis.ticks = element_blank())
-  
-  print(p)
-}
-```
 
 **Ordered by effect size**
 
@@ -579,9 +551,11 @@ for (gene in top_genes_sparkx) {
 }
 ```
 
+
 ---
 
 ### Plot expression of top HVGs for comparison
+
 
 **Top ranks by p-value**
 
@@ -621,6 +595,7 @@ for (gene in top_genes_hvgs) {
 }
 ```
 
+
 **Top ranks by statistic value**
 
 ```{r, fig.width = 2.5, fig.height = 2.5}
@@ -658,6 +633,7 @@ for (gene in top_genes_hvgs) {
   print(p)
 }
 ```
+
 
 ---
 
