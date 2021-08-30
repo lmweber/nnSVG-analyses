@@ -640,26 +640,31 @@ for (gene in top_genes_hvgs) {
 
 ## Gene clustering
 
+### GpGp genes
+
 **Clustering genes from GpGp with adjusted p-values <= 0.05**
 
-```{r, fig.width = 2.5, fig.height = 2.5}
+```{r}
 # number of genes with adjusted p-value == 0
 table(df$padj == 0)
 # number of genes with adjusted p-value <= 0.05
 table(df$padj <= 0.05)
 
 stopifnot(all(df$gene_id == rowData(spe)$gene_id))
-ix_sig <- df$padj <= 0.05
+ix_sig_gpgp <- df$padj <= 0.05
 
 # subset genes
-spe_sig <- spe[ix_sig, ]
-dim(spe_sig)
+spe_sig_gpgp <- spe[ix_sig_gpgp, ]
+dim(spe_sig_gpgp)
 
 # z-score normalize logcounts from these genes
-znorm <- t(apply(logcounts(spe_sig), 1, scale, center = TRUE, scale = TRUE))
+znorm <- t(apply(logcounts(spe_sig_gpgp), 1, scale, center = TRUE, scale = TRUE))
 dim(znorm)
 znorm[1:3, 1:3]
+```
 
+
+```{r, fig.width = 2.5, fig.height = 2.5}
 # cluster on genes
 k <- 10
 kmeans_out <- kmeans(znorm, centers = k)
@@ -674,9 +679,9 @@ centers[1:3, 1:3]
 
 # plot cluster centers
 df_centers <- t(centers)
-rownames(df_centers) <- colnames(spe_sig)
+rownames(df_centers) <- colnames(spe_sig_gpgp)
 colnames(df_centers) <- paste0("profile", seq_len(k))
-df_centers <- cbind(df_centers, spatialCoords(spe_sig))
+df_centers <- cbind(df_centers, spatialCoords(spe_sig_gpgp))
 df_centers <- as.data.frame(df_centers)
 df_centers <- gather(df_centers, key = "profile", value = "znorm", paste0("profile", seq_len(k)))
 df_centers$profile <- as.factor(df_centers$profile)
@@ -691,7 +696,165 @@ for (g in seq_len(k)) {
     coord_fixed() + 
     scale_y_reverse() + 
     scale_color_gradient2(low = "blue", mid = "white", high = "red") + 
-    ggtitle(paste0("profile", g)) + 
+    ggtitle(paste0("GpGp profile", g)) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
+```
+
+
+```{r, fig.width = 2.5, fig.height = 2.5}
+# cluster on genes
+k <- 50
+kmeans_out <- kmeans(znorm, centers = k)
+clus <- kmeans_out$cluster
+length(clus)
+table(clus)
+
+# cluster centers
+centers <- kmeans_out$centers
+dim(centers)
+centers[1:3, 1:3]
+
+# plot cluster centers
+df_centers <- t(centers)
+rownames(df_centers) <- colnames(spe_sig_gpgp)
+colnames(df_centers) <- paste0("profile", seq_len(k))
+df_centers <- cbind(df_centers, spatialCoords(spe_sig_gpgp))
+df_centers <- as.data.frame(df_centers)
+df_centers <- gather(df_centers, key = "profile", value = "znorm", paste0("profile", seq_len(k)))
+df_centers$profile <- as.factor(df_centers$profile)
+head(df_centers)
+str(df_centers)
+
+for (g in seq_len(k)) {
+  df_centers_sub <- df_centers[df_centers$profile == paste0("profile", g), ]
+  
+  p <- ggplot(df_centers_sub, aes(x = x, y = y, color = znorm)) + 
+    geom_point(size = 0.1) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient2(low = "blue", mid = "white", high = "red") + 
+    ggtitle(paste0("GpGp profile", g)) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
+```
+
+
+---
+
+### SPARK-X genes
+
+**Clustering genes from SPARK-X with adjusted p-values <= 0.05**
+
+```{r}
+# number of genes with adjusted p-value == 0
+table(df$adjustedPval == 0)
+# number of genes with adjusted p-value <= 0.05
+table(df$adjustedPval <= 0.05)
+
+stopifnot(all(df$gene_id == rowData(spe)$gene_id))
+ix_sig_sparkx <- df$adjustedPval <= 0.05
+
+# subset genes
+spe_sig_sparkx <- spe[ix_sig_sparkx, ]
+dim(spe_sig_sparkx)
+
+# z-score normalize logcounts from these genes
+znorm <- t(apply(logcounts(spe_sig_sparkx), 1, scale, center = TRUE, scale = TRUE))
+dim(znorm)
+znorm[1:3, 1:3]
+```
+
+
+```{r, fig.width = 2.5, fig.height = 2.5}
+# cluster on genes
+k <- 10
+kmeans_out <- kmeans(znorm, centers = k)
+clus <- kmeans_out$cluster
+length(clus)
+table(clus)
+
+# cluster centers
+centers <- kmeans_out$centers
+dim(centers)
+centers[1:3, 1:3]
+
+# plot cluster centers
+df_centers <- t(centers)
+rownames(df_centers) <- colnames(spe_sig_sparkx)
+colnames(df_centers) <- paste0("profile", seq_len(k))
+df_centers <- cbind(df_centers, spatialCoords(spe_sig_sparkx))
+df_centers <- as.data.frame(df_centers)
+df_centers <- gather(df_centers, key = "profile", value = "znorm", paste0("profile", seq_len(k)))
+df_centers$profile <- as.factor(df_centers$profile)
+head(df_centers)
+str(df_centers)
+
+for (g in seq_len(k)) {
+  df_centers_sub <- df_centers[df_centers$profile == paste0("profile", g), ]
+  
+  p <- ggplot(df_centers_sub, aes(x = x, y = y, color = znorm)) + 
+    geom_point(size = 0.1) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient2(low = "blue", mid = "white", high = "red") + 
+    ggtitle(paste0("SPARK-X profile", g)) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
+```
+
+
+```{r, fig.width = 2.5, fig.height = 2.5}
+# cluster on genes
+k <- 50
+kmeans_out <- kmeans(znorm, centers = k)
+clus <- kmeans_out$cluster
+length(clus)
+table(clus)
+
+# cluster centers
+centers <- kmeans_out$centers
+dim(centers)
+centers[1:3, 1:3]
+
+# plot cluster centers
+df_centers <- t(centers)
+rownames(df_centers) <- colnames(spe_sig_sparkx)
+colnames(df_centers) <- paste0("profile", seq_len(k))
+df_centers <- cbind(df_centers, spatialCoords(spe_sig_sparkx))
+df_centers <- as.data.frame(df_centers)
+df_centers <- gather(df_centers, key = "profile", value = "znorm", paste0("profile", seq_len(k)))
+df_centers$profile <- as.factor(df_centers$profile)
+head(df_centers)
+str(df_centers)
+
+for (g in seq_len(k)) {
+  df_centers_sub <- df_centers[df_centers$profile == paste0("profile", g), ]
+  
+  p <- ggplot(df_centers_sub, aes(x = x, y = y, color = znorm)) + 
+    geom_point(size = 0.1) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient2(low = "blue", mid = "white", high = "red") + 
+    ggtitle(paste0("SPARK-X profile", g)) + 
     theme_bw() + 
     theme(panel.grid = element_blank(), 
           axis.title = element_blank(), 
