@@ -1,0 +1,229 @@
+---
+title: "BRISC examples"
+author: "Lukas Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+
+# Background
+
+This document contains background and examples to illustrate the possible extensions to BRISC that we have been discussing.
+
+
+## Spatial transcriptomics
+
+We are in applying methods such as BRISC (Saha and Datta 2018) and GpGp (Guinness 2018) to identify "spatially variable genes" in spatial transcriptomics data.
+
+In spatial transcriptomics data, we are measuring transcriptome-wide gene expression (i.e. gene expression of all ~30,000 or so genes in the human transcriptome) at a grid of approximately 5,000 spatial coordinates on a tissue slide. In the commercially available 10x Genomics Visium platform, the grid has dimensions approximately 6.5mm x 6.5mm, and the spatial coordinates ("spots") are located in a regular hexagonal grid.
+
+The following figure illustrates the platform.
+
+[FIGURE ILLUSTRATING THE PLATFORM]
+
+
+## Spatially variable genes
+
+The measurements from the Visium platform consist of sequencing read counts for the ~30,000 genes at the ~5,000 spots, which are stored in a 30,000 x 5,000 counts matrix (genes / features in rows, spots / observations in columns). The matrix is highly sparse, due to non-detection of genes resulting from the sensitivity of the platform.
+
+We then perform several initial preprocessing steps, including quality control and filtering, normalization to correct for biases such as different sequencing depth per spot, and log transformation to stabilize variance and transform to a continuous scale. These steps are fairly standard and are adapted from existing analysis pipelines for single-cell RNA sequencing data (although alternatives also exist, e.g. count-based models instead of log-transformation).
+
+Next, we would like to identify a subset of "biologically informative" genes, or rank all genes by their biological information content and then take the top n% (e.g. top 10%). This is done to reduce noise (there are usually thousands of genes that are not related to any of the biological phenomena of interest in the dataset, so removing these tends to leave a clearer signal), and to improve computational scalability in later steps.
+
+In the context of spatial transcriptomics, "biologically informative" means genes that have a spatially variable expression pattern across the tissue slide. For example, this could be related to spatial distributions of cell types, or spatial gradients of expression across the slide dimensions. These genes are referred to as "spatially variable genes" (SVGs), and we would like to identify them by either:
+
+- (i) identifying a set of statistically significant SVGs (according to some assumption on kernel and bandwidth), or 
+- (ii) ranking all genes (e.g. by the estimated spatial variance component) and taking the top 10%
+
+In practice, this means we run a method such as BRISC once per gene (i.e. a loop over the 30,000 genes) to estimate the significance of the spatial variance parameter (sigma squared) or compare the fitted model against a null model without spatial terms, and then rank genes by the resulting p-values. We can also calculate an effect size as the proportion of spatial variance (sigma_sq / (sigma_sq + tau_sq)).
+
+
+## Existing methods
+
+Existing methods for these types of analyses include:
+
+- SpatialDE ([Svensson et al. 2018](https://www.nature.com/articles/nmeth.4636))
+- SPARK ([Sun et al. 2020](https://www.nature.com/articles/s41592-019-0701-7))
+
+However, both of these scale cubically in the number of spatial coordinates (spots). This means they can be used for earlier generations of the spatial transcriptomics platform (which had only a few hundred spots per slide), but cannot be used with the newer platform (5,000 spots per slide).
+
+More recently, the following paper was published in June 2021:
+
+- SPARK-X ([Zhu et al. 2021](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02404-0))
+
+This method scales linearly with the number of spots and is extremely fast overall. However, in our initial evaluations, it does not work very well on our datasets in biological terms, i.e. the top-ranked genes do not look like true SVGs when we investigate them more closely. Specifically, it looks like the ranking of SVGs is driven by small numbers of outlier spots that are hard to control for - however we are still investigating this more closely.
+
+
+## BRISC and GpGp
+
+The NNGP and Vecchia's approximation methods in BRISC and GpGp also allow us to fit models that scale linearly with the number of spots, and in our initial evaluations, give more sensible (i.e. biologically meaningful) final rankings of SVGs than SPARK-X.
+
+Therefore, we would like to build a framework around BRISC for ranking SVGs in spatial transcriptomics datasets. In principle, this could be a simple parallelized wrapper function around BRISC, which runs BRISC once per gene and extracts the parameter estimates and other outputs. I have written an example function [here](https://github.com/lmweber/spatzli/blob/main/R/runSVGsBRISC.R), and a similar one for GpGp [here](https://github.com/lmweber/spatzli/blob/main/R/runSVGsGpGp.R).
+
+Crucially, the linear scaling with the number of spots means that we can expect to continue to be able to apply these methods even with possible future generations of the spatial transcriptomics with even larger numbers of spots per tissue slide. Compared to the earlier generation of cubically scaling methods, this is a game-changer, and could potentially lead to wide adoption of these methods. Other than SPARK-X (which does not work very well on our datasets) and much simpler methods such as Moran's I or Geary's C (which we can also use as a baseline comparison), we are not aware of any other methods to identify SVGs that scale linearly.
+
+
+# BRISC extensions
+
+In our initial work with BRISC, we have identified three possible extensions, which we think would be very useful for this project. The first two relate to computational scalability to run on thousands of genes, and the third is for approximate likelihood ratio tests.
+
+Below I load some publicly available datasets and demonstrate some examples for these three ideas.
+
+
+## Install packages
+
+I will use the following packages from version 3.14 (the current `devel` version) of Bioconductor.
+
+```{r, eval=FALSE}
+# install Bioconductor 3.14
+install.packages("BiocManager")
+BiocManager::install(version = "3.14")
+
+# Bioconductor packages
+BiocManager::install("SpatialExperiment")
+BiocManager::install("STexampleData")
+BiocManager::install("scater")
+BiocManager::install("scran")
+```
+
+I will also use GpGp and the following fork of BRISC. The only change in this BRISC fork is to output some additional runtimes.
+
+```{r, eval=FALSE}
+install.packages("GpGp")
+
+# fork of BRISC
+remotes::install_github("lmweber/BRISC")
+```
+
+
+## Load data and preprocessing
+
+Here I load one of our publicly available example datasets, run several standard preprocessing steps to get it to the point where we can apply methods to identify SVGs, and then downsample to a few hundred genes (instead of 30,000 genes) for the purposes of the examples in this document.
+
+A complete workflow example of the preprocessing steps (and the subsequent downstream analysis steps) is available in one of our online resources [here](https://lmweber.org/OSTA-book/human-dlpfc-workflow.html).
+
+This dataset measures gene expression in a small tissue sample of human brain from the dorsolateral prefrontal cortex (DLPFC) region, and was described in our publication [Maynard and Collado-Torres et al. 2021](https://www.nature.com/articles/s41593-020-00787-0).
+
+```{r, message=FALSE}
+library(SpatialExperiment)
+library(STexampleData)
+library(scater)
+library(scran)
+```
+
+
+```{r}
+# load dataset as SpatialExperiment object from STexampleData package
+spe <- Visium_humanDLPFC()
+
+# dataset is stored in 'genes x spots' format
+dim(spe)
+# metadata describing features and observations
+head(rowData(spe))
+head(colData(spe))
+head(spatialData(spe))
+head(spatialCoords(spe))
+# sparse matrix of sequencing read counts
+counts(spe)[85:90, 1:6]
+```
+
+
+```{r, message=FALSE}
+# run preprocessing steps
+
+# subset to keep only spots overlapping with tissue
+spe <- spe[, spatialData(spe)$in_tissue == 1]
+
+# filter low-quality spots
+
+# identify mitochondrial genes
+is_mito <- grepl("(^MT-)|(^mt-)", rowData(spe)$gene_name)
+# calculate per-spot QC metrics
+spe <- addPerCellQC(spe, subsets = list(mito = is_mito))
+# select QC thresholds
+qc_lib_size <- colData(spe)$sum < 500
+qc_detected <- colData(spe)$detected < 250
+qc_mito <- colData(spe)$subsets_mito_percent > 30
+qc_cell_count <- colData(spe)$cell_count > 12
+# combined set of discarded spots
+discard <- qc_lib_size | qc_detected | qc_mito | qc_cell_count
+colData(spe)$discard <- discard
+table(discard)
+
+# remove low-quality spots
+spe <- spe[, !colData(spe)$discard]
+
+# normalization and log-transformation
+
+# quick clustering for pool-based size factors
+set.seed(123)
+qclus <- quickCluster(spe)
+# calculate size factors
+spe <- computeSumFactors(spe, cluster = qclus)
+# calculate logcounts (log-transformed normalized counts)
+spe <- logNormCounts(spe)
+
+# remove mitochondrial genes
+
+# remove mitochondrial genes since these tend to be highly 
+# expressed and not biologically informative
+spe <- spe[!is_mito, ]
+message("removing ", sum(is_mito), " mitochondrial genes out of total ", nrow(spe), " genes")
+dim(spe)
+```
+
+
+Next, we filter genes with extremely low expression, defined as less than or equal to 10 sequencing read counts ("unique molecular identifier" or UMI counts) across all spots combined (which is extremely low - we could also increase this). We also have a preprocessing function that performs some of these steps [here](https://github.com/lmweber/spatzli/blob/main/R/preprocessSVGs.R).
+
+```{r}
+# filter low-expressed genes
+n_umi <- 10
+sums <- rowSums(counts(spe))
+ix_remove <- sums <= n_umi
+message("removing ", sum(ix_remove), " out of ", nrow(spe), " genes due to low counts")
+spe <- spe[!ix_remove, ]
+dim(spe)
+```
+
+
+Finally, downsample the object to keep only a few hundred genes. We do this only for computational scalability for the examples in this document, and would not normally do this in an analysis, since we are interested in ranking all genes that pass the filtering thresholds.
+
+```{r}
+# downsample to keep only n genes
+n <- 200
+set.seed(123)
+ix_keep <- sample(seq_len(nrow(spe)), n)
+
+spe <- spe[ix_keep, ]
+dim(spe)
+```
+
+
+## Extension 1: Sorting coordinates
+
+
+
+## Extension 2: Nearest neighbor indices
+
+
+
+## Extension 3: Likelihood ratio tests
+
+
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
