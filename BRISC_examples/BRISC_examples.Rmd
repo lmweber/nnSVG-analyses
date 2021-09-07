@@ -199,6 +199,8 @@ dim(spe)
 ```
 
 
+## Example plots and downsampling
+
 Here, we can show some illustrative plots for some genes with known spatial expression patterns in this dataset. These plots show log-transformed normalized expression of each gene in the x-y coordinates of the tissue slide.
 
 ```{r, fig.width = 3.5, fig.height = 3}
@@ -249,15 +251,15 @@ dim(spe)
 ```
 
 
-## Extension 1: Sorting coordinates
+# Extension 1: Sorting coordinates
 
 
 
-## Extension 2: Nearest neighbor indices
+# Extension 2: Nearest neighbor indices
 
 
 
-## Extension 3: Likelihood ratio tests
+# Extension 3: Likelihood ratio tests
 
 
 
