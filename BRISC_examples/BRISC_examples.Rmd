@@ -119,6 +119,9 @@ library(SpatialExperiment)
 library(STexampleData)
 library(scater)
 library(scran)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
 ```
 
 
@@ -196,13 +199,50 @@ dim(spe)
 ```
 
 
-Finally, downsample the object to keep only a few hundred genes. We do this only for computational scalability for the examples in this document, and would not normally do this in an analysis, since we are interested in ranking all genes that pass the filtering thresholds.
+Here, we can show some illustrative plots for some genes with known spatial expression patterns in this dataset. These plots show log-transformed normalized expression of each gene in the x-y coordinates of the tissue slide.
+
+```{r, fig.width = 3.5, fig.height = 3}
+# known interesting genes in this dataset
+interesting <- c("MOBP", "SNAP25", "PCP4", "HBB", "IGKC", "NPY")
+
+# generate plots
+for (i in seq_along(interesting)) {
+  gene <- interesting[i]
+  ix_gene <- which(rowData(spe)$gene_name == gene)
+  
+  df <- as.data.frame(cbind(
+    spatialCoords(spe), 
+    logexpr = logcounts(spe)[ix_gene, ]
+  ))
+  
+  p <- ggplot(df, aes(x = x, y = y, color = logexpr)) + 
+    geom_point(size = 0.2) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient(low = "gray95", high = "blue") + 
+    ggtitle(gene) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
+```
+
+
+Finally, downsample the object to keep only a few hundred genes. We do this only for computational scalability for the examples in this document, and would not normally do this in an analysis, since we are interested in ranking all genes that pass the filtering thresholds. (Note that we also keep the known interesting genes from above.)
 
 ```{r}
-# downsample to keep only n genes
+# downsample to keep n random genes
 n <- 200
 set.seed(123)
 ix_keep <- sample(seq_len(nrow(spe)), n)
+
+# also keep known interesting genes
+ix_interesting <- which(rowData(spe)$gene_name %in% interesting)
+ix_keep <- c(ix_keep, ix_interesting)
 
 spe <- spe[ix_keep, ]
 dim(spe)
