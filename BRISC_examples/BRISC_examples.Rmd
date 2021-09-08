@@ -36,7 +36,7 @@ knitr::include_graphics("images/Visium.png")
 
 ## Spatially variable genes
 
-The measurements from the Visium platform consist of sequencing read counts for the ~30,000 genes at the ~5,000 spots, which are stored in a 30,000 x 5,000 counts matrix (genes / features in rows, spots / observations in columns). The matrix is highly sparse, due to non-detection of genes resulting from the sensitivity of the platform.
+The measurements from the Visium platform consist of sequencing read counts for the ~30,000 genes or transcripts at the ~5,000 spatial coordinates (spots), which are stored in a 30,000 x 5,000 counts matrix (note we usually store features in rows and observations in columns in Bioconductor, i.e. `p x n` instead of `n x p`). The matrix is highly sparse, due to non-detection of genes resulting from the sensitivity of the technology.
 
 We then perform several initial preprocessing steps, including quality control and filtering, normalization to correct for biases such as different sequencing depth per spot, and log transformation to stabilize variance and transform to a continuous scale. These steps are fairly standard and are adapted from existing analysis pipelines for single-cell RNA sequencing data (although alternatives also exist, e.g. count-based models instead of log-transformation).
 
@@ -44,10 +44,10 @@ Next, we would like to identify a subset of "biologically informative" genes, or
 
 In the context of spatial transcriptomics, "biologically informative" means genes that have a spatially variable expression pattern across the tissue slide. For example, this could be related to spatial distributions of cell types, or spatial gradients of expression across the slide dimensions. These genes are referred to as "spatially variable genes" (SVGs), and we would like to identify them by either:
 
-- (i) identifying a set of statistically significant SVGs (according to some assumption on kernel and bandwidth), or 
-- (ii) ranking all genes (e.g. by the estimated spatial variance component) and taking the top 10%
+- identifying a set of statistically significant SVGs (with some assumptions on e.g. kernel and bandwidth), or 
+- ranking all genes (e.g. by the estimated spatial variance component) and taking the top n% (e.g. top 10%)
 
-In practice, this means we run a method such as BRISC once per gene (i.e. a loop over the 30,000 genes) to estimate the significance of the spatial variance parameter (sigma squared) or compare the fitted model against a null model without spatial terms, and then rank genes by the resulting p-values. We can also calculate an effect size as the proportion of spatial variance (sigma_sq / (sigma_sq + tau_sq)).
+In practice, this means we run a method such as BRISC once per gene (i.e. a loop over the 30,000 genes, or ~15,000 genes after filtering low-expressed genes) to estimate the significance of the spatial variance parameter (sigma squared) or compare the fitted model against a null model without spatial terms, and then rank genes by the resulting p-values. We can also calculate an effect size, e.g. the proportion of spatial variance (sigma_sq / (sigma_sq + tau_sq)).
 
 
 ## Existing methods
@@ -63,7 +63,7 @@ More recently, the following paper was published in June 2021:
 
 - SPARK-X ([Zhu et al. 2021](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02404-0))
 
-This method scales linearly with the number of spots and is extremely fast overall. However, in our initial evaluations, it does not work very well on our datasets in biological terms, i.e. the top-ranked genes do not look like true SVGs when we investigate them more closely. Specifically, it looks like the ranking of SVGs is driven by small numbers of outlier spots that are hard to control for - however we are still investigating this more closely.
+This method scales linearly with the number of spots and is extremely fast overall. However, in our initial evaluations, it does not work very well on our datasets in biological terms, i.e. the top-ranked genes do not look like true SVGs when we investigate them more closely. Specifically, it looks like the ranking of SVGs is driven by small numbers of outlier spots that are hard to control for -- however we are still investigating this more closely.
 
 
 ## BRISC and GpGp
@@ -72,7 +72,7 @@ The NNGP and Vecchia's approximation methods in BRISC and GpGp also allow us to 
 
 Therefore, we would like to build a framework around BRISC for ranking SVGs in spatial transcriptomics datasets. In principle, this could be a simple parallelized wrapper function around BRISC, which runs BRISC once per gene and extracts the parameter estimates and other outputs. I have written an example function [here](https://github.com/lmweber/spatzli/blob/main/R/runSVGsBRISC.R), and a similar one for GpGp [here](https://github.com/lmweber/spatzli/blob/main/R/runSVGsGpGp.R).
 
-Crucially, the linear scaling with the number of spots means that we can expect to continue to be able to apply these methods even with possible future generations of the spatial transcriptomics with even larger numbers of spots per tissue slide. Compared to the earlier generation of cubically scaling methods, this is a game-changer, and could potentially lead to wide adoption of these methods. Other than SPARK-X (which does not work very well on our datasets) and much simpler methods such as Moran's I or Geary's C (which we can also use as a baseline comparison), we are not aware of any other methods to identify SVGs that scale linearly.
+Crucially, the linear scaling with the number of spots means that we can expect to continue to be able to apply these methods even with possible future generations of the spatial transcriptomics technology with even larger numbers of spots per tissue slide. Compared to the earlier generation of cubically scaling methods, this is a game-changer, and could potentially lead to wide adoption of these methods. Other than SPARK-X (which does not work very well on our datasets) and much simpler methods such as Moran's I or Geary's C (which we can use as a baseline comparison), we are not aware of any other methods to identify SVGs that scale linearly.
 
 
 # BRISC extensions
