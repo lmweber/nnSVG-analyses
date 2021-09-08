@@ -47,7 +47,7 @@ In the context of spatial transcriptomics, "biologically informative" means gene
 - identifying a set of statistically significant SVGs (with some assumptions on e.g. kernel and bandwidth), or 
 - ranking all genes (e.g. by the estimated spatial variance component) and taking the top n% (e.g. top 10%)
 
-In practice, this means we run a method such as BRISC once per gene (i.e. a loop over the 30,000 genes, or ~15,000 genes after filtering low-expressed genes) to estimate the significance of the spatial variance parameter (sigma squared) or compare the fitted model against a null model without spatial terms, and then rank genes by the resulting p-values. We can also calculate an effect size, e.g. the proportion of spatial variance (sigma_sq / (sigma_sq + tau_sq)).
+In practice, this means we run a method such as BRISC once per gene (i.e. a loop over the 30,000 genes, or ~16,000 genes after filtering low-expressed genes) to estimate the significance of the spatial variance parameter (sigma squared) or compare the fitted model against a null model without spatial terms, and then rank genes by the resulting p-values. We can also calculate an effect size, e.g. the proportion of spatial variance (sigma_sq / (sigma_sq + tau_sq)).
 
 
 ## Existing methods
@@ -110,7 +110,7 @@ remotes::install_github("lmweber/BRISC")
 
 ## Load data and preprocessing
 
-Here I load one of our publicly available example datasets, run several standard preprocessing steps to get it to the point where we can apply methods to identify SVGs, and then downsample to a few hundred genes (instead of 30,000 genes) for the purposes of the examples in this document.
+Here I load one of our publicly available example datasets, run several standard preprocessing steps to get it to the point where we can apply methods to identify SVGs, and then downsample to a few hundred genes (instead of 30,000) for the purposes of the examples in this document.
 
 A complete workflow example of the preprocessing steps (and the subsequent downstream analysis steps) is available in one of our online resources [here](https://lmweber.org/OSTA-book/human-dlpfc-workflow.html).
 
@@ -188,7 +188,7 @@ dim(spe)
 ```
 
 
-Next, we filter genes with extremely low expression, defined as less than or equal to 10 sequencing read counts ("unique molecular identifier" or UMI counts) across all spots combined (which is extremely low - we could also increase this). We also have a preprocessing function that performs some of these steps [here](https://github.com/lmweber/spatzli/blob/main/R/preprocessSVGs.R).
+Next, we filter genes with extremely low expression, which I have arbitrarily defined as less than or equal to 10 sequencing read counts ("unique molecular identifier" or UMI counts) across all spots combined. We also have a preprocessing function that performs some of these steps [here](https://github.com/lmweber/spatzli/blob/main/R/preprocessSVGs.R).
 
 ```{r}
 # filter low-expressed genes
@@ -236,7 +236,7 @@ for (i in seq_along(interesting)) {
 ```
 
 
-Finally, downsample the object to keep only a few hundred genes. We do this only for computational scalability for the examples in this document, and would not normally do this in an analysis, since we are interested in ranking all genes that pass the filtering thresholds. (Note that we also keep the known interesting genes from above.)
+Finally, downsample the object to keep only a few hundred random genes, plus the known interesting genes from above. We do this only for computational scalability for the examples in this document, and would not normally do this in an analysis, since we are interested in ranking all genes that pass the filtering thresholds.
 
 ```{r}
 # downsample to keep n random genes
@@ -246,23 +246,189 @@ ix_keep <- sample(seq_len(nrow(spe)), n)
 
 # also keep known interesting genes
 ix_interesting <- which(rowData(spe)$gene_name %in% interesting)
-ix_keep <- c(ix_keep, ix_interesting)
+ix_keep <- c(ix_interesting, ix_keep)
 
 spe <- spe[ix_keep, ]
 dim(spe)
 ```
 
 
-# Extension 1: Sorting coordinates
+# Extension 1: Re-use sorting of coordinates
+
+The first possible extension we have identified is to re-use the sorting of coordinates, which is performed in the initial steps in `BRISC_estimation()`.
+
+In our setup, we fit ~16,000 models in a (parallelized) loop, with different response vector for each of the ~16,000 genes, and the same grid of spatial coordinates (spots) each time.
+
+From my understanding of the sorting schemes (as described by [Guinness 2018](https://arxiv.org/abs/1609.05372)), this means we could re-use the sorted coordinates in the loop iterations -- i.e. calculate the sorted coordinates once, and pass this as an input to a modified version of `BRISC_estimation()` in the loop instead of calculating it in each loop iteration. This could potentially save a huge amount of runtime in our loop.
+
+Here I output some runtimes from `BRISC_estimation()` to estimate the amount of runtime we could save.
+
+For this gene, sorting coordinates takes 1.8 seconds out of 2.8 seconds total.
+
+```{r, message=FALSE}
+library(BRISC)
+```
+
+```{r}
+# response vector for a single gene
+# i.e. 1 gene, 3582 spots overlapping with tissue
+y_i <- logcounts(spe)[10, ]
+length(y_i)
+
+# scale coordinates proportionally
+coords <- spatialCoords(spe)
+range_all <- max(apply(coords, 2, function(col) diff(range(col))))
+coords <- apply(coords, 2, function(col) (col - min(col)) / range_all)
+
+# covariates
+x <- NULL
+
+# run BRISC to show runtimes
+system.time({
+  BRISC_estimation(coords = coords, y = y_i, x = x, 
+                   n.neighbors = 15, order = "AMMD", 
+                   cov.model = "exponential", search.type = "cb", 
+                   verbose = TRUE)
+})
+```
 
 
+# Extension 2: Re-use nearest neighbors
 
-# Extension 2: Nearest neighbor indices
+The second possible extension we have identified is to re-use the nearest neighbors.
 
+The nearest neighbors are currently calculated internally in `BRISC_estimation(), so in our loop setup they are re-calculated in each iteration. If it is possible to calculate the nearest neighbors once at the start and then pass this as an input in the loop iterations, this could potentially save a huge amount of runtime.
+
+Here is an example using `GpGp`, which is slower overall but can be used to demonstrate these two options.
+
+```{r, message=FALSE}
+library(GpGp)
+```
+
+```{r}
+# response vector for a single gene
+# i.e. 1 gene, 3582 spots overlapping with tissue
+y_i <- logcounts(spe)[10, ]
+length(y_i)
+
+# sort coordinates
+coords <- spatialCoords(spe)
+# calculate ordering only once
+ord <- order_maxmin(coords)
+# calculate nearest neighbors only once
+nn <- find_ordered_nn(coords[ord, ], m = 15)
+
+# covariates
+x <- NULL
+
+system.time({
+  # note: using manual reordering, pre-calculated nearest neighbors
+  fit_model(y = y_i[ord], locs = coords[ord, ], X = x[ord, ], 
+            covfun_name = "exponential_isotropic", 
+            NNarray = nn, reorder = FALSE, m_seq = 15, 
+            silent = TRUE)
+})
+```
 
 
 # Extension 3: Likelihood ratio tests
 
+The third extension relates to approximate inference using likelihood ratio tests.
+
+The main output we use to rank genes as SVGs is the estimated significance / p-value for the spatial variance parameter (`sigma.sq` in BRISC or `sigmasq` in GpGp). (We also use the estimated proportion of spatial variance as an effect size, i.e. `sigma.sq / (sigma.sq + tau.sq)` from BRISC or `sigmasq / (sigmasq + tausq)` from GpGp).
+
+Using the bootstrap inference from BRISC for 16,000 genes is quite slow in this case, so we have also investigated the use of a likelihood ratio test for approximate inference. This is similar to the approach used by one of the earlier methods for SVGs (SpatialDE, Svensson et al. 2018).
+
+However, calculating the likelihood ratio tests requires us to obtain the fitted log-likelihoods for the models from each gene, so that we can calculate the deviance against a null model without spatial terms. From looking at the BRISC code, I think it is possible to extract this, but due to my inexperience with C++ / Rcpp I haven't been able to do this correctly yet.
+
+As an example, using GpGp we can extract the fitted log-likelihoods as `loglik <- out_gpgp$loglik`, and then calculate the likelihood ratio tests using `lm` to fit the non-spatial model. My code for this is in this function: https://github.com/lmweber/spatzli/blob/main/R/runSVGsGpGp.R
+
+Here I do this for the 206 genes in our small object from earlier and using the function from above. (This takes ~3 minutes to run with 4 cores on my laptop.)
+
+The outputs are stored in the `rowData()` slot (which contains features metadata such as gene IDs) in the `SpatialExperiment` object.
+
+Then, we can rank genes by the p-values, which shows that the known genes with highly spatial expression patterns are highly significant.
+
+```{r, eval=FALSE}
+remotes::install_github("lmweber/spatzli")
+```
+
+```{r, message=FALSE}
+library(spatzli)
+```
+
+```{r}
+# fit GpGp models
+runtime_gpgp <- system.time({
+  spe_gpgp <- runSVGsGpGp(spe, x = NULL, n_threads = 4)
+})
+
+# runtime
+runtime_gpgp
+
+# calculate ranks according to p-values
+rowData(spe_gpgp)$rank_gpgp_pval <- rank(rowData(spe_gpgp)$pval, ties.method = "first")
+# calculate ranks according to effect sizes
+rowData(spe_gpgp)$rank_gpgp_prop_sv <- rank(-1 * rowData(spe_gpgp)$prop_sv, ties.method = "first")
+```
+
+```{r}
+# show output format
+head(rowData(spe_gpgp))
+
+# how many significant SVGs are detected? (using adjusted p-values)
+table(rowData(spe_gpgp)$padj <= 0.05)
+
+# how many "highly" significant SVGs?
+table(rowData(spe_gpgp)$pval == 0)
+
+# gene names for highly significant SVGs (note: includes the 6 known genes)
+sig_genes <- rowData(spe_gpgp)$gene_name[rowData(spe_gpgp)$pval == 0]
+sig_genes
+```
+
+```{r, fig.width = 2.5, fig.height = 2.5}
+# plot expression for all highly significant SVGs to check if they look sensible
+for (i in seq_along(sig_genes)) {
+  gene <- sig_genes[i]
+  ix_gene <- which(rowData(spe)$gene_name == gene)
+  
+  df <- as.data.frame(cbind(
+    spatialCoords(spe), 
+    logexpr = logcounts(spe)[ix_gene, ]
+  ))
+  
+  p <- ggplot(df, aes(x = x, y = y, color = logexpr)) + 
+    geom_point(size = 0.1) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient(low = "gray95", high = "blue") + 
+    ggtitle(gene) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
+```
+
+
+# Possible future ideas
+
+**Faster / multivariate bootstrap inference?**
+
+Currently, we can use both bootstrap inference from BRISC and likelihood ratio (LR) tests from GpGp, where we are using the LR tests from GpGp as a fast approximation. The runtime for the full loop over 16,000 genes using GpGp for the LR tests is approximately 5 hours with 4 cores on my laptop. If we can use BRISC for the LR tests instead, we expect this will be faster.
+
+However, would it somehow also be possible to perform the bootstrap inference in a faster setup in our loop? e.g. some sort of multivariate bootstrapping using the full multivariate response for all 16,000 genes (16,000 genes measured at 3,500 spatial coordinates). I'm not sure if this makes sense (since we want to estimate the spatial variance parameter separately for each gene), but would be extremely useful if it is somehow possible.
+
+
+**Fix certain parameters**
+
+Would it be biologically meaningful to fix the bandwidth parameter in the kernel? i.e. the `phi` parameter in BRISC, or the `range` parameter in GpGp. This is not currently possible in BRISC, but can be done in GpGp. However, when I tried it out, it did not give a biologically sensible final ranking of genes.
+
+From a biological perspective, I am not sure we really want to do this, since we are interested in ranking genes according to the strength of *any* spatial patterns of expression, which may be correlated with different tissue structures for different genes. However, it is possible that this could make sense in different datasets that we have not looked at yet.
 
 
 # Session info
