@@ -1,5 +1,5 @@
 ---
-title: "BRISC examples"
+title: "BRISC extensions"
 author: "Lukas Weber"
 date: "`r Sys.Date()`"
 output:
