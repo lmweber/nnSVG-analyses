@@ -23,13 +23,15 @@ This document contains background and examples to illustrate the possible extens
 
 ## Spatial transcriptomics
 
-We are in applying methods such as BRISC (Saha and Datta 2018) and GpGp (Guinness 2018) to identify "spatially variable genes" in spatial transcriptomics data.
+We are interested in applying methods such as BRISC (Saha and Datta 2018) and GpGp (Guinness 2018) to identify "spatially variable genes" in spatial transcriptomics data.
 
-In spatial transcriptomics data, we are measuring transcriptome-wide gene expression (i.e. gene expression of all ~30,000 or so genes in the human transcriptome) at a grid of approximately 5,000 spatial coordinates on a tissue slide. In the commercially available 10x Genomics Visium platform, the grid has dimensions approximately 6.5mm x 6.5mm, and the spatial coordinates ("spots") are located in a regular hexagonal grid.
+In spatial transcriptomics data, we are measuring transcriptome-wide gene expression (i.e. gene expression of all ~30,000 or so genes or transcripts in the human transcriptome) at a grid of approximately 5,000 spatial coordinates on a tissue slide. In the commercially available 10x Genomics Visium platform, the grid has dimensions approximately 6.5mm x 6.5mm, and the spatial coordinates ("spots") are located in a regular hexagonal grid.
 
 The following figure illustrates the platform.
 
-[FIGURE ILLUSTRATING THE PLATFORM]
+```{r, echo=FALSE, out.width="80%", fig.align="center", fig.cap="10x Genomics Visium schematic (from 10x Genomics website)."}
+knitr::include_graphics("images/Visium.png")
+```
 
 
 ## Spatially variable genes
