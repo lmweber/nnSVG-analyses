@@ -81,7 +81,7 @@ rowData(spe)$rank_hvgs_bio <- rank(-1 * dec$bio, ties.method = "first")
 
 Run SVGs method using BRISC (extensions version), and calculate likelihood ratio tests comparing models with and without spatial terms.
 
-Runtime: 
+Runtime: ~4.5 hours on laptop with 4 cores
 
 Note: either run code in first couple of code blocks below (long) runtime) or load pre-saved results object in next code block.
 
@@ -89,18 +89,31 @@ To do:
 - add option for bootstrap significance tests
 
 ```{r}
-runtime_brisc <- system.time({
-  spe_brisc <- runSVGsBRISC(spe, x = NULL, n_threads = 4)
-})
+# runtime_brisc <- system.time({
+#   spe_brisc <- runSVGsBRISC(spe, x = NULL, n_threads = 4)
+# })
 ```
 
 ```{r}
-runtime_brisc
+# runtime_brisc
 ```
 
 ```{r}
-file <- "../outputs/spe_brisc_spatzli.rds"
-saveRDS(spe_brisc, file = file)
+# file <- "../outputs/spe_brisc_spatzli.rds"
+# saveRDS(spe_brisc, file = file)
+```
+
+```{r}
+# alternatively: load previously saved results
+spe_brisc <- readRDS("../outputs/spe_brisc_spatzli.rds")
+```
+
+```{r}
+# calculate ranks according to p-values
+rowData(spe_brisc)$rank_brisc_pval <- rank(rowData(spe_brisc)$pval, ties.method = "first")
+# calculate ranks according to effect sizes
+rowData(spe_brisc)$rank_brisc_sigmasq <- rank(-1 * rowData(spe_brisc)$sigma.sq, ties.method = "first")
+rowData(spe_brisc)$rank_brisc_prop_sv <- rank(-1 * rowData(spe_brisc)$prop_sv, ties.method = "first")
 ```
 
 
@@ -173,6 +186,40 @@ rowData(spe_sparkx) <- cbind(rowData(spe), out_sparkx$res_mtest)
 ```{r}
 # calculate ranks according to p-values
 rowData(spe_sparkx)$rank_sparkx_pval <- rank(rowData(spe_sparkx)$combinedPval, ties.method = "first")
+```
+
+
+---
+
+# Comparisons
+
+Comparisons between methods.
+
+Notes:
+- BRISC and GpGp are very similar
+- BRISC/GpGp are more similar to HVGs than SPARK-X is similiar to HVGs
+
+To do:
+- Try running BRISC with different tolerance argument
+
+```{r}
+table(BRISC = rowData(spe_brisc)$pval == 0, 
+      GpGp = rowData(spe_gpgp)$pval == 0)
+
+table(BRISC = rowData(spe_brisc)$pval == 0, 
+      HVGs = rowData(spe)$hvgs_pval <= 1e-12)
+
+table(GpGp = rowData(spe_gpgp)$pval == 0, 
+      HVGs = rowData(spe)$hvgs_pval <= 1e-6)
+
+table(BRISC = rowData(spe_brisc)$pval == 0, 
+      SparkX = rowData(spe_sparkx)$combinedPval <= 1e-12)
+
+table(GpGp = rowData(spe_gpgp)$pval == 0, 
+      SparkX = rowData(spe_sparkx)$combinedPval <= 1e-12)
+
+table(SparkX = rowData(spe_sparkx)$combinedPval <= 1e-12, 
+      HVGs = rowData(spe)$hvgs_pval <= 1e-12)
 ```
 
 
