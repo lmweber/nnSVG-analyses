@@ -20,6 +20,11 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 
 Analyses for SVGs: comparison of methods including BRISC, GpGp, HVGs, using spatzli wrappers, human DLPFC dataset.
 
+```{r, eval = FALSE}
+# module load conda_R/4.1.x
+# R
+```
+
 ```{r, message = FALSE}
 library(SpatialExperiment)
 library(STexampleData)
@@ -90,7 +95,7 @@ To do:
 
 ```{r}
 # runtime_brisc <- system.time({
-#   spe_brisc <- runSVGsBRISC(spe, x = NULL, n_threads = 10)
+#   spe_brisc <- runSVGsBRISC(spe, x = NULL, n_threads = 20)
 # })
 ```
 
@@ -127,7 +132,7 @@ Note: either run code in first couple of code blocks below (5 hours runtime) or 
 
 ```{r}
 # runtime_gpgp <- system.time({
-#   spe_gpgp <- runSVGsGpGp(spe, x = NULL, n_threads = 10)
+#   spe_gpgp <- runSVGsGpGp(spe, x = NULL, n_threads = 20)
 # })
 ```
 
