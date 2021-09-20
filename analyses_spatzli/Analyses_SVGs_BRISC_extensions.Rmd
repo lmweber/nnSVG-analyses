@@ -96,7 +96,7 @@ To do:
 
 ```{r}
 # runtime_brisc <- system.time({
-#   spe_brisc <- runSVGsBRISC(spe, x = NULL, n_threads = 20)
+#   spe_brisc <- runSVGsBRISC(spe, x = NULL, n_threads = 10)
 # })
 ```
 
@@ -133,7 +133,7 @@ Note: either run code in first couple of code blocks below (5 hours runtime) or 
 
 ```{r}
 # runtime_gpgp <- system.time({
-#   spe_gpgp <- runSVGsGpGp(spe, x = NULL, n_threads = 20)
+#   spe_gpgp <- runSVGsGpGp(spe, x = NULL, n_threads = 10)
 # })
 ```
 
