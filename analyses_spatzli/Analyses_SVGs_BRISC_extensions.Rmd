@@ -91,6 +91,7 @@ Runtime: ~4.5 hours on laptop with 4 cores
 Note: either run code in first couple of code blocks below (long) runtime) or load pre-saved results object in next code block.
 
 To do:
+
 - add option for bootstrap significance tests
 
 ```{r}
@@ -201,10 +202,12 @@ rowData(spe_sparkx)$rank_sparkx_pval <- rank(rowData(spe_sparkx)$combinedPval, t
 Comparisons between methods.
 
 Notes:
+
 - BRISC and GpGp are very similar
 - BRISC/GpGp are more similar to HVGs than SPARK-X is similiar to HVGs
 
 To do:
+
 - Try running BRISC with different tolerance argument
 
 ```{r}
