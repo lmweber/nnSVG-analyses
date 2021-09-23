@@ -160,7 +160,8 @@ for (i in seq_along(ix_all)) {
   
   p <- ggplot(df, aes_string(x = "xcoord", y = "ycoord", color = "sum")) + 
     geom_point(size = 0.1) + 
-    scale_color_gradient(low = "gray95", high = "red") + 
+    scale_color_gradient2(low = "gray97", mid = "red", high = "darkred", 
+                          midpoint = mean(range(df$sum))) + 
     ggtitle(names_all[i]) + 
     theme_bw() + 
     theme(panel.grid = element_blank(), 
