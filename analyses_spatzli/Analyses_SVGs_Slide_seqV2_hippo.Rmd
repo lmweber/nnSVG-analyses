@@ -26,6 +26,9 @@ library(spatzli)
 library(ggspavis)
 library(readr)
 library(ggplot2)
+library(RCTD)
+library(dplyr)
+library(tidyr)
 ```
 
 
@@ -134,6 +137,31 @@ spe
 
 ---
 
+# Load RCTD results
+
+Load predicted cell type labels from RCTD for each spot. These are the results from Figure 5A in the Cable et al. (2021) paper, which the authors have provided directly to us via email in a saved `.RData` object.
+
+```{r}
+dir_rctd <- "../../data/Slide_seqV2_hippo/processed_data"
+
+# load file containing RCTD outputs
+out_rctd <- load(file.path(dir_rctd, "SlideseqHippo.RData"))
+
+# extract top predicted cell type labels
+labels_rctd <- results_df$first_type
+
+# extract barcode IDs
+barcodes_rctd <- puck@counts@Dimnames[[2]]
+
+names(labels_rctd) <- barcodes_rctd
+
+head(labels_rctd)
+str(labels_rctd)
+```
+
+
+---
+
 # Plot known genes
 
 Plot expression of some known cell type markers and known spatially variable genes (SVGs) from Cable et al. (2021), Figure 6.
@@ -171,6 +199,48 @@ for (i in seq_along(ix_all)) {
   
   print(p)
 }
+```
+
+
+---
+
+# Plot RCTD labels
+
+Plot predicted cell type labels from RCTD.
+
+```{r, fig.width = 7, fig.height = 6}
+# create data frame with RCTD labels
+df <- as.data.frame(cbind(colData(spe), spatialCoords(spe)))
+
+df_labels <- data.frame(
+  barcode_id = names(labels_rctd), 
+  RCTD = labels_rctd
+)
+
+df <- full_join(df, df_labels, by = "barcode_id")
+
+# plot
+ggplot(df, aes_string(x = "xcoord", y = "ycoord", color = "RCTD")) + 
+  geom_point(size = 0.1) + 
+  coord_fixed() + 
+  ggtitle("RCTD predicted cell types") + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank())
+
+# plot without NAs
+df_sub <- na.omit(df)
+dim(df_sub)
+
+ggplot(df_sub, aes_string(x = "xcoord", y = "ycoord", color = "RCTD")) + 
+  geom_point(size = 0.1) + 
+  coord_fixed() + 
+  ggtitle("RCTD predicted cell types") + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank())
 ```
 
 
