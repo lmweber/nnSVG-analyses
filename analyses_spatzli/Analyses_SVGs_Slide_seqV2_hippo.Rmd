@@ -39,7 +39,7 @@ Notes:
 
 
 ```{r}
-dir_data <- "../../data/Slide_seqV2_hippo"
+dir_data <- "../../data/Slide_seqV2_hippo/raw_data"
 
 # load expression matrix
 # runtime: several minutes
@@ -59,9 +59,67 @@ str(bead_ids)
 length(bead_ids)
 
 # convert expression matrix to numeric matrix without gene IDs
-exprs <- as.matrix(exprs[, -1])
+exprs <- exprs[, -1]
+exprs <- as.matrix(exprs)
 stopifnot(nrow(exprs) == length(gene_ids))
 rownames(exprs) <- gene_ids
+
+dim(exprs)
+format(object.size(exprs), units = "GB")
+exprs[1:6, 1:6]
+```
+
+```{r}
+# load beads info
+# note: contains mix of tab-delimited and comma-delimited
+file <- file.path(dir_data, "Puck_200115_08_bead_locations.csv")
+bead_locations_colnames <- unlist(strsplit(readLines(file, n = 1), "\t"))
+bead_locations <- read_csv(file, skip = 1, col_names = FALSE)
+colnames(bead_locations) <- bead_locations_colnames
+dim(bead_locations)
+head(bead_locations)
+
+stopifnot(nrow(bead_locations) == ncol(exprs))
+stopifnot(all(bead_ids == bead_locations$barcodes))
+```
+
+```{r}
+# create SpatialExperiment
+row_data <- DataFrame(
+  gene_name = gene_ids
+)
+
+col_data <- DataFrame(
+  barcode_id = bead_ids
+)
+
+spatial_data <- DataFrame(
+  barcode_id = bead_ids
+)
+
+spatial_coords <- as.matrix(bead_locations[, c("xcoord", "ycoord")])
+rownames(spatial_coords) <- bead_ids
+
+exprs_sparse <- as(exprs, "dgCMatrix")
+
+spe <- SpatialExperiment(
+  rowData = row_data, 
+  colData = col_data, 
+  spatialCoords = spatial_coords, 
+  spatialData = spatial_data, 
+  assays = list(counts = exprs_sparse)
+)
+
+spe
+
+format(object.size(spe), units = "MB")
+```
+
+```{r}
+# save SpatialExperiment object
+dir_out <- "../../data/Slide_seqV2_hippo/SPE"
+file_out <- file.path(dir_out, "Slide_seqV2_hippo_SPE.rds")
+saveRDS(spe, file = file_out)
 ```
 
 
