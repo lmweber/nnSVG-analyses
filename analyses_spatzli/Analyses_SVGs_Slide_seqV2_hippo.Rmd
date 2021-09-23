@@ -1,0 +1,69 @@
+---
+title: "Comparison of SVGs methods: Slide-seqV2 hippocampus"
+author: "Lukas Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+
+# Introduction
+
+Analyses for SVGs: using Slide-seqV2 dataset from mouse hippocampus (from Stickels et al. 2021).
+
+```{r, message = FALSE}
+library(SpatialExperiment)
+library(spatzli)
+library(readr)
+library(data.table)
+```
+
+
+# Load data
+
+Load Slide-seqV2 dataset from mouse hippocampus (from Stickels et al. 2021) and create `SpatialExperiment` object.
+
+```{r}
+dir_data <- "../../data/Slide_seqV2_hippo"
+
+# load expression matrix
+# runtime: several minutes
+exprs <- read_table(file.path(dir_data, "Puck_200115_08.digital_expression.txt.gz"))
+dim(exprs)
+format(object.size(exprs), units = "GB")
+exprs[1:6, 1:6]
+
+# get gene IDs from first column
+gene_ids <- exprs$GENE
+str(gene_ids)
+length(gene_ids)
+
+# get barcode IDs from column names (excluding gene IDs column)
+bead_ids <- colnames(exprs)[-1]
+str(bead_ids)
+length(bead_ids)
+
+# convert expression matrix to numeric matrix without gene IDs
+exprs <- as.matrix(exprs[, -1])
+stopifnot(nrow(exprs) == length(gene_ids))
+rownames(exprs) <- gene_ids
+```
+
+
+---
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
