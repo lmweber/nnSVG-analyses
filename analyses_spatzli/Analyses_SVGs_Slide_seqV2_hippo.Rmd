@@ -138,7 +138,7 @@ spe
 
 Plot expression of some known cell type markers and known spatially variable genes (SVGs) from Cable et al. (2021), Figure 6.
 
-```{r, fig.width = 5, fig.height = 5}
+```{r, fig.width = 7, fig.height = 6}
 # known cell type markers
 marker_names <- c("Snap25")
 ix_markers <- match(marker_names, rowData(spe)$gene_name)
@@ -162,6 +162,7 @@ for (i in seq_along(ix_all)) {
     geom_point(size = 0.1) + 
     scale_color_gradient2(low = "gray97", mid = "red", high = "darkred", 
                           midpoint = mean(range(df$sum))) + 
+    coord_fixed() + 
     ggtitle(names_all[i]) + 
     theme_bw() + 
     theme(panel.grid = element_blank(), 
