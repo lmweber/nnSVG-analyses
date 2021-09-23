@@ -32,6 +32,12 @@ library(data.table)
 
 Load Slide-seqV2 dataset from mouse hippocampus (from Stickels et al. 2021) and create `SpatialExperiment` object.
 
+Notes:
+
+- raw data is stored as a `.txt.gz` file containing a column of gene IDs and expression matrix
+- too large to store in memory on laptop, so need to run this on JHPCE
+
+
 ```{r}
 dir_data <- "../../data/Slide_seqV2_hippo"
 
