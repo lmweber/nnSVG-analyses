@@ -640,7 +640,7 @@ for (gene in top_genes_hvgs) {
 
 ## Gene clustering
 
-### GpGp genes
+### GpGp genes: k-means
 
 **Clustering genes from GpGp with adjusted p-values <= 0.05**
 
@@ -749,6 +749,40 @@ for (g in seq_len(k)) {
   
   print(p)
 }
+```
+
+
+### GpGp genes: hierarchical
+
+**Clustering genes from GpGp with adjusted p-values == 0**
+
+Since hierarchical clustering requires storing distance matrix in memory, we use a smaller number of genes.
+
+```{r}
+# subset genes
+spe_sig_gpgp <- spe[df$padj == 0, ]
+
+dim(spe_sig_gpgp)
+
+# z-score normalize logcounts from these genes
+znorm <- t(apply(logcounts(spe_sig_gpgp), 1, scale, center = TRUE, scale = TRUE))
+dim(znorm)
+znorm[1:3, 1:3]
+```
+
+```{r}
+# cluster on genes
+d <- dist(t(znorm), method = "euclidean")
+str(d)
+
+# hierarchical clustering using Ward's linkage
+hc <- hclust(d, method = "ward.D2")
+
+# select 12 clusters
+k <- 12
+ct <- cutree(hc, k = 12)
+
+table(ct)
 ```
 
 
