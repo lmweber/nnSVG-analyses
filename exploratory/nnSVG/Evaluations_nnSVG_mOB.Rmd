@@ -132,25 +132,23 @@ table(truth = colData(spe)$layer_id,
 
 ## nnSVG: all spots
 
-Using implementation of BRISC method in nnSVG package.
+Using implementation of BRISC method in nnSVG package
 
 Runtime: ~45 min with 4 cores on laptop
 
 ```{r}
-library(nnSVG)
-
-# run nnSVG across all spots
-runtime_nnSVG_all <- system.time({
-  spe_all <- nnSVG(spe, n_threads = 4)
-})
-
-runtime_nnSVG_all
+# # run nnSVG across all spots
+# runtime_nnSVG_all <- system.time({
+#   spe_all <- nnSVG(spe, n_threads = 4)
+# })
+# 
+# runtime_nnSVG_all
 ```
 
 ```{r}
-# save output
-file <- "../../outputs/spe_mOB_nnSVG_all.rds"
-saveRDS(spe_all, file = file)
+# # save output
+# file <- "../../outputs/spe_mOB_nnSVG_all.rds"
+# saveRDS(spe_all, file = file)
 ```
 
 ```{r}
@@ -161,17 +159,112 @@ spe_all <- readRDS("../../outputs/spe_mOB_nnSVG_all.rds")
 
 ## nnSVG: within cell types
 
-```{r}
-# build model matrix using cell type labels from clustering
-X <- model.matrix(~ colData(spe)$label)
-dim(X)
-head(X)
-stopifnot(nrow(X) == ncol(spe))
+Including covariates for cluster IDs representing cell types
 
-# run nnSVG taking cell types into account
-system.time({
-  spe_clusters <- nnSVG(spe, x = X, n_threads = 4)
-})
+Runtime: ~45 min with 4 cores on laptop
+
+```{r}
+# # build model matrix using cell type labels from clustering
+# X <- model.matrix(~ colData(spe)$label)
+# dim(X)
+# head(X)
+# stopifnot(nrow(X) == ncol(spe))
+# 
+# # run nnSVG taking cell types into account
+# runtime_nnSVG_clusters <- system.time({
+#   spe_clusters <- nnSVG(spe, x = X, n_threads = 4)
+# })
+```
+
+```{r}
+# # save output
+# file <- "../../outputs/spe_mOB_nnSVG_clusters.rds"
+# saveRDS(spe_clusters, file = file)
+```
+
+```{r}
+# alternatively: load saved results
+spe_clusters <- readRDS("../../outputs/spe_mOB_nnSVG_clusters.rds")
+```
+
+
+---
+
+# Comparisons
+
+## Top SVGs
+
+```{r}
+# all spots
+rowData(spe_all)[rowData(spe_all)$rank <= 10, ]
+
+# within cell types
+rowData(spe_clusters)[rowData(spe_clusters)$rank <= 10, ]
+```
+
+
+## Plots
+
+```{r, fig.width=4, fig.height=3}
+# plot clusters
+df <- as.data.frame(cbind(spatialCoords(spe), colData(spe)))
+
+ggplot(df, aes(x = x, y = y, color = label)) + 
+  geom_point(size = 2) + 
+  coord_fixed() + 
+  scale_y_reverse() + 
+  ggtitle("Cluster labels") + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank())
+```
+
+
+```{r, fig.width=4, fig.height=3}
+# top SVG across all spots
+ix <- which(rowData(spe_all)$rank == 1)
+ix_name <- rowData(spe_all)$gene_name[ix]
+
+df <- as.data.frame(
+  cbind(spatialCoords(spe_all), 
+        expr = counts(spe_all)[ix, ]))
+
+ggplot(df, aes(x = x, y = y, color = expr)) + 
+  geom_point(size = 2) + 
+  coord_fixed() + 
+  scale_y_reverse() + 
+  scale_color_gradient(low = "gray90", high = "red") + 
+  ggtitle(ix_name) + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank())
+```
+
+
+```{r, fig.width=4, fig.height=3.5}
+# top SVG within cell types
+ix <- which(rowData(spe_clusters)$rank == 1)
+ix_name <- rowData(spe_clusters)$gene_name[ix]
+
+df <- as.data.frame(
+  cbind(spatialCoords(spe_clusters), 
+        expr = counts(spe_clusters)[ix, ]))
+
+ggplot(df, aes(x = x, y = y, color = expr)) + 
+  geom_point(size = 2) + 
+  coord_fixed() + 
+  scale_y_reverse() + 
+  scale_color_gradient(low = "gray90", high = "red") + 
+  ggtitle(ix_name) + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank())
 ```
 
 
