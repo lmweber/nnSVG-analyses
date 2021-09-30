@@ -134,13 +134,28 @@ table(truth = colData(spe)$layer_id,
 
 Using implementation of BRISC method in nnSVG package.
 
+Runtime: ~45 min with 4 cores on laptop
+
 ```{r}
 library(nnSVG)
 
 # run nnSVG across all spots
-system.time({
+runtime_nnSVG_all <- system.time({
   spe_all <- nnSVG(spe, n_threads = 4)
 })
+
+runtime_nnSVG_all
+```
+
+```{r}
+# save output
+file <- "../../outputs/spe_mOB_nnSVG_all.rds"
+saveRDS(spe_all, file = file)
+```
+
+```{r}
+# alternatively: load saved results
+spe_all <- readRDS("../../outputs/spe_mOB_nnSVG_all.rds")
 ```
 
 
