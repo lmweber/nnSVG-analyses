@@ -222,49 +222,61 @@ ggplot(df, aes(x = x, y = y, color = label)) +
 ```
 
 
-```{r, fig.width=4, fig.height=3}
-# top SVG across all spots
-ix <- which(rowData(spe_all)$rank == 1)
-ix_name <- rowData(spe_all)$gene_name[ix]
+```{r, fig.width=2.5, fig.height=1.75}
+# top SVGs across all spots
+n <- 10
 
-df <- as.data.frame(
-  cbind(spatialCoords(spe_all), 
-        expr = counts(spe_all)[ix, ]))
-
-ggplot(df, aes(x = x, y = y, color = expr)) + 
-  geom_point(size = 2.5) + 
-  coord_fixed() + 
-  scale_y_reverse() + 
-  scale_color_gradient(low = "gray90", high = "red") + 
-  ggtitle(ix_name) + 
-  theme_bw() + 
-  theme(panel.grid = element_blank(), 
-        axis.title = element_blank(), 
-        axis.text = element_blank(), 
-        axis.ticks = element_blank())
+for (i in seq_len(n)) {
+  ix <- which(rowData(spe_all)$rank == i)
+  ix_name <- rowData(spe_all)$gene_name[ix]
+  
+  df <- as.data.frame(
+    cbind(spatialCoords(spe_all), 
+          expr = counts(spe_all)[ix, ]))
+  
+  p <- ggplot(df, aes(x = x, y = y, color = expr)) + 
+    geom_point(size = 1.25) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient(low = "gray90", high = "red") + 
+    ggtitle(ix_name) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
 ```
 
 
-```{r, fig.width=4, fig.height=3.5}
-# top SVG within cell types
-ix <- which(rowData(spe_clusters)$rank == 1)
-ix_name <- rowData(spe_clusters)$gene_name[ix]
+```{r, fig.width=2.5, fig.height=1.75}
+# top SVGs within cell types
+n <- 10
 
-df <- as.data.frame(
-  cbind(spatialCoords(spe_clusters), 
-        expr = counts(spe_clusters)[ix, ]))
-
-ggplot(df, aes(x = x, y = y, color = expr)) + 
-  geom_point(size = 2.5) + 
-  coord_fixed() + 
-  scale_y_reverse() + 
-  scale_color_gradient(low = "gray90", high = "red") + 
-  ggtitle(ix_name) + 
-  theme_bw() + 
-  theme(panel.grid = element_blank(), 
-        axis.title = element_blank(), 
-        axis.text = element_blank(), 
-        axis.ticks = element_blank())
+for (i in seq_len(n)) {
+  ix <- which(rowData(spe_clusters)$rank == i)
+  ix_name <- rowData(spe_clusters)$gene_name[ix]
+  
+  df <- as.data.frame(
+    cbind(spatialCoords(spe_clusters), 
+          expr = counts(spe_clusters)[ix, ]))
+  
+  p <- ggplot(df, aes(x = x, y = y, color = expr)) + 
+    geom_point(size = 1.25) + 
+    coord_fixed() + 
+    scale_y_reverse() + 
+    scale_color_gradient(low = "gray90", high = "red") + 
+    ggtitle(ix_name) + 
+    theme_bw() + 
+    theme(panel.grid = element_blank(), 
+          axis.title = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+  
+  print(p)
+}
 ```
 
 
