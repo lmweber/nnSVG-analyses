@@ -210,7 +210,7 @@ rowData(spe_clusters)[rowData(spe_clusters)$rank <= 10, ]
 df <- as.data.frame(cbind(spatialCoords(spe), colData(spe)))
 
 ggplot(df, aes(x = x, y = y, color = label)) + 
-  geom_point(size = 2) + 
+  geom_point(size = 2.5) + 
   coord_fixed() + 
   scale_y_reverse() + 
   ggtitle("Cluster labels") + 
@@ -232,7 +232,7 @@ df <- as.data.frame(
         expr = counts(spe_all)[ix, ]))
 
 ggplot(df, aes(x = x, y = y, color = expr)) + 
-  geom_point(size = 2) + 
+  geom_point(size = 2.5) + 
   coord_fixed() + 
   scale_y_reverse() + 
   scale_color_gradient(low = "gray90", high = "red") + 
@@ -255,7 +255,7 @@ df <- as.data.frame(
         expr = counts(spe_clusters)[ix, ]))
 
 ggplot(df, aes(x = x, y = y, color = expr)) + 
-  geom_point(size = 2) + 
+  geom_point(size = 2.5) + 
   coord_fixed() + 
   scale_y_reverse() + 
   scale_color_gradient(low = "gray90", high = "red") + 
