@@ -1,10 +1,11 @@
-#################################################################
+#################################
 # Script to load and prepare data
-# Spatial Transcriptomics (ST) mouse olfactory bulb (mOB) dataset
 # Lukas Weber, Oct 2021
-#################################################################
+#################################
 
-# References:
+# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
+
+# references:
 # Stahl et al. (2016): https://www.science.org/doi/full/10.1126/science.aaf2403
 # Miller et al. (2021): https://genome.cshlp.org/content/early/2021/05/25/gr.271288.120
 
