@@ -10,6 +10,11 @@
 # Miller et al. (2021): https://genome.cshlp.org/content/early/2021/05/25/gr.271288.120
 
 
+# to run in interactive session on cluster:
+# module load conda_R/4.1.x
+# Rscript filename.R
+
+
 library(nnSVG)
 library(SpatialExperiment)
 library(MERINGUE)
