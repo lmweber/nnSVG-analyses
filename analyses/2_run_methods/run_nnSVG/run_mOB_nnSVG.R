@@ -39,7 +39,7 @@ spe
 runtime <- system.time({
   spe <- nnSVG(spe, x = NULL, 
                filter_genes = FALSE, filter_mito = FALSE, 
-               n_threads = 4)
+               n_threads = 10)
 })
 
 # store runtime in object
