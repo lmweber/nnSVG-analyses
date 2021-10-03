@@ -57,6 +57,9 @@ res_mOB <- cbind(res_mOB_nnSVG, res_mOB_nnSVG_clusters, res_mOB_HVGs)
 # calculate overlaps
 # ------------------
 
+# overlaps calculated as proportion of top n genes from method 1 (e.g. HVGs) 
+# that are also in the set of top n genes from method 2 (e.g. nnSVG)
+
 overlaps <- c(10, 20, 50, 100, 200, 500, 1000)
 top_nnSVG <- rep(NA, length(top_HVGs))
 top_nnSVG_clusters <- rep(NA, length(top_HVGs))
@@ -103,9 +106,9 @@ fn <- here("plots", "overlaps", "overlaps_mOB.pdf")
 ggsave(fn, width = 6, height = 4)
 
 
-# ------------
-# plot results
-# ------------
+# ----------------------
+# calculate correlations
+# ----------------------
 
 ggplot(res_mOB, aes(x = rank_HVGs, y = rank_nnSVG)) + 
   geom_point() + 
