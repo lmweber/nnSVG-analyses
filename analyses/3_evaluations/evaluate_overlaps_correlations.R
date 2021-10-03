@@ -11,7 +11,9 @@
 library(SpatialExperiment)
 library(here)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
+library(ochRe)
 
 
 # ------------
@@ -44,7 +46,61 @@ res_mOB_HVGs <-
 colnames(res_mOB_HVGs) <- 
   c("stat_HVGs", "rank_HVGs", "pval_HVGs", "padj_HVGs")
 
-res_mOB <- as.data.frame(cbind(res_mOB_nnSVG, res_mOB_nnSVG_clusters, res_mOB_HVGs))
+res_mOB_nnSVG <- as.data.frame(res_mOB_nnSVG)
+res_mOB_nnSVG_clusters <- as.data.frame(res_mOB_nnSVG_clusters)
+res_mOB_HVGs <- as.data.frame(res_mOB_HVGs)
+
+res_mOB <- cbind(res_mOB_nnSVG, res_mOB_nnSVG_clusters, res_mOB_HVGs)
+
+
+# ------------------
+# calculate overlaps
+# ------------------
+
+overlaps <- c(10, 20, 50, 100, 200, 500, 1000)
+top_nnSVG <- rep(NA, length(top_HVGs))
+top_nnSVG_clusters <- rep(NA, length(top_HVGs))
+
+for (k in seq_along(overlaps)) {
+  # select top gene names
+  genes_k <- rownames(filter(res_mOB_HVGs, rank_HVGs <= overlaps[k]))
+  
+  # calculate overlaps
+  top_nnSVG[k] <- nrow(filter(res_mOB_nnSVG[genes_k, ], 
+                              rank_nnSVG <= overlaps[k]))
+  top_nnSVG_clusters[k] <- nrow(filter(res_mOB_nnSVG_clusters[genes_k, ], 
+                                       rank_nnSVG_clusters <= overlaps[k]))
+}
+
+# calculate proportions
+df_overlaps <- data.frame(
+  top_HVGs = overlaps, 
+  nnSVG = top_nnSVG / overlaps, 
+  nnSVG_clusters = top_nnSVG_clusters / overlaps
+)
+
+df_overlaps <- pivot_longer(
+  df_overlaps, 
+  cols = c("nnSVG", "nnSVG_clusters"), 
+  names_to = "method", 
+  values_to = "prop_overlap"
+)
+
+# plot
+ggplot(df_overlaps, aes(x = top_HVGs, y = prop_overlap, 
+                        group = method, color = method)) + 
+  geom_line() + 
+  geom_point() + 
+  scale_color_ochre(palette = "parliament") + 
+  scale_x_continuous(breaks = top_HVGs, trans = "log10") + 
+  labs(x = "top HVGs", 
+       y = "proportion overlapping") + 
+  ggtitle("mOB: Overlap with top HVGs") + 
+  theme_bw() + 
+  theme(panel.grid.minor.x = element_blank())
+
+fn <- here("plots", "overlaps", "overlaps_mOB.pdf")
+ggsave(fn, width = 6, height = 4)
 
 
 # ------------
