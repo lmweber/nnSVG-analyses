@@ -13,6 +13,7 @@ library(here)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(ggrepel)
 library(ochRe)
 
 
@@ -173,17 +174,26 @@ ggsave(fn, width = 6, height = 4)
 # plot ranks
 # ----------
 
-ggplot(res_mOB, aes(x = rank_HVGs, y = rank_nnSVG)) + 
-  geom_point() + 
-  xlim(c(0, 200)) + 
-  ylim(c(0, 200)) + 
-  coord_fixed() + 
-  theme_bw()
+# plot ranks of top n genes from each pair of methods
 
-ggplot(res_mOB, aes(x = rank_nnSVG, y = rank_nnSVG_clusters)) + 
-  geom_point() + 
-  xlim(c(0, 200)) + 
-  ylim(c(0, 200)) + 
-  coord_fixed() + 
-  theme_bw()
+ranks <- c(20, 100, 1000)
+
+for (k in seq_along(ranks)) {
+  p <- ggplot(res_mOB, aes(x = rank_HVGs, y = rank_nnSVG, label = gene_name)) + 
+    geom_point() + 
+    xlim(c(0, ranks[k])) + 
+    ylim(c(0, ranks[k])) + 
+    coord_fixed() + 
+    ggtitle(paste0("Ranks of top ", ranks[k], " genes per method")) + 
+    theme_bw()
+  
+  if (ranks[k] == 20) {
+    p <- p + geom_text_repel(position = "dodge")
+  }
+  
+  print(p)
+  
+  fn <- here("plots", "ranks", paste0("ranks_mOB_HVGs_nnSVG_", ranks[k], ".pdf"))
+  ggsave(fn, width = 4.5, height = 4.5)
+}
 
