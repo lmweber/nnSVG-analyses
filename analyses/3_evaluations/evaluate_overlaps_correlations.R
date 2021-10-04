@@ -103,8 +103,9 @@ ggplot(df_overlaps, aes(x = top_HVGs, y = prop_overlap,
   theme_bw() + 
   theme(panel.grid.minor.x = element_blank())
 
-fn <- here("plots", "overlaps", "overlaps_mOB.pdf")
-ggsave(fn, width = 6, height = 4)
+fn <- here("plots", "overlaps", "overlaps_mOB")
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
+ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
 
 # ----------------------
@@ -166,8 +167,9 @@ ggplot(df_correlations, aes(x = top_n, y = correlation,
   theme_bw() + 
   theme(panel.grid.minor.x = element_blank())
 
-fn <- here("plots", "correlations", "correlations_mOB.pdf")
-ggsave(fn, width = 6, height = 4)
+fn <- here("plots", "correlations", "correlations_mOB")
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
+ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
 
 # ----------
@@ -193,7 +195,8 @@ for (k in seq_along(ranks)) {
   
   print(p)
   
-  fn <- here("plots", "ranks", paste0("ranks_mOB_HVGs_nnSVG_", ranks[k], ".pdf"))
-  ggsave(fn, width = 4.5, height = 4.5)
+  fn <- here("plots", "ranks", paste0("ranks_mOB_HVGs_nnSVG_", ranks[k]))
+  ggsave(paste0(fn, ".pdf"), width = 4.5, height = 4.5)
+  ggsave(paste0(fn, ".png"), width = 4.5, height = 4.5)
 }
 
