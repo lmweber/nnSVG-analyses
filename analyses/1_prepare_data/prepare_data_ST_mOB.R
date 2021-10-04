@@ -15,9 +15,9 @@
 # Rscript filename.R
 
 
-library(nnSVG)
 library(SpatialExperiment)
 library(MERINGUE)
+library(nnSVG)
 library(dplyr)
 library(here)
 
