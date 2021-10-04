@@ -46,33 +46,15 @@ assayNames(spe)
 # - normalization
 # - calculate logcounts
 
-# set seed for reproducibility
+# set seed for reproducibility (required if 'deconv = TRUE')
 set.seed(123)
 spe <- preprocessSVG(spe, in_tissue = TRUE, 
-                     filter_genes = 20, filter_mito = TRUE)
+                     filter_genes = 20, filter_mito = TRUE, 
+                     deconv = TRUE)
 
 dim(spe)
 assayNames(spe)
 logcounts(spe)[1:6, 1:6]
-
-
-# ----------
-# clustering
-# ----------
-
-# clustering to identify cell types
-
-# using 'clusterSVG()' function from nnSVG package
-
-# set seed for reproducibility
-set.seed(123)
-spe <- clusterSVG(spe, filter_mito = FALSE)
-
-colData(spe)
-
-# compare against ground truth labels provided with this dataset
-table(truth = colData(spe)$ground_truth, 
-      clusters = colData(spe)$label)
 
 
 # -----------

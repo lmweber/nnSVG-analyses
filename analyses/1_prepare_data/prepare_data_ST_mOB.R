@@ -86,10 +86,11 @@ spe <- SpatialExperiment(
 # - normalization
 # - calculate logcounts
 
-# set seed for reproducibility
+# set seed for reproducibility (required if 'deconv = TRUE')
 set.seed(123)
 spe <- preprocessSVG(spe, in_tissue = FALSE, 
-                     filter_genes = 20, filter_mito = TRUE)
+                     filter_genes = 20, filter_mito = TRUE, 
+                     deconv = TRUE)
 
 dim(spe)
 assayNames(spe)
