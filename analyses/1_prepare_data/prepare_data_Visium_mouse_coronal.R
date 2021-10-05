@@ -1,0 +1,82 @@
+#################################
+# Script to load and prepare data
+# Lukas Weber, Oct 2021
+#################################
+
+# dataset: 10x Genomics Visium mouse brain coronal section
+
+# references:
+# 10x Genomics: https://www.10xgenomics.com/resources/datasets
+
+
+# to run in interactive session on cluster:
+# module load conda_R/4.1.x
+# Rscript filename.R
+
+
+library(SpatialExperiment)
+library(STexampleData)
+library(nnSVG)
+library(dplyr)
+library(here)
+
+
+# ---------
+# load data
+# ---------
+
+# load data object from STexampleData package
+
+spe <- Visium_mouseCoronal()
+dim(spe)
+assayNames(spe)
+
+
+# -------------------
+# preprocessing steps
+# -------------------
+
+# using 'preprocessSVG()' function from nnSVG package
+
+# preprocessing steps:
+# - select spots over tissue
+# - filter low-expressed genes
+# - filter mitochondrial genes
+# - calculate deviance residuals and/or logcounts
+
+# set seed for reproducibility
+set.seed(123)
+spe <- preprocessSVG(spe, in_tissue = TRUE, 
+                     filter_genes = 20, filter_mito = TRUE)
+
+dim(spe)
+assayNames(spe)
+assays(spe)[["binomial_deviance_residuals"]][1:6, 1:6]
+logcounts(spe)[1:6, 1:6]
+
+
+# ----------
+# clustering
+# ----------
+
+# clustering to identify cell types
+
+# using 'clusterSVG()' function from nnSVG package
+
+# set seed for reproducibility
+set.seed(123)
+spe <- clusterSVG(spe, assay_name = "binomial_deviance_residuals", 
+                  filter_mito = FALSE)
+
+colData(spe)
+
+table(colData(spe)$label)
+
+
+# -----------
+# save object
+# -----------
+
+file <- here("outputs", "SPE", "spe_mouseCoronal.rds")
+saveRDS(spe, file = file)
+
