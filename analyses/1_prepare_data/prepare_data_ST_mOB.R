@@ -83,17 +83,16 @@ spe <- SpatialExperiment(
 # preprocessing steps:
 # - filter low-expressed genes
 # - filter mitochondrial genes
-# - normalization
-# - calculate logcounts
+# - calculate deviance residuals and/or logcounts
 
-# set seed for reproducibility (required if 'deconv = TRUE')
+# set seed for reproducibility
 set.seed(123)
 spe <- preprocessSVG(spe, in_tissue = FALSE, 
-                     filter_genes = 20, filter_mito = TRUE, 
-                     deconv = TRUE)
+                     filter_genes = 20, filter_mito = TRUE)
 
 dim(spe)
 assayNames(spe)
+assays(spe)[["binomial_deviance_residuals"]][1:6, 1:6]
 logcounts(spe)[1:6, 1:6]
 
 
@@ -107,7 +106,8 @@ logcounts(spe)[1:6, 1:6]
 
 # set seed for reproducibility
 set.seed(123)
-spe <- clusterSVG(spe, filter_mito = FALSE)
+spe <- clusterSVG(spe, assay_name = "binomial_deviance_residuals", 
+                  filter_mito = FALSE)
 
 colData(spe)
 

@@ -138,17 +138,14 @@ colData(spe)[names(labels_rctd), "celltype"] <- as.character(labels_rctd)
 # preprocessing steps:
 # - filter low-expressed genes
 # - filter mitochondrial genes
-# - normalization
-# - calculate logcounts
+# - calculate deviance residuals and/or logcounts
 
-# set seed for reproducibility
-# set.seed(123)  ## not needed when 'deconv = FALSE'
 spe <- preprocessSVG(spe, in_tissue = FALSE, 
-                     filter_genes = 20, filter_mito = TRUE, 
-                     deconv = FALSE)
+                     filter_genes = 20, filter_mito = TRUE)
 
 dim(spe)
 assayNames(spe)
+assays(spe)[["binomial_deviance_residuals"]][1:6, 1:6]
 logcounts(spe)[1:6, 1:6]
 
 

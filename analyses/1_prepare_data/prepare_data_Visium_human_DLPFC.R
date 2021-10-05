@@ -43,17 +43,16 @@ assayNames(spe)
 # - select spots over tissue
 # - filter low-expressed genes
 # - filter mitochondrial genes
-# - normalization
-# - calculate logcounts
+# - calculate deviance residuals and/or logcounts
 
-# set seed for reproducibility (required if 'deconv = TRUE')
+# set seed for reproducibility
 set.seed(123)
 spe <- preprocessSVG(spe, in_tissue = TRUE, 
-                     filter_genes = 20, filter_mito = TRUE, 
-                     deconv = TRUE)
+                     filter_genes = 20, filter_mito = TRUE)
 
 dim(spe)
 assayNames(spe)
+assays(spe)[["binomial_deviance_residuals"]][1:6, 1:6]
 logcounts(spe)[1:6, 1:6]
 
 
