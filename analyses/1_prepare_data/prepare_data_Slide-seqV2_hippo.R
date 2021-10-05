@@ -140,8 +140,10 @@ colData(spe)[names(labels_rctd), "celltype"] <- as.character(labels_rctd)
 # - filter mitochondrial genes
 # - calculate deviance residuals and/or logcounts
 
+# set seed for reproducibility
+set.seed(123)
 spe <- preprocessSVG(spe, in_tissue = FALSE, 
-                     filter_genes = 20, filter_mito = TRUE)
+                     filter_genes = 5, filter_mito = TRUE)
 
 dim(spe)
 assayNames(spe)

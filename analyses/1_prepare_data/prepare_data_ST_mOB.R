@@ -88,7 +88,7 @@ spe <- SpatialExperiment(
 # set seed for reproducibility
 set.seed(123)
 spe <- preprocessSVG(spe, in_tissue = FALSE, 
-                     filter_genes = 20, filter_mito = TRUE)
+                     filter_genes = 5, filter_mito = TRUE)
 
 dim(spe)
 assayNames(spe)
