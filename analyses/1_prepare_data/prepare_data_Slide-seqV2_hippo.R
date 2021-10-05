@@ -153,6 +153,6 @@ logcounts(spe)[1:6, 1:6]
 # save object
 # -----------
 
-file <- here("outputs", "SPE", "Slide_seqV2_hippo_SPE.rds")
+file <- here("outputs", "SPE", "spe_SlideSeqHippo.rds")
 saveRDS(spe, file = file)
 
