@@ -33,11 +33,12 @@ spe
 # - runtime
 # - peak memory usage
 
-# skip filtering since this was performed during preprocessing
+# skip filtering since this was already done during preprocessing
 
 # run nnSVG
 runtime <- system.time({
   spe <- nnSVG(spe, x = NULL, 
+               assay_name = "binomial_deviance_residuals", 
                filter_genes = FALSE, filter_mito = FALSE, 
                n_threads = 10)
 })

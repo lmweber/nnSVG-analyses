@@ -33,7 +33,7 @@ spe
 # - runtime
 # - peak memory usage
 
-# skip filtering since this was performed during preprocessing
+# skip filtering since this was already done during preprocessing
 
 # create model matrix of covariates for cell types using cluster labels
 X <- model.matrix(~ colData(spe)$label)
@@ -44,6 +44,7 @@ stopifnot(nrow(X) == ncol(spe))
 # run nnSVG with covariates
 runtime <- system.time({
   spe <- nnSVG(spe, x = X, 
+               assay_name = "binomial_deviance_residuals", 
                filter_genes = FALSE, filter_mito = FALSE, 
                n_threads = 10)
 })
