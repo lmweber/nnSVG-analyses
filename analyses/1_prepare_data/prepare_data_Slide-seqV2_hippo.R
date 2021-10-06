@@ -143,7 +143,8 @@ colData(spe)[names(labels_rctd), "celltype"] <- as.character(labels_rctd)
 # set seed for reproducibility
 set.seed(123)
 spe <- preprocessSVG(spe, in_tissue = FALSE, 
-                     filter_genes = 1, filter_mito = TRUE)
+                     filter_genes = 1, filter_mito = TRUE, 
+                     deconv = FALSE)
 
 dim(spe)
 assayNames(spe)
