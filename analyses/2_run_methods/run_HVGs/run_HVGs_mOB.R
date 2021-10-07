@@ -57,6 +57,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "spe_mOB_HVGs.rds")
+file <- here("outputs", "results", "HVGs", "spe_HVGs_mOB.rds")
 saveRDS(spe, file = file)
 
