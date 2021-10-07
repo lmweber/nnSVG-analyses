@@ -1,0 +1,359 @@
+---
+title: "Mean-variance relationships"
+author: "Lukas Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
+# Introduction
+
+Mean-variance relationship in Visium datasets
+
+```{r, message = FALSE}
+library(SpatialExperiment)
+library(STexampleData)
+library(matrixStats)
+library(MASS)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+
+# Visium human DLPFC: layers 1 to 6
+
+## Load data
+
+Visium human DLPFC dataset, sample 151673
+
+```{r}
+# load dataset from STexampleData package
+spe <- Visium_humanDLPFC()
+dim(spe)
+```
+
+
+## Mean-variance plot
+
+Select spots:
+
+```{r}
+# select spots over tissue
+spe <- spe[, spatialData(spe)$in_tissue == 1]
+dim(spe)
+
+# select spots in layers 1 to 6
+spe <- spe[, colData(spe)$ground_truth %in% paste0("Layer", 1:6)]
+dim(spe)
+```
+
+
+Select genes:
+
+```{r}
+# remove genes with zero expression
+ix_zeros <- rowSums(counts(spe)) == 0
+spe <- spe[!ix_zeros, ]
+dim(spe)
+```
+
+
+Calculate gene-level values (mean and variance):
+
+```{r}
+# calculate gene-level values
+df <- data.frame(
+  gene_id = rowData(spe)$gene_id, 
+  gene_name = rowData(spe)$gene_name, 
+  mean = rowMeans(as.matrix(counts(spe))), 
+  observed = rowVars(as.matrix(counts(spe)))
+)
+
+dim(df)
+head(df)
+```
+
+
+Calculate theoretical values for variance from Poisson distribution. Poisson distribution has `variance = mean`, so these are simply equal to the `mean`.
+
+```{r}
+# theoretical Poisson values
+# (variance = mean)
+df$poisson <- df$mean
+```
+
+
+Calculate theoretical values for variance from negative binomial distribution. This requires fitting values to estimate the dispersion parameter.
+
+```{r}
+# fit negative binomial to data (using MASS package)
+gene_sums <- rowSums(counts(spe))
+summary(glm.nb_out <- glm.nb(gene_sums ~ 1))
+
+# estimated dispersion parameter
+nb_disp <- glm.nb_out$theta
+nb_disp
+
+# theoretical negative binomial values
+# (variance = mean + mean^2 * disp)
+df$neg_binom <- df$mean + (df$mean^2) * nb_disp
+```
+
+
+Create plot:
+
+```{r, fig.width=5.5, fig.height=4}
+# reshape data frame
+df <- pivot_longer(
+  df, 
+  cols = c("observed", "poisson", "neg_binom"), 
+  names_to = "method", 
+  values_to = "variance"
+)
+
+df$method <- factor(df$method, levels = c("observed", "poisson", "neg_binom"))
+head(df)
+
+# create plot
+ggplot(as.data.frame(df), aes(x = mean, y = variance, 
+                              group = method, color = method)) + 
+  geom_point(pch = 1, size = 0.8) + 
+  scale_x_log10() + 
+  scale_y_log10() + 
+  scale_color_manual(values = c("black", "blue", "red")) + 
+  ggtitle("Visium human DLPFC: layers 1 to 6") + 
+  theme_bw()
+```
+
+
+---
+
+# Visium human DLPFC: layer 6
+
+## Load data
+
+Visium human DLPFC dataset, sample 151673
+
+```{r}
+# load dataset from STexampleData package
+spe <- Visium_humanDLPFC()
+dim(spe)
+```
+
+
+## Mean-variance plot
+
+Select spots:
+
+```{r}
+# select spots over tissue
+spe <- spe[, spatialData(spe)$in_tissue == 1]
+dim(spe)
+
+# select spots in layer 6
+spe <- spe[, colData(spe)$ground_truth %in% "Layer6"]
+dim(spe)
+```
+
+
+Select genes:
+
+```{r}
+# remove genes with zero expression
+ix_zeros <- rowSums(counts(spe)) == 0
+spe <- spe[!ix_zeros, ]
+dim(spe)
+```
+
+
+Calculate gene-level values (mean and variance):
+
+```{r}
+# calculate gene-level values
+df <- data.frame(
+  gene_id = rowData(spe)$gene_id, 
+  gene_name = rowData(spe)$gene_name, 
+  mean = rowMeans(as.matrix(counts(spe))), 
+  observed = rowVars(as.matrix(counts(spe)))
+)
+
+dim(df)
+head(df)
+```
+
+
+Calculate theoretical values for variance from Poisson distribution. Poisson distribution has `variance = mean`, so these are simply equal to the `mean`.
+
+```{r}
+# theoretical Poisson values
+# (variance = mean)
+df$poisson <- df$mean
+```
+
+
+Calculate theoretical values for variance from negative binomial distribution. This requires fitting values to estimate the dispersion parameter.
+
+```{r}
+# fit negative binomial to data (using MASS package)
+gene_sums <- rowSums(counts(spe))
+summary(glm.nb_out <- glm.nb(gene_sums ~ 1))
+
+# estimated dispersion parameter
+nb_disp <- glm.nb_out$theta
+nb_disp
+
+# theoretical negative binomial values
+# (variance = mean + mean^2 * disp)
+df$neg_binom <- df$mean + (df$mean^2) * nb_disp
+```
+
+
+Create plot:
+
+```{r, fig.width=5.5, fig.height=4}
+# reshape data frame
+df <- pivot_longer(
+  df, 
+  cols = c("observed", "poisson", "neg_binom"), 
+  names_to = "method", 
+  values_to = "variance"
+)
+
+df$method <- factor(df$method, levels = c("observed", "poisson", "neg_binom"))
+head(df)
+
+# create plot
+ggplot(as.data.frame(df), aes(x = mean, y = variance, 
+                              group = method, color = method)) + 
+  geom_point(pch = 1, size = 0.8) + 
+  scale_x_log10() + 
+  scale_y_log10() + 
+  scale_color_manual(values = c("black", "blue", "red")) + 
+  ggtitle("Visium human DLPFC: layer 6") + 
+  theme_bw()
+```
+
+
+---
+
+# Visium mouse coronal
+
+## Load data
+
+Visium mouse coronal dataset
+
+```{r}
+# load dataset from STexampleData package
+spe <- Visium_mouseCoronal()
+dim(spe)
+```
+
+
+## Mean-variance plot
+
+Select spots:
+
+```{r}
+# select spots over tissue
+spe <- spe[, spatialData(spe)$in_tissue == 1]
+dim(spe)
+```
+
+
+Select genes:
+
+```{r}
+# remove genes with zero expression
+ix_zeros <- rowSums(counts(spe)) == 0
+spe <- spe[!ix_zeros, ]
+dim(spe)
+```
+
+
+Calculate gene-level values (mean and variance):
+
+```{r}
+# calculate gene-level values
+df <- data.frame(
+  gene_id = rowData(spe)$gene_id, 
+  gene_name = rowData(spe)$gene_name, 
+  mean = rowMeans(as.matrix(counts(spe))), 
+  observed = rowVars(as.matrix(counts(spe)))
+)
+
+dim(df)
+head(df)
+```
+
+
+Calculate theoretical values for variance from Poisson distribution. Poisson distribution has `variance = mean`, so these are simply equal to the `mean`.
+
+```{r}
+# theoretical Poisson values
+# (variance = mean)
+df$poisson <- df$mean
+```
+
+
+Calculate theoretical values for variance from negative binomial distribution. This requires fitting values to estimate the dispersion parameter.
+
+```{r}
+# fit negative binomial to data (using MASS package)
+gene_sums <- rowSums(counts(spe))
+summary(glm.nb_out <- glm.nb(gene_sums ~ 1))
+
+# estimated dispersion parameter
+nb_disp <- glm.nb_out$theta
+nb_disp
+
+# theoretical negative binomial values
+# (variance = mean + mean^2 * disp)
+df$neg_binom <- df$mean + (df$mean^2) * nb_disp
+```
+
+
+Create plot:
+
+```{r, fig.width=5.5, fig.height=4}
+# reshape data frame
+df <- pivot_longer(
+  df, 
+  cols = c("observed", "poisson", "neg_binom"), 
+  names_to = "method", 
+  values_to = "variance"
+)
+
+df$method <- factor(df$method, levels = c("observed", "poisson", "neg_binom"))
+head(df)
+
+# create plot
+ggplot(as.data.frame(df), aes(x = mean, y = variance, 
+                              group = method, color = method)) + 
+  geom_point(pch = 1, size = 0.8) + 
+  scale_x_log10() + 
+  scale_y_log10() + 
+  scale_color_manual(values = c("black", "blue", "red")) + 
+  ggtitle("Visium mouse coronal") + 
+  theme_bw()
+```
+
+
+---
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
