@@ -3,11 +3,11 @@
 # Lukas Weber, Oct 2021
 #######################
 
-# method: nnSVG
-# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
+# method: HVGs
+# dataset: 10x Genomics Visium human dorsolateral prefrontal cortex (DLPFC)
 
 
-library(nnSVG)
+library(scran)
 library(SpatialExperiment)
 library(here)
 
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_mOB.rds")
+file <- here("outputs", "SPE", "spe_DLPFC.rds")
 spe <- readRDS(file)
 
 spe
@@ -33,15 +33,19 @@ spe
 # - runtime
 # - peak memory usage
 
-# skip filtering since this was already done during preprocessing
+# skip filtering since this was performed during preprocessing
 
-# run nnSVG
+# run HVGs
 runtime <- system.time({
-  spe <- nnSVG(spe, x = NULL, 
-               assay_name = "logcounts", 
-               filter_genes = FALSE, filter_mito = FALSE, 
-               n_threads = 10)
+  dec <- modelGeneVar(spe)
 })
+
+# store in object
+stopifnot(all(rownames(dec) == rowData(spe)$gene_id))
+rowData(spe) <- cbind(rowData(spe), dec)
+
+# calculate ranks according to 'bio' statistic
+rowData(spe)$rank <- rank(-1 * rowData(spe)$bio, ties.method = "first")
 
 # store runtime in object
 metadata(spe) <- list(
@@ -53,6 +57,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "nnSVG", "spe_nnSVG_logcounts_mOB.rds")
+file <- here("outputs", "results", "HVGs", "spe_DLPFC_HVGs.rds")
 saveRDS(spe, file = file)
 

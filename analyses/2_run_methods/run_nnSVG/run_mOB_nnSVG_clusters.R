@@ -3,11 +3,11 @@
 # Lukas Weber, Oct 2021
 #######################
 
-# method: HVGs
+# method: nnSVG (with covariates for clusters)
 # dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
 
 
-library(scran)
+library(nnSVG)
 library(SpatialExperiment)
 library(here)
 
@@ -33,19 +33,21 @@ spe
 # - runtime
 # - peak memory usage
 
-# skip filtering since this was performed during preprocessing
+# skip filtering since this was already done during preprocessing
 
-# run HVGs
+# create model matrix of covariates for cell types using cluster labels
+X <- model.matrix(~ colData(spe)$label)
+dim(X)
+head(X)
+stopifnot(nrow(X) == ncol(spe))
+
+# run nnSVG with covariates
 runtime <- system.time({
-  dec <- modelGeneVar(spe)
+  spe <- nnSVG(spe, x = X, 
+               assay_name = "binomial_deviance_residuals", 
+               filter_genes = FALSE, filter_mito = FALSE, 
+               n_threads = 10)
 })
-
-# store in object
-stopifnot(all(rownames(dec) == rowData(spe)$gene_id))
-rowData(spe) <- cbind(rowData(spe), dec)
-
-# calculate ranks according to 'bio' statistic
-rowData(spe)$rank <- rank(-1 * rowData(spe)$bio, ties.method = "first")
 
 # store runtime in object
 metadata(spe) <- list(
@@ -57,6 +59,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "HVGs", "spe_HVGs_mOB.rds")
+file <- here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters.rds")
 saveRDS(spe, file = file)
 

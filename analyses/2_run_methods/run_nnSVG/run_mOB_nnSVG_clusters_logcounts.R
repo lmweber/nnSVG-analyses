@@ -3,8 +3,8 @@
 # Lukas Weber, Oct 2021
 #######################
 
-# method: nnSVG
-# dataset: 10x Genomics Visium human dorsolateral prefrontal cortex (DLPFC)
+# method: nnSVG (with covariates for clusters)
+# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
 
 
 library(nnSVG)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_DLPFC.rds")
+file <- here("outputs", "SPE", "spe_mOB.rds")
 spe <- readRDS(file)
 
 spe
@@ -35,10 +35,16 @@ spe
 
 # skip filtering since this was already done during preprocessing
 
-# run nnSVG
+# create model matrix of covariates for cell types using cluster labels
+X <- model.matrix(~ colData(spe)$label)
+dim(X)
+head(X)
+stopifnot(nrow(X) == ncol(spe))
+
+# run nnSVG with covariates
 runtime <- system.time({
-  spe <- nnSVG(spe, x = NULL, 
-               assay_name = "binomial_deviance_residuals", 
+  spe <- nnSVG(spe, x = X, 
+               assay_name = "logcounts", 
                filter_genes = FALSE, filter_mito = FALSE, 
                n_threads = 10)
 })
@@ -53,6 +59,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "nnSVG", "spe_nnSVG_DLPFC.rds")
+file <- here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters_logcounts.rds")
 saveRDS(spe, file = file)
 

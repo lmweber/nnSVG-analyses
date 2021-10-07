@@ -3,7 +3,7 @@
 # Lukas Weber, Oct 2021
 #######################
 
-# method: nnSVG (with covariates for clusters)
+# method: nnSVG
 # dataset: 10x Genomics Visium human dorsolateral prefrontal cortex (DLPFC)
 
 
@@ -35,17 +35,9 @@ spe
 
 # skip filtering since this was already done during preprocessing
 
-# create model matrix of covariates for cell types using ground truth labels
-# remove NAs from ground truth labels
-spe <- spe[, !is.na(colData(spe)$ground_truth)]
-X <- model.matrix(~ colData(spe)$ground_truth)
-dim(X)
-head(X)
-stopifnot(nrow(X) == ncol(spe))
-
-# run nnSVG with covariates
+# run nnSVG
 runtime <- system.time({
-  spe <- nnSVG(spe, x = X, 
+  spe <- nnSVG(spe, x = NULL, 
                assay_name = "logcounts", 
                filter_genes = FALSE, filter_mito = FALSE, 
                n_threads = 10)
@@ -61,6 +53,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "nnSVG", "spe_nnSVG_clusters_logcounts_DLPFC.rds")
+file <- here("outputs", "results", "nnSVG", "spe_DLPFC_nnSVG_logcounts.rds")
 saveRDS(spe, file = file)
 

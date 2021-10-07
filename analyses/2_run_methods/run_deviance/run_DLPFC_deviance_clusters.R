@@ -3,11 +3,11 @@
 # Lukas Weber, Oct 2021
 #######################
 
-# method: nnSVG (with covariates for clusters)
+# method: deviance (scry) (with covariates for clusters)
 # dataset: 10x Genomics Visium human dorsolateral prefrontal cortex (DLPFC)
 
 
-library(nnSVG)
+library(scry)
 library(SpatialExperiment)
 library(here)
 
@@ -33,23 +33,23 @@ spe
 # - runtime
 # - peak memory usage
 
-# skip filtering since this was already done during preprocessing
+# skip filtering since this was performed during preprocessing
 
-# create model matrix of covariates for cell types using ground truth labels
+
+# factor of ground truth labels
 # remove NAs from ground truth labels
 spe <- spe[, !is.na(colData(spe)$ground_truth)]
-X <- model.matrix(~ colData(spe)$ground_truth)
-dim(X)
-head(X)
-stopifnot(nrow(X) == ncol(spe))
+X <- na.omit(colData(spe)$ground_truth)
+stopifnot(length(X) == ncol(spe))
 
-# run nnSVG with covariates
+# run deviance feature selection
 runtime <- system.time({
-  spe <- nnSVG(spe, x = X, 
-               assay_name = "binomial_deviance_residuals", 
-               filter_genes = FALSE, filter_mito = FALSE, 
-               n_threads = 10)
+  spe <- devianceFeatureSelection(spe, assay = "counts", fam = "binomial", 
+                                  batch = X)
 })
+
+# calculate ranks
+rowData(spe)$rank <- rank(-1 * rowData(spe)$binomial_deviance, ties.method = "first")
 
 # store runtime in object
 metadata(spe) <- list(
@@ -61,6 +61,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "nnSVG", "spe_nnSVG_clusters_DLPFC.rds")
+file <- here("outputs", "results", "deviance", "spe_DLPFC_deviance_clusters.rds")
 saveRDS(spe, file = file)
 

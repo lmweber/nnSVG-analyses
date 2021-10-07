@@ -3,11 +3,11 @@
 # Lukas Weber, Oct 2021
 #######################
 
-# method: deviance (scry)
-# dataset: 10x Genomics Visium human dorsolateral prefrontal cortex (DLPFC)
+# method: nnSVG
+# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
 
 
-library(scry)
+library(nnSVG)
 library(SpatialExperiment)
 library(here)
 
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_DLPFC.rds")
+file <- here("outputs", "SPE", "spe_mOB.rds")
 spe <- readRDS(file)
 
 spe
@@ -33,15 +33,15 @@ spe
 # - runtime
 # - peak memory usage
 
-# skip filtering since this was performed during preprocessing
+# skip filtering since this was already done during preprocessing
 
-# run deviance feature selection
+# run nnSVG
 runtime <- system.time({
-  spe <- devianceFeatureSelection(spe, assay = "counts", fam = "binomial")
+  spe <- nnSVG(spe, x = NULL, 
+               assay_name = "binomial_deviance_residuals", 
+               filter_genes = FALSE, filter_mito = FALSE, 
+               n_threads = 10)
 })
-
-# calculate ranks
-rowData(spe)$rank <- rank(-1 * rowData(spe)$binomial_deviance, ties.method = "first")
 
 # store runtime in object
 metadata(spe) <- list(
@@ -53,6 +53,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "deviance", "spe_deviance_DLPFC.rds")
+file <- here("outputs", "results", "nnSVG", "spe_mOB_nnSVG.rds")
 saveRDS(spe, file = file)
 

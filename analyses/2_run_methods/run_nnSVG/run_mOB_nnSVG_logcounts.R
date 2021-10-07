@@ -4,7 +4,7 @@
 #######################
 
 # method: nnSVG
-# dataset: 10x Genomics Visium human dorsolateral prefrontal cortex (DLPFC)
+# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
 
 
 library(nnSVG)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_DLPFC.rds")
+file <- here("outputs", "SPE", "spe_mOB.rds")
 spe <- readRDS(file)
 
 spe
@@ -53,6 +53,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "nnSVG", "spe_nnSVG_logcounts_DLPFC.rds")
+file <- here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_logcounts.rds")
 saveRDS(spe, file = file)
 
