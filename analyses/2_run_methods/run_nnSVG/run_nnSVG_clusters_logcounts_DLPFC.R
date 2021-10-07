@@ -35,8 +35,10 @@ spe
 
 # skip filtering since this was already done during preprocessing
 
-# create model matrix of covariates for cell types using cluster labels
-X <- model.matrix(~ colData(spe)$label)
+# create model matrix of covariates for cell types using ground truth labels
+# remove NAs from ground truth labels
+spe <- spe[, !is.na(colData(spe)$ground_truth)]
+X <- model.matrix(~ colData(spe)$ground_truth)
 dim(X)
 head(X)
 stopifnot(nrow(X) == ncol(spe))
