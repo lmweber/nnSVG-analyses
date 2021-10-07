@@ -35,11 +35,10 @@ spe
 
 # skip filtering since this was performed during preprocessing
 
-
 # factor of ground truth labels
 # remove NAs from ground truth labels
 spe <- spe[, !is.na(colData(spe)$ground_truth)]
-X <- na.omit(colData(spe)$ground_truth)
+X <- colData(spe)$ground_truth
 stopifnot(length(X) == ncol(spe))
 
 # run deviance feature selection
