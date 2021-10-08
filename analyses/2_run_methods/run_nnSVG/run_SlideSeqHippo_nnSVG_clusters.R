@@ -48,7 +48,7 @@ runtime <- system.time({
   spe <- nnSVG(spe, x = X, 
                assay_name = "binomial_deviance_residuals", 
                filter_genes = FALSE, filter_mito = FALSE, 
-               n_threads = 10, on_disk = TRUE)
+               n_threads = 10)
 })
 
 # store runtime in object
