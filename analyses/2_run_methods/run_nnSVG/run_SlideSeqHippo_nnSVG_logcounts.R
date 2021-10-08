@@ -40,7 +40,7 @@ runtime <- system.time({
   spe <- nnSVG(spe, x = NULL, 
                assay_name = "logcounts", 
                filter_genes = FALSE, filter_mito = FALSE, 
-               n_threads = 10)
+               n_threads = 10, on_disk = TRUE)
 })
 
 # store runtime in object
