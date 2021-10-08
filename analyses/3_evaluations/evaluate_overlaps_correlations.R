@@ -14,7 +14,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(ggrepel)
-library(ochRe)
+library(ggsci)
 
 
 # ------------
@@ -23,89 +23,146 @@ library(ochRe)
 
 # mOB dataset
 
-spe_mOB_nnSVG <- readRDS(here("outputs", "results", "spe_mOB_nnSVG.rds"))
-spe_mOB_nnSVG_clusters <- readRDS(here("outputs", "results", "spe_mOB_nnSVG_clusters.rds"))
-spe_mOB_HVGs <- readRDS(here("outputs", "results", "spe_mOB_HVGs.rds"))
+list_mOB <- list(
+  spe_mOB_nnSVG = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG.rds")), 
+  spe_mOB_nnSVG_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters.rds")), 
+  
+  spe_mOB_nnSVG_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_logcounts.rds")), 
+  spe_mOB_nnSVG_clusters_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters_logcounts.rds")), 
+  
+  spe_mOB_HVGs = readRDS(here("outputs", "results", "HVGs", "spe_mOB_HVGs.rds")), 
+  
+  spe_mOB_deviance = readRDS(here("outputs", "results", "deviance", "spe_mOB_deviance.rds")), 
+  spe_mOB_deviance_clusters = readRDS(here("outputs", "results", "deviance", "spe_mOB_deviance_clusters.rds"))
+)
 
-stopifnot(all(rowData(spe_mOB_HVGs)$gene_name == rowData(spe_mOB_nnSVG)$gene_name))
-stopifnot(all(rowData(spe_mOB_HVGs)$gene_name == rowData(spe_mOB_nnSVG_clusters)$gene_name))
+for (i in seq_along(list_mOB)){
+  stopifnot(all(rowData(list_mOB[[i]])$gene_name == rowData(list_mOB[[1]])$gene_name))
+}
 
-# create combined data frame of results
+# method and dataset names
 
-res_mOB_nnSVG <- 
-  rowData(spe_mOB_nnSVG)[, c("gene_name", "LR_stat", "rank", "pval", "padj")]
-colnames(res_mOB_nnSVG) <- 
-  c("gene_name", "stat_nnSVG", "rank_nnSVG", "pval_nnSVG", "padj_nnSVG")
+names_mOB <- gsub("^spe_", "", names(list_mOB))
+names_mOB
 
-res_mOB_nnSVG_clusters <- 
-  rowData(spe_mOB_nnSVG_clusters)[, c("LR_stat", "rank", "pval", "padj")]
-colnames(res_mOB_nnSVG_clusters) <- 
-  c("stat_nnSVG_clusters", "rank_nnSVG_clusters", "pval_nnSVG_clusters", "padj_nnSVG_clusters")
-
-res_mOB_HVGs <- 
-  rowData(spe_mOB_HVGs)[, c("bio", "rank", "p.value", "FDR")]
-colnames(res_mOB_HVGs) <- 
-  c("stat_HVGs", "rank_HVGs", "pval_HVGs", "padj_HVGs")
-
-res_mOB_nnSVG <- as.data.frame(res_mOB_nnSVG)
-res_mOB_nnSVG_clusters <- as.data.frame(res_mOB_nnSVG_clusters)
-res_mOB_HVGs <- as.data.frame(res_mOB_HVGs)
-
-res_mOB <- cbind(res_mOB_nnSVG, res_mOB_nnSVG_clusters, res_mOB_HVGs)
+names(list_mOB) <- names_mOB
 
 
 # ------------------
 # calculate overlaps
 # ------------------
 
-# overlaps calculated as proportion of top n genes from method 1 (e.g. HVGs) 
+# overlaps calculated as proportion of top n genes from method 1 (e.g. HVGs)
 # that are also in the set of top n genes from method 2 (e.g. nnSVG)
 
+# overlap sizes
 overlaps <- c(10, 20, 50, 100, 200, 500, 1000)
-top_nnSVG <- rep(NA, length(overlaps))
-top_nnSVG_clusters <- rep(NA, length(overlaps))
 
-for (k in seq_along(overlaps)) {
-  # select top gene names
-  genes_k <- rownames(filter(res_mOB_HVGs, rank_HVGs <= overlaps[k]))
+# function to calculate overlaps for a pair of methods
+calc_overlaps <- function(method1, method2) {
   
-  # calculate overlaps
-  top_nnSVG[k] <- nrow(filter(res_mOB_nnSVG[genes_k, ], 
-                              rank_nnSVG <= overlaps[k]))
-  top_nnSVG_clusters[k] <- nrow(filter(res_mOB_nnSVG_clusters[genes_k, ], 
-                                       rank_nnSVG_clusters <= overlaps[k]))
+  res_method1 <- rowData(list_mOB[[method1]])
+  res_method2 <- rowData(list_mOB[[method2]])
+  
+  top_method2 <- rep(NA, length(overlaps))
+  
+  for (k in seq_along(overlaps)) {
+    # select top gene names from method 1
+    genes_k <- rownames(filter(as.data.frame(res_method1), 
+                               rank <= overlaps[k]))
+    # calculate overlaps
+    top_method2[k] <- nrow(filter(as.data.frame(res_method2[genes_k, ]), 
+                                  rank <= overlaps[k]))
+  }
+  
+  # calculate proportions
+  top_method2 / overlaps
 }
 
-# calculate proportions
-df_overlaps <- data.frame(
-  top_HVGs = overlaps, 
-  nnSVG = top_nnSVG / overlaps, 
-  nnSVG_clusters = top_nnSVG_clusters / overlaps
+
+# use function to calculate overlaps for sets of methods
+
+df_overlaps_mOB_HVGs <- data.frame(
+  top_n = overlaps, 
+  nnSVG = calc_overlaps("mOB_HVGs", "mOB_nnSVG"), 
+  nnSVG_clusters = calc_overlaps("mOB_HVGs", "mOB_nnSVG_clusters"), 
+  nnSVG_logcounts = calc_overlaps("mOB_HVGs", "mOB_nnSVG_logcounts"), 
+  nnSVG_clusters_logcounts = calc_overlaps("mOB_HVGs", "mOB_nnSVG_clusters_logcounts")
 )
 
-df_overlaps <- pivot_longer(
-  df_overlaps, 
-  cols = c("nnSVG", "nnSVG_clusters"), 
+df_overlaps_mOB_deviance <- data.frame(
+  top_n = overlaps, 
+  nnSVG = calc_overlaps("mOB_deviance", "mOB_nnSVG"), 
+  nnSVG_clusters = calc_overlaps("mOB_deviance", "mOB_nnSVG_clusters"), 
+  nnSVG_logcounts = calc_overlaps("mOB_deviance", "mOB_nnSVG_logcounts"), 
+  nnSVG_clusters_logcounts = calc_overlaps("mOB_deviance", "mOB_nnSVG_clusters_logcounts")
+)
+
+df_overlaps_mOB_HVGs_vs_deviance <- data.frame(
+  top_n = overlaps, 
+  deviance = calc_overlaps("mOB_HVGs", "mOB_deviance"), 
+  deviance_clusters = calc_overlaps("mOB_HVGs", "mOB_deviance_clusters")
+)
+
+
+# create data frames for plotting
+
+df_overlaps_mOB_HVGs <- pivot_longer(
+  df_overlaps_mOB_HVGs, 
+  cols = colnames(df_overlaps_mOB_HVGs)[-1], 
   names_to = "method", 
   values_to = "prop_overlap"
 )
 
-# plot
-ggplot(df_overlaps, aes(x = top_HVGs, y = prop_overlap, 
-                        group = method, color = method)) + 
-  geom_line() + 
-  geom_point() + 
-  scale_color_ochre(palette = "nolan_ned") + 
-  scale_x_continuous(breaks = df_overlaps$top_HVGs, trans = "log10") + 
-  labs(x = "top HVGs", 
-       y = "proportion overlapping") + 
-  ggtitle("mOB: Overlap with top HVGs") + 
-  theme_bw() + 
-  theme(panel.grid.minor.x = element_blank())
+df_overlaps_mOB_deviance <- pivot_longer(
+  df_overlaps_mOB_deviance, 
+  cols = colnames(df_overlaps_mOB_deviance)[-1], 
+  names_to = "method", 
+  values_to = "prop_overlap"
+)
 
-fn <- here("plots", "overlaps", "overlaps_mOB")
+df_overlaps_mOB_HVGs_vs_deviance <- pivot_longer(
+  df_overlaps_mOB_HVGs_vs_deviance, 
+  cols = colnames(df_overlaps_mOB_HVGs_vs_deviance)[-1], 
+  names_to = "method", 
+  values_to = "prop_overlap"
+)
+
+
+# function to generate plots
+
+plot_overlaps <- function(df, name_x) {
+  ggplot(df, aes(x = top_n, y = prop_overlap, 
+                 group = method, color = method)) + 
+    geom_line() + 
+    geom_point() + 
+    scale_color_startrek() + 
+    scale_x_continuous(breaks = df$top_n, trans = "log10") + 
+    labs(x = paste0("top n ", name_x), 
+         y = "proportion overlapping") + 
+    ggtitle(paste0("mOB: Overlap with top ", name_x)) + 
+    theme_bw() + 
+    theme(panel.grid.minor.x = element_blank())
+}
+
+
+# generate and save plots
+
+plot_overlaps(df_overlaps_mOB_HVGs, "HVGs")
+fn <- here("plots", "overlaps", "overlaps_mOB_HVGs")
 ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
 ggsave(paste0(fn, ".png"), width = 6, height = 4)
+
+plot_overlaps(df_overlaps_mOB_deviance, "deviance")
+fn <- here("plots", "overlaps", "overlaps_mOB_deviance")
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
+ggsave(paste0(fn, ".png"), width = 6, height = 4)
+
+plot_overlaps(df_overlaps_mOB_HVGs_vs_deviance, "HVGs_vs_deviance")
+fn <- here("plots", "overlaps", "overlaps_mOB_HVGs_vs_deviance")
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
+ggsave(paste0(fn, ".png"), width = 6, height = 4)
+
 
 
 # ----------------------
@@ -170,6 +227,7 @@ ggplot(df_correlations, aes(x = top_n, y = correlation,
 fn <- here("plots", "correlations", "correlations_mOB")
 ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
 ggsave(paste0(fn, ".png"), width = 6, height = 4)
+
 
 
 # ----------
