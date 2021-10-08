@@ -4,7 +4,7 @@
 #######################
 
 # method: nnSVG (with covariates for clusters)
-# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
+# dataset: Slide-seqV2 mouse hippocampus
 
 
 library(nnSVG)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_mOB.rds")
+file <- here("outputs", "SPE", "spe_SlideSeqHippo.rds")
 spe <- readRDS(file)
 
 spe
@@ -35,8 +35,10 @@ spe
 
 # skip filtering since this was already done during preprocessing
 
-# create model matrix of covariates for cell types using cluster labels
-X <- model.matrix(~ colData(spe)$label)
+# create model matrix of covariates for cell types
+# remove NAs from cell type labels
+spe <- spe[, !is.na(colData(spe)$celltype)]
+X <- model.matrix(~ as.factor(colData(spe)$celltype))
 dim(X)
 head(X)
 stopifnot(nrow(X) == ncol(spe))
@@ -59,6 +61,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters_logcounts.rds")
+file <- here("outputs", "results", "nnSVG", "spe_SlideSeqHippo_nnSVG_logcounts_clusters.rds")
 saveRDS(spe, file = file)
 

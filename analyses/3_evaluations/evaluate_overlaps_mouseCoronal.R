@@ -28,7 +28,7 @@ list_mouseCoronal <- list(
   spe_mouseCoronal_nnSVG_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_clusters.rds")), 
   
   spe_mouseCoronal_nnSVG_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_logcounts.rds")), 
-  spe_mouseCoronal_nnSVG_clusters_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_clusters_logcounts.rds")), 
+  spe_mouseCoronal_nnSVG_logcounts_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_logcounts_clusters.rds")), 
   
   spe_mouseCoronal_HVGs = readRDS(here("outputs", "results", "HVGs", "spe_mouseCoronal_HVGs.rds")), 
   
@@ -87,7 +87,7 @@ df_overlaps_mouseCoronal_HVGs <- data.frame(
   nnSVG = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG"), 
   nnSVG_clusters = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_clusters"), 
   nnSVG_logcounts = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_logcounts"), 
-  nnSVG_clusters_logcounts = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_clusters_logcounts")
+  nnSVG_logcounts_clusters = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_logcounts_clusters")
 )
 
 df_overlaps_mouseCoronal_deviance <- data.frame(
@@ -95,7 +95,7 @@ df_overlaps_mouseCoronal_deviance <- data.frame(
   nnSVG = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG"), 
   nnSVG_clusters = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_clusters"), 
   nnSVG_logcounts = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_logcounts"), 
-  nnSVG_clusters_logcounts = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_clusters_logcounts")
+  nnSVG_logcounts_clusters = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_logcounts_clusters")
 )
 
 df_overlaps_mouseCoronal_HVGs_vs_deviance <- data.frame(

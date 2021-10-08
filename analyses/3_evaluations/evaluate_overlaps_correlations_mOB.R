@@ -28,7 +28,7 @@ list_mOB <- list(
   spe_mOB_nnSVG_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters.rds")), 
   
   spe_mOB_nnSVG_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_logcounts.rds")), 
-  spe_mOB_nnSVG_clusters_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters_logcounts.rds")), 
+  spe_mOB_nnSVG_logcounts_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_logcounts_clusters.rds")), 
   
   spe_mOB_HVGs = readRDS(here("outputs", "results", "HVGs", "spe_mOB_HVGs.rds")), 
   
@@ -87,7 +87,7 @@ df_overlaps_mOB_HVGs <- data.frame(
   nnSVG = calc_overlaps("mOB_HVGs", "mOB_nnSVG"), 
   nnSVG_clusters = calc_overlaps("mOB_HVGs", "mOB_nnSVG_clusters"), 
   nnSVG_logcounts = calc_overlaps("mOB_HVGs", "mOB_nnSVG_logcounts"), 
-  nnSVG_clusters_logcounts = calc_overlaps("mOB_HVGs", "mOB_nnSVG_clusters_logcounts")
+  nnSVG_logcounts_clusters = calc_overlaps("mOB_HVGs", "mOB_nnSVG_logcounts_clusters")
 )
 
 df_overlaps_mOB_deviance <- data.frame(
@@ -95,7 +95,7 @@ df_overlaps_mOB_deviance <- data.frame(
   nnSVG = calc_overlaps("mOB_deviance", "mOB_nnSVG"), 
   nnSVG_clusters = calc_overlaps("mOB_deviance", "mOB_nnSVG_clusters"), 
   nnSVG_logcounts = calc_overlaps("mOB_deviance", "mOB_nnSVG_logcounts"), 
-  nnSVG_clusters_logcounts = calc_overlaps("mOB_deviance", "mOB_nnSVG_clusters_logcounts")
+  nnSVG_logcounts_clusters = calc_overlaps("mOB_deviance", "mOB_nnSVG_logcounts_clusters")
 )
 
 df_overlaps_mOB_HVGs_vs_deviance <- data.frame(

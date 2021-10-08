@@ -28,7 +28,7 @@ list_SlideSeqHippo <- list(
   spe_SlideSeqHippo_nnSVG_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_SlideSeqHippo_nnSVG_clusters.rds")), 
   
   spe_SlideSeqHippo_nnSVG_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_SlideSeqHippo_nnSVG_logcounts.rds")), 
-  spe_SlideSeqHippo_nnSVG_clusters_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_SlideSeqHippo_nnSVG_clusters_logcounts.rds")), 
+  spe_SlideSeqHippo_nnSVG_logcounts_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_SlideSeqHippo_nnSVG_logcounts_clusters.rds")), 
   
   spe_SlideSeqHippo_HVGs = readRDS(here("outputs", "results", "HVGs", "spe_SlideSeqHippo_HVGs.rds")), 
   
@@ -87,7 +87,7 @@ df_overlaps_SlideSeqHippo_HVGs <- data.frame(
   nnSVG = calc_overlaps("SlideSeqHippo_HVGs", "SlideSeqHippo_nnSVG"), 
   nnSVG_clusters = calc_overlaps("SlideSeqHippo_HVGs", "SlideSeqHippo_nnSVG_clusters"), 
   nnSVG_logcounts = calc_overlaps("SlideSeqHippo_HVGs", "SlideSeqHippo_nnSVG_logcounts"), 
-  nnSVG_clusters_logcounts = calc_overlaps("SlideSeqHippo_HVGs", "SlideSeqHippo_nnSVG_clusters_logcounts")
+  nnSVG_logcounts_clusters = calc_overlaps("SlideSeqHippo_HVGs", "SlideSeqHippo_nnSVG_logcounts_clusters")
 )
 
 df_overlaps_SlideSeqHippo_deviance <- data.frame(
@@ -95,7 +95,7 @@ df_overlaps_SlideSeqHippo_deviance <- data.frame(
   nnSVG = calc_overlaps("SlideSeqHippo_deviance", "SlideSeqHippo_nnSVG"), 
   nnSVG_clusters = calc_overlaps("SlideSeqHippo_deviance", "SlideSeqHippo_nnSVG_clusters"), 
   nnSVG_logcounts = calc_overlaps("SlideSeqHippo_deviance", "SlideSeqHippo_nnSVG_logcounts"), 
-  nnSVG_clusters_logcounts = calc_overlaps("SlideSeqHippo_deviance", "SlideSeqHippo_nnSVG_clusters_logcounts")
+  nnSVG_logcounts_clusters = calc_overlaps("SlideSeqHippo_deviance", "SlideSeqHippo_nnSVG_logcounts_clusters")
 )
 
 df_overlaps_SlideSeqHippo_HVGs_vs_deviance <- data.frame(
