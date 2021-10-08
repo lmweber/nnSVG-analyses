@@ -93,15 +93,18 @@ df_overlaps_mouseCoronal_HVGs <- data.frame(
 df_overlaps_mouseCoronal_deviance <- data.frame(
   top_n = overlaps, 
   nnSVG = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG"), 
-  nnSVG_clusters = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_clusters"), 
-  nnSVG_logcounts = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_logcounts"), 
-  nnSVG_logcounts_clusters = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_logcounts_clusters")
+  nnSVG_logcounts = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_logcounts")
 )
 
 df_overlaps_mouseCoronal_HVGs_vs_deviance <- data.frame(
   top_n = overlaps, 
-  deviance = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_deviance"), 
-  deviance_clusters = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_deviance_clusters")
+  deviance = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_deviance")
+)
+
+df_overlaps_mouseCoronal_deviance_clusters <- data.frame(
+  top_n = overlaps, 
+  nnSVG_clusters = calc_overlaps("mouseCoronal_deviance_clusters", "mouseCoronal_nnSVG_clusters"), 
+  nnSVG_logcounts_clusters = calc_overlaps("mouseCoronal_deviance_clusters", "mouseCoronal_nnSVG_logcounts_clusters")
 )
 
 
@@ -124,6 +127,13 @@ df_overlaps_mouseCoronal_deviance <- pivot_longer(
 df_overlaps_mouseCoronal_HVGs_vs_deviance <- pivot_longer(
   df_overlaps_mouseCoronal_HVGs_vs_deviance, 
   cols = colnames(df_overlaps_mouseCoronal_HVGs_vs_deviance)[-1], 
+  names_to = "method", 
+  values_to = "prop_overlap"
+)
+
+df_overlaps_mouseCoronal_deviance_clusters <- pivot_longer(
+  df_overlaps_mouseCoronal_deviance_clusters, 
+  cols = colnames(df_overlaps_mouseCoronal_deviance_clusters)[-1], 
   names_to = "method", 
   values_to = "prop_overlap"
 )
@@ -160,6 +170,11 @@ ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
 plot_overlaps(df_overlaps_mouseCoronal_HVGs_vs_deviance, "HVGs")
 fn <- here("plots", "overlaps", "overlaps_mouseCoronal_HVGs_vs_deviance")
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
+ggsave(paste0(fn, ".png"), width = 6, height = 4)
+
+plot_overlaps(df_overlaps_mouseCoronal_deviance_clusters, "deviance_clusters")
+fn <- here("plots", "overlaps", "overlaps_mouseCoronal_deviance_clusters")
 ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
 ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
