@@ -148,6 +148,7 @@ plot_overlaps <- function(df, name_x) {
     geom_point() + 
     scale_color_startrek() + 
     scale_x_continuous(breaks = df$top_n, trans = "log10") + 
+    ylim(c(0, 1)) + 
     labs(x = paste0("top n genes: ", name_x), 
          y = "proportion overlapping") + 
     ggtitle(paste0("SlideSeqHippo: Overlap with top ", name_x)) + 
