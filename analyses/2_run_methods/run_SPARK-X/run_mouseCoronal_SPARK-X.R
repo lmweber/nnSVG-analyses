@@ -4,7 +4,7 @@
 #######################
 
 # method: SPARK-X
-# dataset: 10x Genomics Visium human dorsolateral prefrontal cortex (DLPFC)
+# dataset: 10x Genomics Visium mouse coronal brain section
 
 
 library(SPARK)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_DLPFC.rds")
+file <- here("outputs", "SPE", "spe_mouseCoronal.rds")
 spe <- readRDS(file)
 
 spe
@@ -67,6 +67,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARK-X", "spe_DLPFC_SPARK-X.rds")
+file <- here("outputs", "results", "SPARK-X", "spe_mouseCoronal_SPARK-X.rds")
 saveRDS(spe, file = file)
 
