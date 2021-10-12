@@ -48,7 +48,7 @@ runtime <- system.time({
   sparkx_out <- sparkx(count_in = counts(spe), 
                        locus_in = spatialCoords(spe), 
                        X_in = NULL, 
-                       numCores = 4, option = "mixture", verbose = TRUE)
+                       numCores = 10, option = "mixture", verbose = TRUE)
 })
 
 # results for individual kernels
