@@ -25,15 +25,16 @@ library(ggsci)
 
 list_mouseCoronal <- list(
   spe_mouseCoronal_nnSVG = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG.rds")), 
-  spe_mouseCoronal_nnSVG_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_clusters.rds")), 
+  #spe_mouseCoronal_nnSVG_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_clusters.rds")), 
   
   spe_mouseCoronal_nnSVG_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_logcounts.rds")), 
-  spe_mouseCoronal_nnSVG_logcounts_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_logcounts_clusters.rds")), 
+  #spe_mouseCoronal_nnSVG_logcounts_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mouseCoronal_nnSVG_logcounts_clusters.rds")), 
+  
+  spe_mouseCoronal_SPARKX = readRDS(here("outputs", "results", "SPARK-X", "spe_mouseCoronal_SPARK-X.rds")), 
   
   spe_mouseCoronal_HVGs = readRDS(here("outputs", "results", "HVGs", "spe_mouseCoronal_HVGs.rds")), 
-  
-  spe_mouseCoronal_deviance = readRDS(here("outputs", "results", "deviance", "spe_mouseCoronal_deviance.rds")), 
-  spe_mouseCoronal_deviance_clusters = readRDS(here("outputs", "results", "deviance", "spe_mouseCoronal_deviance_clusters.rds"))
+  spe_mouseCoronal_deviance = readRDS(here("outputs", "results", "deviance", "spe_mouseCoronal_deviance.rds"))#, 
+  #spe_mouseCoronal_deviance_clusters = readRDS(here("outputs", "results", "deviance", "spe_mouseCoronal_deviance_clusters.rds"))
 )
 
 for (i in seq_along(list_mouseCoronal)){
@@ -85,15 +86,17 @@ calc_overlaps <- function(method1, method2) {
 df_overlaps_mouseCoronal_HVGs <- data.frame(
   top_n = overlaps, 
   nnSVG = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG"), 
-  nnSVG_clusters = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_clusters"), 
+  #nnSVG_clusters = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_clusters"), 
   nnSVG_logcounts = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_logcounts"), 
-  nnSVG_logcounts_clusters = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_logcounts_clusters")
+  #nnSVG_logcounts_clusters = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_nnSVG_logcounts_clusters"), 
+  SPARKX = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_SPARKX")
 )
 
 df_overlaps_mouseCoronal_deviance <- data.frame(
   top_n = overlaps, 
   nnSVG = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG"), 
-  nnSVG_logcounts = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_logcounts")
+  nnSVG_logcounts = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_nnSVG_logcounts"), 
+  SPARKX = calc_overlaps("mouseCoronal_deviance", "mouseCoronal_SPARKX")
 )
 
 df_overlaps_mouseCoronal_HVGs_vs_deviance <- data.frame(
@@ -101,11 +104,11 @@ df_overlaps_mouseCoronal_HVGs_vs_deviance <- data.frame(
   deviance = calc_overlaps("mouseCoronal_HVGs", "mouseCoronal_deviance")
 )
 
-df_overlaps_mouseCoronal_deviance_clusters <- data.frame(
-  top_n = overlaps, 
-  nnSVG_clusters = calc_overlaps("mouseCoronal_deviance_clusters", "mouseCoronal_nnSVG_clusters"), 
-  nnSVG_logcounts_clusters = calc_overlaps("mouseCoronal_deviance_clusters", "mouseCoronal_nnSVG_logcounts_clusters")
-)
+# df_overlaps_mouseCoronal_deviance_clusters <- data.frame(
+#   top_n = overlaps, 
+#   nnSVG_clusters = calc_overlaps("mouseCoronal_deviance_clusters", "mouseCoronal_nnSVG_clusters"), 
+#   nnSVG_logcounts_clusters = calc_overlaps("mouseCoronal_deviance_clusters", "mouseCoronal_nnSVG_logcounts_clusters")
+# )
 
 
 # create data frames for plotting
@@ -131,12 +134,12 @@ df_overlaps_mouseCoronal_HVGs_vs_deviance <- pivot_longer(
   values_to = "prop_overlap"
 )
 
-df_overlaps_mouseCoronal_deviance_clusters <- pivot_longer(
-  df_overlaps_mouseCoronal_deviance_clusters, 
-  cols = colnames(df_overlaps_mouseCoronal_deviance_clusters)[-1], 
-  names_to = "method", 
-  values_to = "prop_overlap"
-)
+# df_overlaps_mouseCoronal_deviance_clusters <- pivot_longer(
+#   df_overlaps_mouseCoronal_deviance_clusters, 
+#   cols = colnames(df_overlaps_mouseCoronal_deviance_clusters)[-1], 
+#   names_to = "method", 
+#   values_to = "prop_overlap"
+# )
 
 
 # function to generate plots
@@ -174,8 +177,8 @@ fn <- here("plots", "overlaps", "overlaps_mouseCoronal_HVGs_vs_deviance")
 ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
 ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
-plot_overlaps(df_overlaps_mouseCoronal_deviance_clusters, "deviance_clusters")
-fn <- here("plots", "overlaps", "overlaps_mouseCoronal_deviance_clusters")
-ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
-ggsave(paste0(fn, ".png"), width = 6, height = 4)
+# plot_overlaps(df_overlaps_mouseCoronal_deviance_clusters, "deviance_clusters")
+# fn <- here("plots", "overlaps", "overlaps_mouseCoronal_deviance_clusters")
+# ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
+# ggsave(paste0(fn, ".png"), width = 6, height = 4)
 

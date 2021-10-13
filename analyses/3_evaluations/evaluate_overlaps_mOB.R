@@ -25,15 +25,16 @@ library(ggsci)
 
 list_mOB <- list(
   spe_mOB_nnSVG = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG.rds")), 
-  spe_mOB_nnSVG_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters.rds")), 
+  #spe_mOB_nnSVG_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_clusters.rds")), 
   
   spe_mOB_nnSVG_logcounts = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_logcounts.rds")), 
-  spe_mOB_nnSVG_logcounts_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_logcounts_clusters.rds")), 
+  #spe_mOB_nnSVG_logcounts_clusters = readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG_logcounts_clusters.rds")), 
+  
+  spe_mOB_SPARKX = readRDS(here("outputs", "results", "SPARK-X", "spe_mOB_SPARK-X.rds")), 
   
   spe_mOB_HVGs = readRDS(here("outputs", "results", "HVGs", "spe_mOB_HVGs.rds")), 
-  
-  spe_mOB_deviance = readRDS(here("outputs", "results", "deviance", "spe_mOB_deviance.rds")), 
-  spe_mOB_deviance_clusters = readRDS(here("outputs", "results", "deviance", "spe_mOB_deviance_clusters.rds"))
+  spe_mOB_deviance = readRDS(here("outputs", "results", "deviance", "spe_mOB_deviance.rds"))#, 
+  #spe_mOB_deviance_clusters = readRDS(here("outputs", "results", "deviance", "spe_mOB_deviance_clusters.rds"))
 )
 
 for (i in seq_along(list_mOB)){
@@ -85,15 +86,17 @@ calc_overlaps <- function(method1, method2) {
 df_overlaps_mOB_HVGs <- data.frame(
   top_n = overlaps, 
   nnSVG = calc_overlaps("mOB_HVGs", "mOB_nnSVG"), 
-  nnSVG_clusters = calc_overlaps("mOB_HVGs", "mOB_nnSVG_clusters"), 
+  #nnSVG_clusters = calc_overlaps("mOB_HVGs", "mOB_nnSVG_clusters"), 
   nnSVG_logcounts = calc_overlaps("mOB_HVGs", "mOB_nnSVG_logcounts"), 
-  nnSVG_logcounts_clusters = calc_overlaps("mOB_HVGs", "mOB_nnSVG_logcounts_clusters")
+  #nnSVG_logcounts_clusters = calc_overlaps("mOB_HVGs", "mOB_nnSVG_logcounts_clusters"), 
+  SPARKX = calc_overlaps("mOB_HVGs", "mOB_SPARKX")
 )
 
 df_overlaps_mOB_deviance <- data.frame(
   top_n = overlaps, 
   nnSVG = calc_overlaps("mOB_deviance", "mOB_nnSVG"), 
-  nnSVG_logcounts = calc_overlaps("mOB_deviance", "mOB_nnSVG_logcounts")
+  nnSVG_logcounts = calc_overlaps("mOB_deviance", "mOB_nnSVG_logcounts"), 
+  SPARKX = calc_overlaps("mOB_deviance", "mOB_SPARKX")
 )
 
 df_overlaps_mOB_HVGs_vs_deviance <- data.frame(
@@ -101,11 +104,11 @@ df_overlaps_mOB_HVGs_vs_deviance <- data.frame(
   deviance = calc_overlaps("mOB_HVGs", "mOB_deviance")
 )
 
-df_overlaps_mOB_deviance_clusters <- data.frame(
-  top_n = overlaps, 
-  nnSVG_clusters = calc_overlaps("mOB_deviance_clusters", "mOB_nnSVG_clusters"), 
-  nnSVG_logcounts_clusters = calc_overlaps("mOB_deviance_clusters", "mOB_nnSVG_logcounts_clusters")
-)
+# df_overlaps_mOB_deviance_clusters <- data.frame(
+#   top_n = overlaps, 
+#   nnSVG_clusters = calc_overlaps("mOB_deviance_clusters", "mOB_nnSVG_clusters"), 
+#   nnSVG_logcounts_clusters = calc_overlaps("mOB_deviance_clusters", "mOB_nnSVG_logcounts_clusters")
+# )
 
 
 # create data frames for plotting
@@ -131,12 +134,12 @@ df_overlaps_mOB_HVGs_vs_deviance <- pivot_longer(
   values_to = "prop_overlap"
 )
 
-df_overlaps_mOB_deviance_clusters <- pivot_longer(
-  df_overlaps_mOB_deviance_clusters, 
-  cols = colnames(df_overlaps_mOB_deviance_clusters)[-1], 
-  names_to = "method", 
-  values_to = "prop_overlap"
-)
+# df_overlaps_mOB_deviance_clusters <- pivot_longer(
+#   df_overlaps_mOB_deviance_clusters, 
+#   cols = colnames(df_overlaps_mOB_deviance_clusters)[-1], 
+#   names_to = "method", 
+#   values_to = "prop_overlap"
+# )
 
 
 # function to generate plots
@@ -174,8 +177,8 @@ fn <- here("plots", "overlaps", "overlaps_mOB_HVGs_vs_deviance")
 ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
 ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
-plot_overlaps(df_overlaps_mOB_deviance_clusters, "deviance_clusters")
-fn <- here("plots", "overlaps", "overlaps_mOB_deviance_clusters")
-ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
-ggsave(paste0(fn, ".png"), width = 6, height = 4)
+# plot_overlaps(df_overlaps_mOB_deviance_clusters, "deviance_clusters")
+# fn <- here("plots", "overlaps", "overlaps_mOB_deviance_clusters")
+# ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
+# ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
