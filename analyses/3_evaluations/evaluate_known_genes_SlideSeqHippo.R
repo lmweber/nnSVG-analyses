@@ -85,6 +85,8 @@ ggplot(res_known, aes(x = rank_SlideSeqHippo_nnSVG_clusters,
   geom_point(color = "purple3") + 
   geom_text_repel(position = "dodge", color = "purple3") + 
   ggtitle(paste0("Known genes: comparison of ranks")) + 
+  xlim(c(0, 400)) + 
+  ylim(c(0, 400)) + 
   theme_bw()
 
 fn <- here("plots", "known", paste0("known_genes_ranks_SlideSeqHippo_nnSVG_SPARKX"))
@@ -100,6 +102,8 @@ ggplot(res_known, aes(x = LR_stat_SlideSeqHippo_nnSVG_clusters,
   geom_point(color = "purple3") + 
   geom_text_repel(position = "dodge", color = "purple3") + 
   ggtitle(paste0("Known genes: comparison of statistics / significance")) + 
+  xlim(c(0, 1500)) + 
+  ylim(c(0, 40)) + 
   theme_bw()
 
 fn <- here("plots", "known", paste0("known_genes_stats_SlideSeqHippo_nnSVG_SPARKX"))
@@ -115,6 +119,8 @@ ggplot(res_known, aes(x = rank_SlideSeqHippo_nnSVG_clusters,
   geom_point(color = "blue") + 
   geom_text_repel(position = "dodge", color = "blue") + 
   ggtitle(paste0("Known genes: rank vs. effect size")) + 
+  xlim(c(0, 150)) + 
+  ylim(c(0, 0.3)) + 
   theme_bw()
 
 fn <- here("plots", "known", paste0("rank_vs_effect_size_SlideSeqHippo_nnSVG"))

@@ -117,3 +117,26 @@ for (k in seq_along(ranks)) {
   ggsave(paste0(fn, ".png"), width = 4.5, height = 4.5)
 }
 
+
+for (k in seq_along(ranks)) {
+  p <- ggplot(res_DLPFC, aes(x = rank_DLPFC_nnSVG, y = rank_DLPFC_SPARKX, label = gene_name_DLPFC_HVGs)) + 
+    geom_point() + 
+    xlim(c(0, ranks[k])) + 
+    ylim(c(0, ranks[k])) + 
+    coord_fixed() + 
+    ggtitle(paste0("Ranks of top ", ranks[k], " genes per method")) + 
+    theme_bw()
+  
+  if (ranks[k] == 20) {
+    p <- p + geom_text_repel(position = "dodge")
+  }
+  
+  print(p)
+  
+  fn <- here("plots", "ranks", paste0("ranks_DLPFC_nnSVG_SPARKX_", ranks[k]))
+  ggsave(paste0(fn, ".pdf"), width = 4.5, height = 4.5)
+  ggsave(paste0(fn, ".png"), width = 4.5, height = 4.5)
+}
+
+
+
