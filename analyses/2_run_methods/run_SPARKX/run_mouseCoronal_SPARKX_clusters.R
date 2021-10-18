@@ -4,7 +4,7 @@
 #######################
 
 # method: SPARK-X (with covariates for clusters)
-# dataset: 10x Genomics Visium human dorsolateral prefrontal cortex (DLPFC)
+# dataset: 10x Genomics Visium mouse coronal brain section
 
 
 library(SPARK)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_DLPFC.rds")
+file <- here("outputs", "SPE", "spe_mouseCoronal.rds")
 spe <- readRDS(file)
 
 spe
@@ -35,10 +35,8 @@ spe
 
 # skip filtering since this was already done during preprocessing
 
-# create model matrix of covariates for cell types using ground truth labels
-# remove NAs from ground truth labels
-spe <- spe[, !is.na(colData(spe)$ground_truth)]
-X <- model.matrix(~ colData(spe)$ground_truth)
+# create model matrix of covariates for cell types using cluster labels
+X <- model.matrix(~ colData(spe)$label)
 dim(X)
 head(X)
 stopifnot(nrow(X) == ncol(spe))
@@ -47,7 +45,7 @@ stopifnot(nrow(X) == ncol(spe))
 runtime <- system.time({
   sparkx_out <- sparkx(count_in = counts(spe), 
                        locus_in = spatialCoords(spe), 
-                       X_in = X, 
+                       X_in = NULL, 
                        numCores = 4, option = "mixture", verbose = TRUE)
 })
 
@@ -75,6 +73,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARK-X", "spe_DLPFC_SPARK-X_clusters.rds")
+file <- here("outputs", "results", "SPARKX", "spe_mouseCoronal_SPARKX_clusters.rds")
 saveRDS(spe, file = file)
 

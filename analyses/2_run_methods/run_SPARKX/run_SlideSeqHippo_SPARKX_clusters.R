@@ -3,8 +3,8 @@
 # Lukas Weber, Oct 2021
 #######################
 
-# method: SPARK-X
-# dataset: 10x Genomics Visium mouse coronal brain section
+# method: SPARK-X (with covariates for clusters)
+# dataset: Slide-seqV2 mouse hippocampus
 
 
 library(SPARK)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_mouseCoronal.rds")
+file <- here("outputs", "SPE", "spe_SlideSeqHippo.rds")
 spe <- readRDS(file)
 
 spe
@@ -35,7 +35,15 @@ spe
 
 # skip filtering since this was already done during preprocessing
 
-# run SPARK-X
+# create model matrix of covariates for cell types
+# remove NAs from cell type labels
+spe <- spe[, !is.na(colData(spe)$celltype)]
+X <- model.matrix(~ as.factor(colData(spe)$celltype))
+dim(X)
+head(X)
+stopifnot(nrow(X) == ncol(spe))
+
+# run SPARK-X with covariates
 runtime <- system.time({
   sparkx_out <- sparkx(count_in = counts(spe), 
                        locus_in = spatialCoords(spe), 
@@ -67,6 +75,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARK-X", "spe_mouseCoronal_SPARK-X.rds")
+file <- here("outputs", "results", "SPARKX", "spe_SlideSeqHippo_SPARKX_clusters.rds")
 saveRDS(spe, file = file)
 

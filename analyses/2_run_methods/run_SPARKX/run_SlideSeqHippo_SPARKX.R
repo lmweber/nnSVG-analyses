@@ -4,7 +4,7 @@
 #######################
 
 # method: SPARK-X
-# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
+# dataset: Slide-seqV2 mouse hippocampus
 
 
 library(SPARK)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_mOB.rds")
+file <- here("outputs", "SPE", "spe_SlideSeqHippo.rds")
 spe <- readRDS(file)
 
 spe
@@ -67,6 +67,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARK-X", "spe_mOB_SPARK-X.rds")
+file <- here("outputs", "results", "SPARKX", "spe_SlideSeqHippo_SPARKX.rds")
 saveRDS(spe, file = file)
 

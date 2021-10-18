@@ -67,6 +67,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARK-X", "spe_DLPFC_SPARK-X.rds")
+file <- here("outputs", "results", "SPARKX", "spe_DLPFC_SPARKX.rds")
 saveRDS(spe, file = file)
 

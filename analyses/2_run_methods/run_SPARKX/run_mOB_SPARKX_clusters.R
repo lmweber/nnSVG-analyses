@@ -4,7 +4,7 @@
 #######################
 
 # method: SPARK-X (with covariates for clusters)
-# dataset: Slide-seqV2 mouse hippocampus
+# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
 
 
 library(SPARK)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_SlideSeqHippo.rds")
+file <- here("outputs", "SPE", "spe_mOB.rds")
 spe <- readRDS(file)
 
 spe
@@ -35,10 +35,8 @@ spe
 
 # skip filtering since this was already done during preprocessing
 
-# create model matrix of covariates for cell types
-# remove NAs from cell type labels
-spe <- spe[, !is.na(colData(spe)$celltype)]
-X <- model.matrix(~ as.factor(colData(spe)$celltype))
+# create model matrix of covariates for cell types using cluster labels
+X <- model.matrix(~ colData(spe)$label)
 dim(X)
 head(X)
 stopifnot(nrow(X) == ncol(spe))
@@ -75,6 +73,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARK-X", "spe_SlideSeqHippo_SPARK-X_clusters.rds")
+file <- here("outputs", "results", "SPARKX", "spe_mOB_SPARKX_clusters.rds")
 saveRDS(spe, file = file)
 

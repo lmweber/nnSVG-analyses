@@ -3,8 +3,8 @@
 # Lukas Weber, Oct 2021
 #######################
 
-# method: SPARK-X (with covariates for clusters)
-# dataset: 10x Genomics Visium mouse coronal brain section
+# method: SPARK-X
+# dataset: Spatial Transcriptomics (ST) mouse olfactory bulb (mOB)
 
 
 library(SPARK)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_mouseCoronal.rds")
+file <- here("outputs", "SPE", "spe_mOB.rds")
 spe <- readRDS(file)
 
 spe
@@ -35,13 +35,7 @@ spe
 
 # skip filtering since this was already done during preprocessing
 
-# create model matrix of covariates for cell types using cluster labels
-X <- model.matrix(~ colData(spe)$label)
-dim(X)
-head(X)
-stopifnot(nrow(X) == ncol(spe))
-
-# run SPARK-X with covariates
+# run SPARK-X
 runtime <- system.time({
   sparkx_out <- sparkx(count_in = counts(spe), 
                        locus_in = spatialCoords(spe), 
@@ -73,6 +67,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARK-X", "spe_mouseCoronal_SPARK-X_clusters.rds")
+file <- here("outputs", "results", "SPARKX", "spe_mOB_SPARKX.rds")
 saveRDS(spe, file = file)
 

@@ -4,7 +4,7 @@
 #######################
 
 # method: SPARK-X
-# dataset: Slide-seqV2 mouse hippocampus
+# dataset: 10x Genomics Visium mouse coronal brain section
 
 
 library(SPARK)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-file <- here("outputs", "SPE", "spe_SlideSeqHippo.rds")
+file <- here("outputs", "SPE", "spe_mouseCoronal.rds")
 spe <- readRDS(file)
 
 spe
@@ -67,6 +67,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARK-X", "spe_SlideSeqHippo_SPARK-X.rds")
+file <- here("outputs", "results", "SPARKX", "spe_mouseCoronal_SPARKX.rds")
 saveRDS(spe, file = file)
 
