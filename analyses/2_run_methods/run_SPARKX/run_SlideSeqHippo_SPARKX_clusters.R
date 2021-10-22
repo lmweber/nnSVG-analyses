@@ -47,7 +47,7 @@ stopifnot(nrow(X) == ncol(spe))
 runtime <- system.time({
   sparkx_out <- sparkx(count_in = counts(spe), 
                        locus_in = spatialCoords(spe), 
-                       X_in = NULL, 
+                       X_in = X, 
                        numCores = 4, option = "mixture", verbose = TRUE)
 })
 
