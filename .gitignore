@@ -4,6 +4,7 @@
 .Ruserdata
 .DS_Store
 outputs
+initial_outputs
 plots
 plots_new
 *.html
