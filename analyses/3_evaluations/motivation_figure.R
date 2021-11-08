@@ -79,7 +79,7 @@ nm_top_SPARKX  ## MBP
 
 # known laminar genes
 
-# rank of MOBP in nnSVG results
+# rank of MOBP in nnSVG
 ix_MOBP_nnSVG <- which(list_DLPFC[["DLPFC_nnSVG"]]$gene_name == "MOBP")
 rank_MOBP_nnSVG <- list_DLPFC[["DLPFC_nnSVG"]]$rank[ix_MOBP_nnSVG]
 rank_MOBP_nnSVG  ## 6
@@ -96,7 +96,7 @@ ix_MOBP_SPARKX <- which(list_DLPFC[["DLPFC_SPARKX"]]$gene_name == "MOBP")
 rank_MOBP_SPARKX <- list_DLPFC[["DLPFC_SPARKX"]]$rank[ix_MOBP_SPARKX]
 rank_MOBP_SPARKX  ## 12
 
-# rank of PCP4 in nnSVG results
+# rank of PCP4 in nnSVG
 ix_PCP4_nnSVG <- which(list_DLPFC[["DLPFC_nnSVG"]]$gene_name == "PCP4")
 rank_PCP4_nnSVG <- list_DLPFC[["DLPFC_nnSVG"]]$rank[ix_PCP4_nnSVG]
 rank_PCP4_nnSVG  ## 81
@@ -113,7 +113,7 @@ ix_PCP4_SPARKX <- which(list_DLPFC[["DLPFC_SPARKX"]]$gene_name == "PCP4")
 rank_PCP4_SPARKX <- list_DLPFC[["DLPFC_SPARKX"]]$rank[ix_PCP4_SPARKX]
 rank_PCP4_SPARKX  ## 1186
 
-# rank of SNAP25 in nnSVG results
+# rank of SNAP25 in nnSVG
 ix_SNAP25_nnSVG <- which(list_DLPFC[["DLPFC_nnSVG"]]$gene_name == "SNAP25")
 rank_SNAP25_nnSVG <- list_DLPFC[["DLPFC_nnSVG"]]$rank[ix_SNAP25_nnSVG]
 rank_SNAP25_nnSVG  ## 25
@@ -133,7 +133,7 @@ rank_SNAP25_SPARKX  ## 38
 
 # known non-laminar genes
 
-# rank of HBB in nnSVG results
+# rank of HBB in nnSVG
 ix_HBB_nnSVG <- which(list_DLPFC[["DLPFC_nnSVG"]]$gene_name == "HBB")
 rank_HBB_nnSVG <- list_DLPFC[["DLPFC_nnSVG"]]$rank[ix_HBB_nnSVG]
 rank_HBB_nnSVG  ## 121
@@ -150,7 +150,7 @@ ix_HBB_SPARKX <- which(list_DLPFC[["DLPFC_SPARKX"]]$gene_name == "HBB")
 rank_HBB_SPARKX <- list_DLPFC[["DLPFC_SPARKX"]]$rank[ix_HBB_SPARKX]
 rank_HBB_SPARKX  ## 6538
 
-# rank of IGKC in nnSVG results
+# rank of IGKC in nnSVG
 ix_IGKC_nnSVG <- which(list_DLPFC[["DLPFC_nnSVG"]]$gene_name == "IGKC")
 rank_IGKC_nnSVG <- list_DLPFC[["DLPFC_nnSVG"]]$rank[ix_IGKC_nnSVG]
 rank_IGKC_nnSVG  ## 49
@@ -167,7 +167,7 @@ ix_IGKC_SPARKX <- which(list_DLPFC[["DLPFC_SPARKX"]]$gene_name == "IGKC")
 rank_IGKC_SPARKX <- list_DLPFC[["DLPFC_SPARKX"]]$rank[ix_IGKC_SPARKX]
 rank_IGKC_SPARKX  ## 3584
 
-# rank of NPY in nnSVG results
+# rank of NPY in nnSVG
 ix_NPY_nnSVG <- which(list_DLPFC[["DLPFC_nnSVG"]]$gene_name == "NPY")
 rank_NPY_nnSVG <- list_DLPFC[["DLPFC_nnSVG"]]$rank[ix_NPY_nnSVG]
 rank_NPY_nnSVG  ## 870
@@ -186,37 +186,40 @@ rank_NPY_SPARKX  ## 13583
 
 
 
-# --------------------------------------------------
-# identify top genes - Slide-seq mouse hippo dataset
-# --------------------------------------------------
+# -----------------------------------------------------------------
+# ranks of top and/or known genes - Slide-seqV2 mouse hippo dataset
+# -----------------------------------------------------------------
 
 # Cpne9
 
-# rank of Cpne9 in nnSVG results
+# rank of Cpne9 in nnSVG
+ix_Cpne9_nnSVG <- which(list_SlideSeqHippo[["SlideSeqHippo_nnSVG"]]$gene_name == "Cpne9")
+rank_Cpne9_nnSVG <- list_SlideSeqHippo[["SlideSeqHippo_nnSVG"]]$rank[ix_Cpne9_nnSVG]
+rank_Cpne9_nnSVG  ## 144
+# rank of Cpne9 in nnSVG_clusters
 ix_Cpne9_nnSVG_clusters <- which(list_SlideSeqHippo[["SlideSeqHippo_nnSVG_clusters"]]$gene_name == "Cpne9")
 rank_Cpne9_nnSVG_clusters <- list_SlideSeqHippo[["SlideSeqHippo_nnSVG_clusters"]]$rank[ix_Cpne9_nnSVG_clusters]
 rank_Cpne9_nnSVG_clusters  ## 141
-
+# rank of Cpne9 in nnSVG_onevsall
+ix_Cpne9_nnSVG_onevsall <- which(list_SlideSeqHippo[["SlideSeqHippo_nnSVG_onevsall"]]$gene_name == "Cpne9")
+rank_Cpne9_nnSVG_onevsall <- list_SlideSeqHippo[["SlideSeqHippo_nnSVG_onevsall"]]$rank[ix_Cpne9_nnSVG_onevsall]
+rank_Cpne9_nnSVG_onevsall  ## 180
 # rank of Cpne9 in HVGs
 ix_Cpne9_HVGs <- which(list_SlideSeqHippo[["SlideSeqHippo_HVGs"]]$gene_name == "Cpne9")
 rank_Cpne9_HVGs <- list_SlideSeqHippo[["SlideSeqHippo_HVGs"]]$rank[ix_Cpne9_HVGs]
 rank_Cpne9_HVGs  ## 7975
-
 # rank of Cpne9 in deviance
 ix_Cpne9_deviance <- which(list_SlideSeqHippo[["SlideSeqHippo_deviance"]]$gene_name == "Cpne9")
 rank_Cpne9_deviance <- list_SlideSeqHippo[["SlideSeqHippo_deviance"]]$rank[ix_Cpne9_deviance]
 rank_Cpne9_deviance  ## 2151
-
 # rank of Cpne9 in deviance_clusters
 ix_Cpne9_deviance_clusters <- which(list_SlideSeqHippo[["SlideSeqHippo_deviance_clusters"]]$gene_name == "Cpne9")
 rank_Cpne9_deviance_clusters <- list_SlideSeqHippo[["SlideSeqHippo_deviance_clusters"]]$rank[ix_Cpne9_deviance_clusters]
 rank_Cpne9_deviance_clusters  ## 2969
-
 # rank of Cpne9 in SPARKX
 ix_Cpne9_SPARKX <- which(list_SlideSeqHippo[["SlideSeqHippo_SPARKX"]]$gene_name == "Cpne9")
 rank_Cpne9_SPARKX <- list_SlideSeqHippo[["SlideSeqHippo_SPARKX"]]$rank[ix_Cpne9_SPARKX]
 rank_Cpne9_SPARKX  ## 102
-
 # rank of Cpne9 in SPARKX_clusters
 ix_Cpne9_SPARKX_clusters <- which(list_SlideSeqHippo[["SlideSeqHippo_SPARKX_clusters"]]$gene_name == "Cpne9")
 rank_Cpne9_SPARKX_clusters <- list_SlideSeqHippo[["SlideSeqHippo_SPARKX_clusters"]]$rank[ix_Cpne9_SPARKX_clusters]
@@ -225,35 +228,39 @@ rank_Cpne9_SPARKX_clusters  ## 174
 
 # Rgs14
 
-# rank of Rgs14 in nnSVG results
+# rank of Rgs14 in nnSVG
+ix_Rgs14_nnSVG <- which(list_SlideSeqHippo[["SlideSeqHippo_nnSVG"]]$gene_name == "Rgs14")
+rank_Rgs14_nnSVG <- list_SlideSeqHippo[["SlideSeqHippo_nnSVG"]]$rank[ix_Rgs14_nnSVG]
+rank_Rgs14_nnSVG  ## 171
+# rank of Rgs14 in nnSVG_clusters
 ix_Rgs14_nnSVG_clusters <- which(list_SlideSeqHippo[["SlideSeqHippo_nnSVG_clusters"]]$gene_name == "Rgs14")
 rank_Rgs14_nnSVG_clusters <- list_SlideSeqHippo[["SlideSeqHippo_nnSVG_clusters"]]$rank[ix_Rgs14_nnSVG_clusters]
 rank_Rgs14_nnSVG_clusters  ## 19
-
+# rank of Rgs14 in nnSVG_onevsall
+ix_Rgs14_nnSVG_onevsall <- which(list_SlideSeqHippo[["SlideSeqHippo_nnSVG_onevsall"]]$gene_name == "Rgs14")
+rank_Rgs14_nnSVG_onevsall <- list_SlideSeqHippo[["SlideSeqHippo_nnSVG_onevsall"]]$rank[ix_Rgs14_nnSVG_onevsall]
+rank_Rgs14_nnSVG_onevsall  ## 127
 # rank of Rgs14 in HVGs
 ix_Rgs14_HVGs <- which(list_SlideSeqHippo[["SlideSeqHippo_HVGs"]]$gene_name == "Rgs14")
 rank_Rgs14_HVGs <- list_SlideSeqHippo[["SlideSeqHippo_HVGs"]]$rank[ix_Rgs14_HVGs]
 rank_Rgs14_HVGs  ## 2636
-
 # rank of Rgs14 in deviance
 ix_Rgs14_deviance <- which(list_SlideSeqHippo[["SlideSeqHippo_deviance"]]$gene_name == "Rgs14")
 rank_Rgs14_deviance <- list_SlideSeqHippo[["SlideSeqHippo_deviance"]]$rank[ix_Rgs14_deviance]
 rank_Rgs14_deviance  ## 5025
-
 # rank of Rgs14 in deviance_clusters
 ix_Rgs14_deviance_clusters <- which(list_SlideSeqHippo[["SlideSeqHippo_deviance_clusters"]]$gene_name == "Rgs14")
 rank_Rgs14_deviance_clusters <- list_SlideSeqHippo[["SlideSeqHippo_deviance_clusters"]]$rank[ix_Rgs14_deviance_clusters]
 rank_Rgs14_deviance_clusters  ## 6516
-
 # rank of Rgs14 in SPARKX
 ix_Rgs14_SPARKX <- which(list_SlideSeqHippo[["SlideSeqHippo_SPARKX"]]$gene_name == "Rgs14")
 rank_Rgs14_SPARKX <- list_SlideSeqHippo[["SlideSeqHippo_SPARKX"]]$rank[ix_Rgs14_SPARKX]
 rank_Rgs14_SPARKX  ## 663
-
 # rank of Rgs14 in SPARKX_clusters
 ix_Rgs14_SPARKX_clusters <- which(list_SlideSeqHippo[["SlideSeqHippo_SPARKX_clusters"]]$gene_name == "Rgs14")
 rank_Rgs14_SPARKX_clusters <- list_SlideSeqHippo[["SlideSeqHippo_SPARKX_clusters"]]$rank[ix_Rgs14_SPARKX_clusters]
 rank_Rgs14_SPARKX_clusters  ## 37
+
 
 
 # ------------------------------------
