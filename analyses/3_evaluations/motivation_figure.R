@@ -30,6 +30,7 @@ list_DLPFC <- list(
   DLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_DLPFC_SPARKX.rds")))
 )
 
+# check row order of gene names is consistent
 for (i in seq_along(list_DLPFC)){
   stopifnot(all(list_DLPFC[[i]]$gene_name == list_DLPFC[[1]]$gene_name))
 }
@@ -48,6 +49,7 @@ list_SlideSeqHippo <- list(
   SlideSeqHippo_SPARKX_clusters = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_SlideSeqHippo_SPARKX_clusters.rds")))
 )
 
+# check row order of gene names is consistent
 for (i in seq_along(list_SlideSeqHippo)){
   stopifnot(all(list_SlideSeqHippo[[i]]$gene_name == list_SlideSeqHippo[[1]]$gene_name))
 }
@@ -192,6 +194,55 @@ list_DLPFC[["DLPFC_nnSVG"]][c(
   ix_MOBP_nnSVG, ix_PCP4_nnSVG, ix_SNAP25_nnSVG, 
   ix_HBB_nnSVG, ix_IGKC_nnSVG, ix_NPY_nnSVG
 ), ]
+
+
+# plot histogram of bandwidth parameters
+
+df <- as.data.frame(list_DLPFC[["DLPFC_nnSVG"]])
+df$is_svg <- df$rank <= 1000
+genes_hvgs <- list_DLPFC[["DLPFC_HVGs"]][list_DLPFC[["DLPFC_HVGs"]]$rank <= 1000, ]$gene_id
+df$is_hvg <- df$gene_id %in% genes_hvgs
+genes_deviance <- list_DLPFC[["DLPFC_deviance"]][list_DLPFC[["DLPFC_deviance"]]$rank <= 1000, ]$gene_id
+df$is_deviance <- df$gene_id %in% genes_deviance
+genes_sparkx <- list_DLPFC[["DLPFC_SPARKX"]][list_DLPFC[["DLPFC_SPARKX"]]$rank <= 1000, ]$gene_id
+df$is_sparkx <- df$gene_id %in% genes_sparkx
+
+df_sub <- df[df$is_svg, ]
+
+ggplot(df, aes(x = phi, group = is_hvg, fill = is_hvg)) + 
+  geom_histogram(bins = 40, position = "identity", color = "black", size = 0.25) + 
+  scale_fill_manual(values = c("#69b3a2", "#404080")) + 
+  labs(x = "phi") + 
+  ggtitle("Inverse bandwidth phi, nnSVG, top 1000 SVGs, DLPFC dataset") + 
+  theme_bw()
+
+fn <- here("plots", "bandwidth", paste0("bandwidth_nnSVG_top1000SVGs_top1000HVGs"))
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4.5)
+ggsave(paste0(fn, ".png"), width = 6, height = 4.5)
+
+
+ggplot(df, aes(x = phi, group = is_deviance, fill = is_deviance)) + 
+  geom_histogram(bins = 40, position = "identity", color = "black", size = 0.25) + 
+  scale_fill_manual(values = c("#69b3a2", "#404080")) + 
+  labs(x = "phi") + 
+  ggtitle("Inverse bandwidth phi, nnSVG, top 1000 SVGs, DLPFC dataset") + 
+  theme_bw()
+
+fn <- here("plots", "bandwidth", paste0("bandwidth_nnSVG_top1000SVGs_top1000deviance"))
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4.5)
+ggsave(paste0(fn, ".png"), width = 6, height = 4.5)
+
+
+ggplot(df, aes(x = phi, group = is_sparkx, fill = is_sparkx)) + 
+  geom_histogram(bins = 40, position = "identity", color = "black", size = 0.25) + 
+  scale_fill_manual(values = c("#69b3a2", "darkred")) + 
+  labs(x = "phi") + 
+  ggtitle("Inverse bandwidth phi, nnSVG, top 1000 SVGs, DLPFC dataset") + 
+  theme_bw()
+
+fn <- here("plots", "bandwidth", paste0("bandwidth_nnSVG_top1000SVGs_top1000SPARKX"))
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4.5)
+ggsave(paste0(fn, ".png"), width = 6, height = 4.5)
 
 
 
