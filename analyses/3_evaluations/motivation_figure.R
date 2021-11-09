@@ -185,6 +185,15 @@ rank_NPY_SPARKX <- list_DLPFC[["DLPFC_SPARKX"]]$rank[ix_NPY_SPARKX]
 rank_NPY_SPARKX  ## 13583
 
 
+# bandwidth parameter estimates for genes of interest
+
+list_DLPFC[["DLPFC_nnSVG"]][c(
+  ix_top_nnSVG, 
+  ix_MOBP_nnSVG, ix_PCP4_nnSVG, ix_SNAP25_nnSVG, 
+  ix_HBB_nnSVG, ix_IGKC_nnSVG, ix_NPY_nnSVG
+), ]
+
+
 
 # -----------------------------------------------------------------
 # ranks of top and/or known genes - Slide-seqV2 mouse hippo dataset
@@ -261,6 +270,12 @@ ix_Rgs14_SPARKX_clusters <- which(list_SlideSeqHippo[["SlideSeqHippo_SPARKX_clus
 rank_Rgs14_SPARKX_clusters <- list_SlideSeqHippo[["SlideSeqHippo_SPARKX_clusters"]]$rank[ix_Rgs14_SPARKX_clusters]
 rank_Rgs14_SPARKX_clusters  ## 37
 
+
+# bandwidth parameter estimates for genes of interest
+
+list_SlideSeqHippo[["SlideSeqHippo_nnSVG_clusters"]][c(
+  ix_Cpne9_nnSVG, ix_Rgs14_nnSVG
+), ]
 
 
 # ------------------------------------
