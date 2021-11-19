@@ -102,9 +102,9 @@ prop_overlap_top100SPARKX_top200HVGs <- mean(top100SPARKX %in% top200HVGs)
 prop_overlap_top1000SPARKX_top2000HVGs <- mean(top1000SPARKX %in% top2000HVGs)
 
 
-# -------------
-# summary plots
-# -------------
+# ---------------
+# plots: overlaps
+# ---------------
 
 # top HVGs within significant SVGs
 
@@ -192,4 +192,73 @@ ggplot(df_topSVGs_topHVGsx2, aes(x = n_HVGs, y = proportion, group = method, col
 fn <- here("plots", "commentary", "overlap_topSVGs_topHVGsx2")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 4)
 ggsave(paste0(fn, ".png"), width = 5, height = 4)
+
+
+# ------------------------
+# plots: rank correlations
+# ------------------------
+
+df_ranks <- data.frame(
+  HVGs = res_DLPFC_HVGs$rank, 
+  nnSVG = res_DLPFC_nnSVG$rank, 
+  SPARKX = res_DLPFC_SPARKX$rank
+)
+df_ranks <- pivot_longer(
+  df_ranks, cols = c("nnSVG", "SPARKX"), names_to = "method", values_to = "SVGs"
+)
+df_ranks$method <- as.factor(df_ranks$method)
+
+
+# top 10
+ggplot(df_ranks, aes(x = HVGs, y = SVGs, color = method, shape = method)) + 
+  geom_point(size = 1.5, stroke = 1) + 
+  scale_color_startrek() + 
+  coord_fixed() + 
+  scale_x_continuous(breaks = seq(0, 10, length.out = 6), limits = c(0, 10)) + 
+  scale_y_continuous(breaks = seq(0, 10, length.out = 6), limits = c(0, 10)) + 
+  scale_shape_manual(values = c(1, 4)) + 
+  xlab("rank HVGs") + 
+  ylab("rank SVGs") + 
+  ggtitle("Ranks of top 10 HVGs and SVGs") + 
+  theme_bw()
+
+fn <- here("plots", "commentary", "ranks_scatter_top10")
+ggsave(paste0(fn, ".pdf"), width = 5, height = 4.25)
+ggsave(paste0(fn, ".png"), width = 5, height = 4.25)
+
+
+# top 100
+ggplot(df_ranks, aes(x = HVGs, y = SVGs, color = method, shape = method)) + 
+  geom_point(size = 1.5, stroke = 1) + 
+  scale_color_startrek() + 
+  coord_fixed() + 
+  scale_x_continuous(breaks = seq(0, 100, length.out = 6), limits = c(0, 100)) + 
+  scale_y_continuous(breaks = seq(0, 100, length.out = 6), limits = c(0, 100)) + 
+  scale_shape_manual(values = c(1, 4)) + 
+  xlab("rank HVGs") + 
+  ylab("rank SVGs") + 
+  ggtitle("Ranks of top 100 HVGs and SVGs") + 
+  theme_bw()
+
+fn <- here("plots", "commentary", "ranks_scatter_top100")
+ggsave(paste0(fn, ".pdf"), width = 5, height = 4.25)
+ggsave(paste0(fn, ".png"), width = 5, height = 4.25)
+
+
+# top 1000
+ggplot(df_ranks, aes(x = HVGs, y = SVGs, color = method, shape = method)) + 
+  geom_point(size = 1.5, stroke = 1) + 
+  scale_color_startrek() + 
+  coord_fixed() + 
+  scale_x_continuous(breaks = seq(0, 1000, length.out = 6), limits = c(0, 1000)) + 
+  scale_y_continuous(breaks = seq(0, 1000, length.out = 6), limits = c(0, 1000)) + 
+  scale_shape_manual(values = c(1, 4)) + 
+  xlab("rank HVGs") + 
+  ylab("rank SVGs") + 
+  ggtitle("Ranks of top 1000 HVGs and SVGs") + 
+  theme_bw()
+
+fn <- here("plots", "commentary", "ranks_scatter_top1000")
+ggsave(paste0(fn, ".pdf"), width = 5, height = 4.25)
+ggsave(paste0(fn, ".png"), width = 5, height = 4.25)
 
