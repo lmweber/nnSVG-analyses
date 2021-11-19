@@ -23,12 +23,10 @@ library(ggsci)
 
 # DLPFC dataset
 res_DLPFC_HVGs = rowData(readRDS(here("outputs", "results", "HVGs", "spe_DLPFC_HVGs.rds")))
-res_DLPFC_deviance = rowData(readRDS(here("outputs", "results", "deviance", "spe_DLPFC_deviance.rds")))
 res_DLPFC_nnSVG = rowData(readRDS(here("outputs", "results", "nnSVG", "spe_DLPFC_nnSVG.rds")))
 res_DLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_DLPFC_SPARKX.rds")))
 
 # check row order of gene names is consistent
-stopifnot(all(res_DLPFC_HVGs$gene_id == res_DLPFC_deviance$gene_id))
 stopifnot(all(res_DLPFC_HVGs$gene_id == res_DLPFC_nnSVG$gene_id))
 stopifnot(all(res_DLPFC_HVGs$gene_id == res_DLPFC_SPARKX$gene_id))
 
@@ -222,7 +220,7 @@ ggplot(df_ranks, aes(x = HVGs, y = SVGs, color = method, shape = method)) +
   ggtitle("Ranks of top 10 HVGs and SVGs") + 
   theme_bw()
 
-fn <- here("plots", "commentary", "ranks_scatter_top10")
+fn <- here("plots", "commentary", "ranks_scatter_top10_HVGs")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 4.25)
 ggsave(paste0(fn, ".png"), width = 5, height = 4.25)
 
@@ -240,7 +238,7 @@ ggplot(df_ranks, aes(x = HVGs, y = SVGs, color = method, shape = method)) +
   ggtitle("Ranks of top 100 HVGs and SVGs") + 
   theme_bw()
 
-fn <- here("plots", "commentary", "ranks_scatter_top100")
+fn <- here("plots", "commentary", "ranks_scatter_top100_HVGs")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 4.25)
 ggsave(paste0(fn, ".png"), width = 5, height = 4.25)
 
@@ -258,7 +256,7 @@ ggplot(df_ranks, aes(x = HVGs, y = SVGs, color = method, shape = method)) +
   ggtitle("Ranks of top 1000 HVGs and SVGs") + 
   theme_bw()
 
-fn <- here("plots", "commentary", "ranks_scatter_top1000")
+fn <- here("plots", "commentary", "ranks_scatter_top1000_HVGs")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 4.25)
 ggsave(paste0(fn, ".png"), width = 5, height = 4.25)
 
