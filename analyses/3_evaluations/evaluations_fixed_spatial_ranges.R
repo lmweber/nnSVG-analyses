@@ -135,10 +135,10 @@ ggplot(as.data.frame(df_overlaps),
   facet_wrap(~ dataset) + 
   geom_line() + 
   geom_point() + 
+  scale_x_continuous(breaks = overlaps, trans = "log10") + 
   ylim(c(0, 1)) + 
   xlab("top n genes") + 
   ylab("proportion overlapping") + 
-  scale_x_log10() + 
   ggtitle("Proportion overlap between top n SVGs and HVGs") + 
   theme_bw()
 
