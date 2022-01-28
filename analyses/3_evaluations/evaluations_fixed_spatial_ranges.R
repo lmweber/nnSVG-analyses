@@ -8,8 +8,6 @@ library(here)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(ggrepel)
-library(ggsci)
 
 
 # ------------
@@ -73,4 +71,78 @@ ggplot(as.data.frame(df_known_DLPFC),
 fn <- here(file.path("plots", "evaluations", "DLPFC_known_SVGs_ranks"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# ------------------------------------------------------
+# overlaps: top n HVGs within top n SVGs for each method
+# ------------------------------------------------------
+
+# overlap sizes
+overlaps <- c(10, 20, 50, 100, 200)
+
+# function to calculate overlaps for a pair of methods, i.e. proportion of top n
+# genes from method 1 (e.g. HVGs) that are also in the set of top n genes from
+# method 2 (e.g. nnSVG)
+calc_overlaps <- function(method1, method2) {
+  
+  res_method1 <- res_list[[method1]]
+  res_method2 <- res_list[[method2]]
+  
+  # remove method names from column names
+  colnames(res_method1)[-(1:2)] <- gsub("_.*$", "", colnames(res_method1)[-(1:2)])
+  colnames(res_method2)[-(1:2)] <- gsub("_.*$", "", colnames(res_method2)[-(1:2)])
+  
+  top_method2 <- rep(NA, length(overlaps))
+  
+  for (k in seq_along(overlaps)) {
+    # select top gene IDs from method 1
+    genes_k <- rownames(filter(as.data.frame(res_method1), 
+                               rank <= overlaps[k]))
+    # calculate overlaps
+    top_method2[k] <- nrow(filter(as.data.frame(res_method2[genes_k, ]), 
+                                  rank <= overlaps[k]))
+  }
+  
+  # calculate proportions
+  return(top_method2 / overlaps)
+}
+
+# use function to calculate overlaps
+
+df_overlaps_DLPFC <- data.frame(
+  top_n = overlaps, 
+  dataset = "DLPFC", 
+  nnSVG = calc_overlaps("DLPFC_HVGs", "DLPFC_nnSVG"), 
+  SPARKX = calc_overlaps("DLPFC_HVGs", "DLPFC_SPARKX")
+)
+
+df_overlaps_mOB <- data.frame(
+  top_n = overlaps, 
+  dataset = "mOB", 
+  nnSVG = calc_overlaps("mOB_HVGs", "mOB_nnSVG"), 
+  SPARKX = calc_overlaps("mOB_HVGs", "mOB_SPARKX")
+)
+
+df_overlaps <- 
+  rbind(df_overlaps_DLPFC, df_overlaps_mOB) %>% 
+  pivot_longer(., cols = c("nnSVG", "SPARKX"), 
+               names_to = "method", values_to = "proportion")
+
+
+# plot overlaps
+ggplot(as.data.frame(df_overlaps), 
+       aes(x = top_n, y = proportion, group = method, color = method)) + 
+  facet_wrap(~ dataset) + 
+  geom_line() + 
+  geom_point() + 
+  ylim(c(0, 1)) + 
+  xlab("top n genes") + 
+  ylab("proportion overlapping") + 
+  scale_x_log10() + 
+  ggtitle("Proportion of top n HVGs within top n SVGs per method") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "prop_overlap_HVGs_in_method"))
+ggsave(paste0(fn, ".pdf"), width = 7, height = 4)
+ggsave(paste0(fn, ".png"), width = 7, height = 4)
 
