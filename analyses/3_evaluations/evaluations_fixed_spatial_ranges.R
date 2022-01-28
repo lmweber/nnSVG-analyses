@@ -64,6 +64,7 @@ ggplot(as.data.frame(df_known_DLPFC),
        aes(x = rank, y = gene_name, group = method, color = method)) + 
   geom_point(pch = 4, stroke = 2) + 
   scale_x_log10() + 
+  scale_color_manual(values = c("maroon", "#F8766D", "#00BFC4")) + 
   ggtitle("DLPFC dataset, known SVGs") + 
   theme_bw() + 
   theme(axis.title.y = element_blank())
@@ -143,8 +144,8 @@ ggplot(as.data.frame(df_overlaps),
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "prop_overlap_top_n_SVGs_HVGs"))
-ggsave(paste0(fn, ".pdf"), width = 7, height = 4)
-ggsave(paste0(fn, ".png"), width = 7, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
+ggsave(paste0(fn, ".png"), width = 8, height = 4)
 
 
 # ---------------------------
