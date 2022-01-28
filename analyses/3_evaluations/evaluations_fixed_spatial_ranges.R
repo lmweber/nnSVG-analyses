@@ -146,3 +146,46 @@ fn <- here(file.path("plots", "evaluations", "prop_overlap_top_n_SVGs_HVGs"))
 ggsave(paste0(fn, ".pdf"), width = 7, height = 4)
 ggsave(paste0(fn, ".png"), width = 7, height = 4)
 
+
+# -----------------
+# ranks scatterplot
+# -----------------
+
+df_ranks_DLPFC_nnSVG_HVGs <- 
+  full_join(as.data.frame(res_list$DLPFC_nnSVG), 
+            as.data.frame(res_list$DLPFC_HVGs), 
+            by = c("gene_id", "gene_name")) %>% 
+  mutate(rank_method = rank_nnSVG) %>% 
+  mutate(method = "nnSVG") %>% 
+  filter(rank_method <= 1000 | rank_HVGs <= 1000) %>% 
+  select(c("gene_id", "gene_name", "rank_HVGs", "rank_method", "method"))
+
+df_ranks_DLPFC_SPARKX_HVGs <- 
+  full_join(as.data.frame(res_list$DLPFC_SPARKX), 
+            as.data.frame(res_list$DLPFC_HVGs), 
+            by = c("gene_id", "gene_name")) %>% 
+  mutate(rank_method = rank_SPARKX) %>% 
+  mutate(method = "SPARKX") %>% 
+  filter(rank_method <= 1000 | rank_HVGs <= 1000) %>% 
+  select(c("gene_id", "gene_name", "rank_HVGs", "rank_method", "method"))
+
+df_ranks_DLPFC <- full_join(df_ranks_DLPFC_nnSVG_HVGs, df_ranks_DLPFC_SPARKX_HVGs)
+
+
+# plot comparisons of ranks
+ggplot(as.data.frame(df_ranks_DLPFC), 
+       aes(x = rank_HVGs, y = rank_method, color = method)) + 
+  facet_wrap(~ method) + 
+  geom_point() + 
+  coord_fixed() + 
+  xlim(c(0, 1000)) + 
+  ylim(c(0, 1000)) + 
+  xlab("rank HVGs") + 
+  ylab("rank method for SVGs") + 
+  ggtitle("Comparison of ranks SVGs vs. HVGs") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "ranks_scatter"))
+ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
+ggsave(paste0(fn, ".png"), width = 8, height = 4)
+
