@@ -232,3 +232,29 @@ fn <- here(file.path("plots", "evaluations", "ranks_scatter_mOB"))
 ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
 ggsave(paste0(fn, ".png"), width = 8, height = 4)
 
+
+# ---------------------
+# correlations of ranks
+# ---------------------
+
+# Spearman correlations comparing ranks against HVGs
+
+df_correlations_DLPFC <- data.frame(
+  nnSVG = cor(df_ranks_DLPFC_nnSVG_HVGs$rank_method, df_ranks_DLPFC_nnSVG_HVGs$rank_HVGs, method = "spearman"), 
+  SPARKX = cor(df_ranks_DLPFC_SPARKX_HVGs$rank_method, df_ranks_DLPFC_SPARKX_HVGs$rank_HVGs, method = "spearman"), 
+  dataset = "DLPFC"
+)
+
+df_correlations_mOB <- data.frame(
+  nnSVG = cor(df_ranks_mOB_nnSVG_HVGs$rank_method, df_ranks_mOB_nnSVG_HVGs$rank_HVGs, method = "spearman"), 
+  SPARKX = cor(df_ranks_mOB_SPARKX_HVGs$rank_method, df_ranks_mOB_SPARKX_HVGs$rank_HVGs, method = "spearman"), 
+  dataset = "mOB"
+)
+
+df_correlations <- 
+  rbind(df_correlations_DLPFC, df_correlations_mOB) %>% 
+  pivot_longer(., cols = c("nnSVG", "SPARKX"), 
+               names_to = "method", values_to = "correlation")
+
+df_correlations
+
