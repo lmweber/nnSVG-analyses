@@ -159,7 +159,8 @@ df_ranks_DLPFC_nnSVG_HVGs <-
             by = c("gene_id", "gene_name")) %>% 
   mutate(rank_method = rank_nnSVG) %>% 
   mutate(method = "nnSVG") %>% 
-  filter(rank_method <= 1000 | rank_HVGs <= 1000) %>% 
+  filter(rank_method <= 1000) %>% 
+  filter(rank_HVGs <= 1000) %>% 
   select(c("gene_id", "gene_name", "rank_HVGs", "rank_method", "method"))
 
 df_ranks_DLPFC_SPARKX_HVGs <- 
@@ -168,7 +169,8 @@ df_ranks_DLPFC_SPARKX_HVGs <-
             by = c("gene_id", "gene_name")) %>% 
   mutate(rank_method = rank_SPARKX) %>% 
   mutate(method = "SPARKX") %>% 
-  filter(rank_method <= 1000 | rank_HVGs <= 1000) %>% 
+  filter(rank_method <= 1000) %>% 
+  filter(rank_HVGs <= 1000) %>% 
   select(c("gene_id", "gene_name", "rank_HVGs", "rank_method", "method"))
 
 df_ranks_DLPFC <- full_join(df_ranks_DLPFC_nnSVG_HVGs, df_ranks_DLPFC_SPARKX_HVGs)
@@ -200,7 +202,8 @@ df_ranks_mOB_nnSVG_HVGs <-
             by = c("gene_name")) %>% 
   mutate(rank_method = rank_nnSVG) %>% 
   mutate(method = "nnSVG") %>% 
-  filter(rank_method <= 1000 | rank_HVGs <= 1000) %>% 
+  filter(rank_method <= 1000) %>% 
+  filter(rank_HVGs <= 1000) %>% 
   select(c("gene_name", "rank_HVGs", "rank_method", "method"))
 
 df_ranks_mOB_SPARKX_HVGs <- 
@@ -209,7 +212,8 @@ df_ranks_mOB_SPARKX_HVGs <-
             by = c("gene_name")) %>% 
   mutate(rank_method = rank_SPARKX) %>% 
   mutate(method = "SPARKX") %>% 
-  filter(rank_method <= 1000 | rank_HVGs <= 1000) %>% 
+  filter(rank_method <= 1000) %>% 
+  filter(rank_HVGs <= 1000) %>% 
   select(c("gene_name", "rank_HVGs", "rank_method", "method"))
 
 df_ranks_mOB <- full_join(df_ranks_mOB_nnSVG_HVGs, df_ranks_mOB_SPARKX_HVGs)
@@ -256,5 +260,17 @@ df_correlations <-
   pivot_longer(., cols = c("nnSVG", "SPARKX"), 
                names_to = "method", values_to = "correlation")
 
-df_correlations
+
+# plot correlations
+ggplot(as.data.frame(df_correlations), 
+       aes(x = correlation, y = dataset, color = method)) + 
+  geom_point(pch = 3, stroke = 2) + 
+  xlim(c(0, 1)) + 
+  xlab("Spearman correlation") + 
+  ggtitle("Correlation between ranks top 1000 SVGs vs. HVGs") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "correlations_ranks"))
+ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
+ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
