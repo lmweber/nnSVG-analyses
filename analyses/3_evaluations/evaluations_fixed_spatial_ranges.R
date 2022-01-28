@@ -147,9 +147,11 @@ ggsave(paste0(fn, ".pdf"), width = 7, height = 4)
 ggsave(paste0(fn, ".png"), width = 7, height = 4)
 
 
-# -----------------
-# ranks scatterplot
-# -----------------
+# ---------------------------
+# scatterplot comparing ranks
+# ---------------------------
+
+# DLPFC dataset
 
 df_ranks_DLPFC_nnSVG_HVGs <- 
   full_join(as.data.frame(res_list$DLPFC_nnSVG), 
@@ -182,10 +184,51 @@ ggplot(as.data.frame(df_ranks_DLPFC),
   ylim(c(0, 1000)) + 
   xlab("rank HVGs") + 
   ylab("rank method for SVGs") + 
-  ggtitle("Comparison of ranks SVGs vs. HVGs") + 
+  ggtitle("Comparison of ranks SVGs vs. HVGs: DLPFC dataset") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "ranks_scatter"))
+fn <- here(file.path("plots", "evaluations", "ranks_scatter_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
+ggsave(paste0(fn, ".png"), width = 8, height = 4)
+
+
+# mOB dataset
+
+df_ranks_mOB_nnSVG_HVGs <- 
+  full_join(as.data.frame(res_list$mOB_nnSVG), 
+            as.data.frame(res_list$mOB_HVGs), 
+            by = c("gene_name")) %>% 
+  mutate(rank_method = rank_nnSVG) %>% 
+  mutate(method = "nnSVG") %>% 
+  filter(rank_method <= 1000 | rank_HVGs <= 1000) %>% 
+  select(c("gene_name", "rank_HVGs", "rank_method", "method"))
+
+df_ranks_mOB_SPARKX_HVGs <- 
+  full_join(as.data.frame(res_list$mOB_SPARKX), 
+            as.data.frame(res_list$mOB_HVGs), 
+            by = c("gene_name")) %>% 
+  mutate(rank_method = rank_SPARKX) %>% 
+  mutate(method = "SPARKX") %>% 
+  filter(rank_method <= 1000 | rank_HVGs <= 1000) %>% 
+  select(c("gene_name", "rank_HVGs", "rank_method", "method"))
+
+df_ranks_mOB <- full_join(df_ranks_mOB_nnSVG_HVGs, df_ranks_mOB_SPARKX_HVGs)
+
+
+# plot comparisons of ranks
+ggplot(as.data.frame(df_ranks_mOB), 
+       aes(x = rank_HVGs, y = rank_method, color = method)) + 
+  facet_wrap(~ method) + 
+  geom_point(shape = 4) + 
+  coord_fixed() + 
+  xlim(c(0, 1000)) + 
+  ylim(c(0, 1000)) + 
+  xlab("rank HVGs") + 
+  ylab("rank method for SVGs") + 
+  ggtitle("Comparison of ranks SVGs vs. HVGs: mOB dataset") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "ranks_scatter_mOB"))
 ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
 ggsave(paste0(fn, ".png"), width = 8, height = 4)
 
