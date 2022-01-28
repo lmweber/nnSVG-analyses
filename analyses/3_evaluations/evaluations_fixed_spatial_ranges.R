@@ -73,9 +73,9 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
-# ------------------------------------------------------
-# overlaps: top n HVGs within top n SVGs for each method
-# ------------------------------------------------------
+# --------------------------------------------------------------------
+# proportion overlap between top n SVGs for each method and top n HVGs
+# --------------------------------------------------------------------
 
 # overlap sizes
 overlaps <- c(10, 20, 50, 100, 200)
@@ -139,56 +139,10 @@ ggplot(as.data.frame(df_overlaps),
   xlab("top n genes") + 
   ylab("proportion overlapping") + 
   scale_x_log10() + 
-  ggtitle("Proportion of top n HVGs within top n SVGs per method") + 
+  ggtitle("Proportion overlap between top n SVGs and HVGs") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "prop_overlap_HVGs_in_method"))
-ggsave(paste0(fn, ".pdf"), width = 7, height = 4)
-ggsave(paste0(fn, ".png"), width = 7, height = 4)
-
-
-# -------------------------------------------------
-# overlaps: top n SVGs from each method within HVGs
-# -------------------------------------------------
-
-# i.e. vice versa compared to above
-
-# use function to calculate overlaps
-
-df_overlaps_DLPFC_viceversa <- data.frame(
-  top_n = overlaps, 
-  dataset = "DLPFC", 
-  nnSVG = calc_overlaps("DLPFC_nnSVG", "DLPFC_HVGs"), 
-  SPARKX = calc_overlaps("DLPFC_SPARKX", "DLPFC_HVGs")
-)
-
-df_overlaps_mOB_viceversa <- data.frame(
-  top_n = overlaps, 
-  dataset = "mOB", 
-  nnSVG = calc_overlaps("mOB_nnSVG", "mOB_HVGs"), 
-  SPARKX = calc_overlaps("mOB_SPARKX", "mOB_HVGs")
-)
-
-df_overlaps_viceversa <- 
-  rbind(df_overlaps_DLPFC_viceversa, df_overlaps_mOB_viceversa) %>% 
-  pivot_longer(., cols = c("nnSVG", "SPARKX"), 
-               names_to = "method", values_to = "proportion")
-
-
-# plot overlaps
-ggplot(as.data.frame(df_overlaps_viceversa), 
-       aes(x = top_n, y = proportion, group = method, color = method)) + 
-  facet_wrap(~ dataset) + 
-  geom_line() + 
-  geom_point() + 
-  ylim(c(0, 1)) + 
-  xlab("top n genes") + 
-  ylab("proportion overlapping") + 
-  scale_x_log10() + 
-  ggtitle("Proportion of top n SVGs per method within top n HVGs") + 
-  theme_bw()
-
-fn <- here(file.path("plots", "evaluations", "prop_overlap_method_in_HVGs_viceversa"))
+fn <- here(file.path("plots", "evaluations", "prop_overlap_top_n_SVGs_HVGs"))
 ggsave(paste0(fn, ".pdf"), width = 7, height = 4)
 ggsave(paste0(fn, ".png"), width = 7, height = 4)
 
