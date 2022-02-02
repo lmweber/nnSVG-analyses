@@ -14,33 +14,27 @@ library(ggplot2)
 # load results
 # ------------
 
-# DLPFC and mOB datasets
+# DLPFC dataset
 
 res_list <- list(
   DLPFC_nnSVG = rowData(readRDS(here("outputs", "results", "nnSVG", "spe_DLPFC_nnSVG.rds"))), 
   DLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_DLPFC_SPARKX.rds"))), 
-  DLPFC_HVGs = rowData(readRDS(here("outputs", "results", "HVGs", "spe_DLPFC_HVGs.rds"))), 
-  mOB_nnSVG = rowData(readRDS(here("outputs", "results", "nnSVG", "spe_mOB_nnSVG.rds"))), 
-  mOB_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_mOB_SPARKX.rds"))), 
-  mOB_HVGs = rowData(readRDS(here("outputs", "results", "HVGs", "spe_mOB_HVGs.rds")))
+  DLPFC_HVGs = rowData(readRDS(here("outputs", "results", "HVGs", "spe_DLPFC_HVGs.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
 colnames(res_list[["DLPFC_nnSVG"]])[-(1:2)] <- paste0(colnames(res_list[["DLPFC_nnSVG"]]), "_nnSVG")[-(1:2)]
 colnames(res_list[["DLPFC_SPARKX"]])[-(1:2)] <- paste0(colnames(res_list[["DLPFC_SPARKX"]]), "_SPARKX")[-(1:2)]
 colnames(res_list[["DLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["DLPFC_HVGs"]]), "_HVGs")[-(1:2)]
-colnames(res_list[["mOB_nnSVG"]])[-(1:2)] <- paste0(colnames(res_list[["mOB_nnSVG"]]), "_nnSVG")[-(1:2)]
-colnames(res_list[["mOB_SPARKX"]])[-(1:2)] <- paste0(colnames(res_list[["mOB_SPARKX"]]), "_SPARKX")[-(1:2)]
-colnames(res_list[["mOB_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["mOB_HVGs"]]), "_HVGs")[-(1:2)]
 
 
 # ---------------------------
 # known SVGs in DLPFC dataset
 # ---------------------------
 
-# known SVGs with fixed spatial ranges: SNAP25, MOBP, PCP4
+# known SVGs with flexible spatial ranges: HBB, IGKC, NPY
 
-known_genes <- c("SNAP25", "MOBP", "PCP4")
+known_genes <- c("HBB", "IGKC", "NPY")
 
 all(res_list$DLPFC_nnSVG$gene_id == res_list$DLPFC_SPARKX$gene_id)
 all(res_list$DLPFC_nnSVG$gene_id == res_list$DLPFC_HVGs$gene_id)
@@ -69,7 +63,7 @@ ggplot(as.data.frame(df_known_DLPFC),
   theme_bw() + 
   theme(axis.title.y = element_blank())
 
-fn <- here(file.path("plots", "evaluations", "DLPFC_known_SVGs_ranks_fixed"))
+fn <- here(file.path("plots", "evaluations", "DLPFC_known_SVGs_ranks_flexible"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -117,16 +111,8 @@ df_overlaps_DLPFC <- data.frame(
   SPARKX = calc_overlaps("DLPFC_HVGs", "DLPFC_SPARKX")
 )
 
-df_overlaps_mOB <- data.frame(
-  top_n = overlaps, 
-  dataset = "mOB", 
-  nnSVG = calc_overlaps("mOB_HVGs", "mOB_nnSVG"), 
-  SPARKX = calc_overlaps("mOB_HVGs", "mOB_SPARKX")
-)
-
 df_overlaps <- 
-  rbind(df_overlaps_DLPFC, df_overlaps_mOB) %>% 
-  pivot_longer(., cols = c("nnSVG", "SPARKX"), 
+  pivot_longer(df_overlaps_DLPFC, cols = c("nnSVG", "SPARKX"), 
                names_to = "method", values_to = "proportion")
 
 
@@ -143,7 +129,7 @@ ggplot(as.data.frame(df_overlaps),
   ggtitle("Proportion overlap between top n SVGs and HVGs") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "prop_overlap_top_n_SVGs_HVGs_fixed"))
+fn <- here(file.path("plots", "evaluations", "prop_overlap_top_n_SVGs_HVGs_flexible"))
 ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
 ggsave(paste0(fn, ".png"), width = 8, height = 4)
 
@@ -190,50 +176,7 @@ ggplot(as.data.frame(df_ranks_DLPFC),
   ggtitle("Comparison of ranks SVGs vs. HVGs: DLPFC dataset") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "ranks_scatter_DLPFC_fixed"))
-ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
-ggsave(paste0(fn, ".png"), width = 8, height = 4)
-
-
-# mOB dataset
-
-df_ranks_mOB_nnSVG_HVGs <- 
-  full_join(as.data.frame(res_list$mOB_nnSVG), 
-            as.data.frame(res_list$mOB_HVGs), 
-            by = c("gene_name")) %>% 
-  mutate(rank_method = rank_nnSVG) %>% 
-  mutate(method = "nnSVG") %>% 
-  filter(rank_method <= 1000) %>% 
-  filter(rank_HVGs <= 1000) %>% 
-  select(c("gene_name", "rank_HVGs", "rank_method", "method"))
-
-df_ranks_mOB_SPARKX_HVGs <- 
-  full_join(as.data.frame(res_list$mOB_SPARKX), 
-            as.data.frame(res_list$mOB_HVGs), 
-            by = c("gene_name")) %>% 
-  mutate(rank_method = rank_SPARKX) %>% 
-  mutate(method = "SPARKX") %>% 
-  filter(rank_method <= 1000) %>% 
-  filter(rank_HVGs <= 1000) %>% 
-  select(c("gene_name", "rank_HVGs", "rank_method", "method"))
-
-df_ranks_mOB <- full_join(df_ranks_mOB_nnSVG_HVGs, df_ranks_mOB_SPARKX_HVGs)
-
-
-# plot comparisons of ranks
-ggplot(as.data.frame(df_ranks_mOB), 
-       aes(x = rank_HVGs, y = rank_method, color = method)) + 
-  facet_wrap(~ method) + 
-  geom_point(shape = 4) + 
-  coord_fixed() + 
-  xlim(c(0, 1000)) + 
-  ylim(c(0, 1000)) + 
-  xlab("rank HVGs") + 
-  ylab("rank method for SVGs") + 
-  ggtitle("Comparison of ranks SVGs vs. HVGs: mOB dataset") + 
-  theme_bw()
-
-fn <- here(file.path("plots", "evaluations", "ranks_scatter_mOB_fixed"))
+fn <- here(file.path("plots", "evaluations", "ranks_scatter_DLPFC_flexible"))
 ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
 ggsave(paste0(fn, ".png"), width = 8, height = 4)
 
@@ -250,15 +193,8 @@ df_correlations_DLPFC <- data.frame(
   dataset = "DLPFC"
 )
 
-df_correlations_mOB <- data.frame(
-  nnSVG = cor(df_ranks_mOB_nnSVG_HVGs$rank_method, df_ranks_mOB_nnSVG_HVGs$rank_HVGs, method = "spearman"), 
-  SPARKX = cor(df_ranks_mOB_SPARKX_HVGs$rank_method, df_ranks_mOB_SPARKX_HVGs$rank_HVGs, method = "spearman"), 
-  dataset = "mOB"
-)
-
 df_correlations <- 
-  rbind(df_correlations_DLPFC, df_correlations_mOB) %>% 
-  pivot_longer(., cols = c("nnSVG", "SPARKX"), 
+  pivot_longer(df_correlations_DLPFC, cols = c("nnSVG", "SPARKX"), 
                names_to = "method", values_to = "correlation")
 
 
@@ -271,7 +207,7 @@ ggplot(as.data.frame(df_correlations),
   ggtitle("Correlation between ranks top 1000 SVGs vs. HVGs") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "correlations_ranks_fixed"))
+fn <- here(file.path("plots", "evaluations", "correlations_ranks_flexible"))
 ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
 ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
