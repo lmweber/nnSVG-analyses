@@ -103,11 +103,13 @@ for (i in seq_along(n)) {
   spe_sub <- spe[, ix[[i]]]
   runtimes_i <- rep(NA, n_iters)
   
+  # seed for reproducibility
+  # (note: set seed outside loop to allow variability across runs)
+  set.seed(123)
+  
   for (j in seq_len(n_iters)) {
     print(paste0("loop iteration i = ", i, ", n[i] = ", n[i], ", j = ", j))
     
-    # seed for reproducibility
-    set.seed(123)
     # skip filtering since already performed above
     runtime <- system.time({
       out <- nnSVG(spe_sub, filter_genes = FALSE, filter_mito = FALSE, n_threads = 1)
