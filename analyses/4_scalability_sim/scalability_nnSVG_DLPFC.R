@@ -3,7 +3,7 @@
 # Lukas Weber, Feb 2022
 ####################################
 
-# method: nnSVG
+# nnSVG, DLPFC dataset
 
 # interactive cluster session
 # qrsh -pe local 10 -l mem_free=2G,h_vmem=3G,h_fsize=100G -now n
@@ -108,9 +108,9 @@ for (i in seq_along(n)) {
 # save results
 # ------------
 
-file_res <- here("outputs", "scalability", "res_scalability_nnSVG.rds")
+file_res <- here("outputs", "scalability", "res_scalability_nnSVG_DLPFC.rds")
 saveRDS(res, file = file_res)
 
-file_runtimes <- here("outputs", "scalability", "runtimes_scalability_nnSVG.rds")
+file_runtimes <- here("outputs", "scalability", "runtimes_scalability_nnSVG_DLPFC.rds")
 saveRDS(runtimes, file = file_runtimes)
 
