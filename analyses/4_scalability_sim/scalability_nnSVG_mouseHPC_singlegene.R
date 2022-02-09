@@ -5,6 +5,12 @@
 
 # nnSVG, Slide-seqV2 mouse hippocampus dataset, single gene
 
+# note: require large amount of memory to calculate deviance residuals on this dataset
+
+# interactive cluster session
+# qrsh -l mem_free=100G,h_vmem=110G,h_fsize=100G -now n
+# module load conda_R/4.1.x
+
 
 library(SpatialExperiment)
 library(STexampleData)
@@ -89,6 +95,9 @@ dim(spe)
 
 res <- as.list(rep(NA, length(n)))
 runtimes <- as.list(rep(NA, length(n)))
+
+names(res) <- paste0("n", n)
+names(runtimes) <- paste0("n", n)
 
 for (i in seq_along(n)) {
   print(paste0("loop iteration i = ", i, ", n[i] = ", n[i]))
