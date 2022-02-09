@@ -5,12 +5,15 @@
 
 # method: nnSVG
 
+# interactive cluster session
+# qrsh -pe local 10 -l mem_free=2G,h_vmem=3G,h_fsize=100G -now n
+# module load conda_R/4.1.x
+
 
 library(SpatialExperiment)
 library(STexampleData)
 library(nnSVG)
 library(scry)
-library(ggplot2)
 library(here)
 
 
@@ -91,7 +94,7 @@ for (i in seq_along(n)) {
   set.seed(123)
   # skip filtering since already performed above
   runtime <- system.time({
-    out <- nnSVG(spe_sub, filter_genes = FALSE, filter_mito = FALSE, n_threads = 4)
+    out <- nnSVG(spe_sub, filter_genes = FALSE, filter_mito = FALSE, n_threads = 10)
   })
   
   res[[i]] <- rowData(out)
