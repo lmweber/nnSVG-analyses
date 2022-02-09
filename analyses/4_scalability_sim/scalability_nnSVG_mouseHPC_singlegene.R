@@ -93,37 +93,37 @@ dim(spe)
 
 # run nnSVG in loop for each subsampled set of spots
 
-res <- as.list(rep(NA, length(n)))
 runtimes <- as.list(rep(NA, length(n)))
+names(runtimes) <- n
 
-names(res) <- paste0("n", n)
-names(runtimes) <- paste0("n", n)
+# repeat runs due to stochasticity
+n_iters <- 10
 
 for (i in seq_along(n)) {
-  print(paste0("loop iteration i = ", i, ", n[i] = ", n[i]))
-  
   spe_sub <- spe[, ix[[i]]]
+  runtimes_i <- rep(NA, n_iters)
   
-  # seed for reproducibility
-  set.seed(123)
-  # skip filtering since already performed above
-  runtime <- system.time({
-    out <- nnSVG(spe_sub, filter_genes = FALSE, filter_mito = FALSE, n_threads = 1)
-  })
+  for (j in seq_len(n_iters)) {
+    print(paste0("loop iteration i = ", i, ", n[i] = ", n[i], ", j = ", j))
+    
+    # seed for reproducibility
+    set.seed(123)
+    # skip filtering since already performed above
+    runtime <- system.time({
+      out <- nnSVG(spe_sub, filter_genes = FALSE, filter_mito = FALSE, n_threads = 1)
+    })
+    
+    # 'elapsed' time is real human time
+    runtimes_i[j] <- runtime[["elapsed"]]
+  }
   
-  res[[i]] <- rowData(out)
-  
-  # 'elapsed' time is real human time
-  runtimes[[i]] <- runtime[["elapsed"]]
+  runtimes[[i]] <- runtimes_i
 }
 
 
 # ------------
 # save results
 # ------------
-
-file_res <- here("outputs", "scalability", "res_scalability_nnSVG_mouseHPC_singlegene.rds")
-saveRDS(res, file = file_res)
 
 file_runtimes <- here("outputs", "scalability", "runtimes_scalability_nnSVG_mouseHPC_singlegene.rds")
 saveRDS(runtimes, file = file_runtimes)
