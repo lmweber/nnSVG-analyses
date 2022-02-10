@@ -3,7 +3,7 @@
 # Lukas Weber, Feb 2022
 ####################################
 
-# nnSVG, DLPFC dataset
+# nnSVG, human DLPFC dataset, all genes
 
 # interactive cluster session
 # qrsh -pe local 10 -l mem_free=2G,h_vmem=3G,h_fsize=100G -now n
@@ -35,7 +35,7 @@ dim(spe)
 n_all <- ncol(spe)
 n_all
 
-n <- c(100, 200, 500, 1000, 2000, n_all)
+n <- c(200, 500, 1000, 2000, n_all)
 
 ix <- as.list(rep(NA, length(n)))
 
@@ -82,25 +82,33 @@ assayNames(spe)
 
 # run nnSVG in loop for each subsampled set of spots
 
-res <- as.list(rep(NA, length(n)))
 runtimes <- as.list(rep(NA, length(n)))
+names(runtimes) <- n
+
+# repeat runs due to stochasticity
+n_iters <- 1
 
 for (i in seq_along(n)) {
-  print(paste0("loop iteration i = ", i, ", n[i] = ", n[i]))
-  
   spe_sub <- spe[, ix[[i]]]
+  runtimes_i <- rep(NA, n_iters)
   
   # seed for reproducibility
+  # (note: set seed outside loop to allow variability across runs)
   set.seed(123)
-  # skip filtering since already performed above
-  runtime <- system.time({
-    out <- nnSVG(spe_sub, filter_genes = FALSE, filter_mito = FALSE, n_threads = 10)
-  })
   
-  res[[i]] <- rowData(out)
+  for (j in seq_len(n_iters)) {
+    print(paste0("loop iteration i = ", i, ", n[i] = ", n[i], ", j = ", j))
+    
+    # skip filtering since already performed above
+    runtime <- system.time({
+      out <- nnSVG(spe_sub, filter_genes = FALSE, filter_mito = FALSE, n_threads = 10)
+    })
+    
+    # 'elapsed' time is real human time
+    runtimes_i[j] <- runtime[["elapsed"]]
+  }
   
-  # 'elapsed' time is real human time
-  runtimes[[i]] <- runtime[["elapsed"]]
+  runtimes[[i]] <- runtimes_i
 }
 
 
@@ -108,9 +116,6 @@ for (i in seq_along(n)) {
 # save results
 # ------------
 
-file_res <- here("outputs", "scalability", "res_scalability_nnSVG_DLPFC.rds")
-saveRDS(res, file = file_res)
-
-file_runtimes <- here("outputs", "scalability", "runtimes_scalability_nnSVG_DLPFC.rds")
+file_runtimes <- here("outputs", "scalability", "runtimes_scalability_nnSVG_DLPFC_allgenes.rds")
 saveRDS(runtimes, file = file_runtimes)
 
