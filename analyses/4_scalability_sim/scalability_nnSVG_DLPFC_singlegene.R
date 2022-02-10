@@ -35,7 +35,7 @@ dim(spe)
 n_all <- ncol(spe)
 n_all
 
-n <- c(100, 200, 500, 1000, 2000, n_all)
+n <- c(200, 500, 1000, 2000, n_all)
 
 ix <- as.list(rep(NA, length(n)))
 
