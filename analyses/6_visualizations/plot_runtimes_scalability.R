@@ -106,7 +106,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
         panel.grid.minor.y = element_blank(), 
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-ggsave(here("plots", "scalability", "runtimes_nnSVG_DLPFC_singlegene.png"), width = 5.5, height = 4.5)
+ggsave(here("plots", "scalability", "runtimes_nnSVG_DLPFC_singlegene.png"), width = 6, height = 4.5)
 
 
 # mouseHPC dataset
@@ -144,7 +144,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
   theme_bw() + 
   theme(panel.grid.minor.x = element_blank(), 
         panel.grid.minor.y = element_blank(), 
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+        axis.text.x = element_text(size = 7, angle = 90, vjust = 0.5, hjust = 1))
 
-ggsave(here("plots", "scalability", "runtimes_nnSVG_mouseHPC_singlegene.png"), width = 5.5, height = 4.5)
+ggsave(here("plots", "scalability", "runtimes_nnSVG_mouseHPC_singlegene.png"), width = 6, height = 4.5)
 
