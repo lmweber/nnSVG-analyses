@@ -40,12 +40,11 @@ df_runtimes_mouseHPC <- cbind(
 
 # calculate linear slope
 slope_DLPFC <- 
-  (mean(mat_runtimes_DLPFC["3639", ]) - mean(mat_runtimes_DLPFC["2000", ])) / (3639 - 2000)
-# calculate linear and cubic lines
-lin <- as.numeric(df_runtimes_DLPFC$n_spots) * slope_DLPFC
-cub <- (as.numeric(df_runtimes_DLPFC$n_spots) * slope_DLPFC)^3
-# rebase cubic to start at same value as linear
-cub <- cub + (lin[1] - cub[1])
+  (mean(mat_runtimes_DLPFC["1000", ]) - mean(mat_runtimes_DLPFC["500", ])) / (1000 - 500)
+# calculate linear and cubic lines starting from first point
+n_spots <- as.numeric(df_runtimes_DLPFC$n_spots)
+lin <- mean(mat_runtimes_DLPFC[1, ]) + (slope_DLPFC * (n_spots - min(n_spots)))
+cub <- lin + (lin - lin[1])^3
 df_runtimes_DLPFC <- cbind(
   df_runtimes_DLPFC, 
   linear = lin, 
@@ -54,12 +53,11 @@ df_runtimes_DLPFC <- cbind(
 
 # calculate linear slope
 slope_mouseHPC <- 
-  (mean(mat_runtimes_mouseHPC["20000", ]) - mean(mat_runtimes_mouseHPC["10000", ])) / (20000 - 10000)
-# calculate linear and cubic lines
-lin <- as.numeric(df_runtimes_mouseHPC$n_spots) * slope_mouseHPC
-cub <- (as.numeric(df_runtimes_mouseHPC$n_spots) * slope_mouseHPC)^3
-# rebase cubic to start at same value as linear
-cub <- cub + (lin[1] - cub[1])
+  (mean(mat_runtimes_mouseHPC["40000", ]) - mean(mat_runtimes_mouseHPC["20000", ])) / (40000 - 20000)
+# calculate linear and cubic lines starting from first point
+n_spots <- as.numeric(df_runtimes_mouseHPC$n_spots)
+lin <- mean(mat_runtimes_mouseHPC[1, ]) + (slope_mouseHPC * (n_spots - min(n_spots)))
+cub <- lin + (lin - lin[1])^3
 df_runtimes_mouseHPC <- cbind(
   df_runtimes_mouseHPC, 
   linear = lin, 
@@ -82,26 +80,24 @@ x_vals <- c(0, unique(df$n_spots))
 
 pal <- "purple3"
 
-df_trends <- df_runtimes_DLPFC
+df_trends <- pivot_longer(df_runtimes_DLPFC[, c("n_spots", "linear", "cubic")], 
+                          cols = c("linear", "cubic"), 
+                          names_to = "trend", values_to = "trend_val")
 df_trends$n_spots <- as.numeric(df_trends$n_spots)
-df_trends$dataset <- as.factor(df_trends$dataset)
+df_trends$trend <- factor(df_trends$trend, levels = c("linear", "cubic"))
 
 # seed for geom_jitter so no points missing
 set.seed(6)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
   geom_boxplot(lwd = 0.75, outlier.shape = NA) + 
   geom_jitter(width = 100, size = 1.5, alpha = 0.75) + 
-  geom_point(data = df_trends, aes(x = n_spots, y = linear), 
+  geom_point(data = df_trends, aes(x = n_spots, y = trend_val, group = NULL), 
              color = "black", alpha = 0.5) + 
-  geom_line(data = df_trends, aes(x = n_spots, y = linear, group = NULL), 
+  geom_line(data = df_trends, aes(x = n_spots, y = trend_val, linetype = trend, group = NULL), 
             color = "black", alpha = 0.5) + 
-  geom_point(data = df_trends, aes(x = n_spots, y = cubic), 
-             color = "black", alpha = 0.5) + 
-  geom_line(data = df_trends, aes(x = n_spots, y = cubic, group = NULL), 
-            linetype = "dashed", color = "black", alpha = 0.5) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
-  ylim(c(0, 9.1)) + 
+  ylim(c(0, 8.6)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
   ggtitle("Scalability: nnSVG") + 
@@ -124,26 +120,24 @@ x_vals <- c(0, unique(df$n_spots))
 
 pal <- "red"
 
-df_trends <- df_runtimes_mouseHPC
+df_trends <- pivot_longer(df_runtimes_mouseHPC[, c("n_spots", "linear", "cubic")], 
+                          cols = c("linear", "cubic"), 
+                          names_to = "trend", values_to = "trend_val")
 df_trends$n_spots <- as.numeric(df_trends$n_spots)
-df_trends$dataset <- as.factor(df_trends$dataset)
+df_trends$trend <- factor(df_trends$trend, levels = c("linear", "cubic"))
 
 # seed for geom_jitter so no points missing
 set.seed(6)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
-  geom_boxplot(lwd = 0.75, outlier.shape = NA) + 
-  geom_jitter(width = 100, size = 1.5, alpha = 0.75) + 
-  geom_point(data = df_trends, aes(x = n_spots, y = linear), 
+  geom_boxplot(width = 2000, lwd = 0.75, outlier.shape = NA) + 
+  geom_jitter(width = 1000, size = 1.5, alpha = 0.75) + 
+  geom_point(data = df_trends, aes(x = n_spots, y = trend_val, group = NULL), 
              color = "black", alpha = 0.5) + 
-  geom_line(data = df_trends, aes(x = n_spots, y = linear, group = NULL), 
+  geom_line(data = df_trends, aes(x = n_spots, y = trend_val, linetype = trend, group = NULL), 
             color = "black", alpha = 0.5) + 
-  geom_point(data = df_trends, aes(x = n_spots, y = cubic), 
-             color = "black", alpha = 0.5) + 
-  geom_line(data = df_trends, aes(x = n_spots, y = cubic, group = NULL), 
-            linetype = "dashed", color = "black", alpha = 0.5) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
-  ylim(c(0, 9.1)) + 
+  ylim(c(0, 152)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
   ggtitle("Scalability: nnSVG") + 
