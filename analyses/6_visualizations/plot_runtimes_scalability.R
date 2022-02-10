@@ -14,8 +14,10 @@ library(ggplot2)
 # load results
 # ------------
 
-runtimes_nnSVG_DLPFC_singlegene <- readRDS(here("outputs", "scalability", "runtimes_scalability_nnSVG_DLPFC_singlegene.rds"))
-runtimes_nnSVG_mouseHPC_singlegene <- readRDS(here("outputs", "scalability", "runtimes_scalability_nnSVG_mouseHPC_singlegene.rds"))
+runtimes_nnSVG_DLPFC_singlegene <- readRDS(here(
+  "outputs", "scalability", "runtimes_scalability_nnSVG_DLPFC_singlegene.rds"))
+runtimes_nnSVG_mouseHPC_singlegene <- readRDS(here(
+  "outputs", "scalability", "runtimes_scalability_nnSVG_mouseHPC_singlegene.rds"))
 
 mat_runtimes_DLPFC <- do.call("rbind", runtimes_nnSVG_DLPFC_singlegene)
 colnames(mat_runtimes_DLPFC) <- paste0("seed", 1:ncol(mat_runtimes_DLPFC))
@@ -47,20 +49,23 @@ x_vals <- c(0, unique(df$n_spots))
 
 pal <- "purple3"
 
+# seed for geom_jitter so no points missing
+set.seed(6)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
-  geom_boxplot(lwd = 0.75, outlier.size = 0.75) + 
+  geom_boxplot(lwd = 0.75, outlier.shape = NA) + 
+  geom_jitter(width = 100, size = 1.5, alpha = 0.75) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
   ylim(c(0, max(df$runtime))) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
-  ggtitle("Scalability: nnSVG, single gene") + 
+  ggtitle("Scalability: nnSVG") + 
   theme_bw() + 
   theme(panel.grid.minor.x = element_blank(), 
         panel.grid.minor.y = element_blank(), 
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-ggsave(here("plots", "scalability", "runtimes_DLPFC_singlegene.png"), width = 5.5, height = 4.5)
+ggsave(here("plots", "scalability", "runtimes_nnSVG_DLPFC_singlegene.png"), width = 5.5, height = 4.5)
 
 
 # mouseHPC dataset
@@ -74,18 +79,21 @@ x_vals <- c(0, unique(df$n_spots))
 
 pal <- "red"
 
+# seed for geom_jitter so no points missing
+set.seed(6)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
-  geom_boxplot(lwd = 0.75, outlier.size = 0.75) + 
+  geom_boxplot(lwd = 0.75, outlier.shape = NA) + 
+  geom_jitter(width = 100, size = 1.5, alpha = 0.75) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
   ylim(c(0, max(df$runtime))) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
-  ggtitle("Scalability: nnSVG, single gene") + 
+  ggtitle("Scalability: nnSVG") + 
   theme_bw() + 
   theme(panel.grid.minor.x = element_blank(), 
         panel.grid.minor.y = element_blank(), 
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-ggsave(here("plots", "scalability", "runtimes_mouseHPC_singlegene.png"), width = 5.5, height = 4.5)
+ggsave(here("plots", "scalability", "runtimes_nnSVG_mouseHPC_singlegene.png"), width = 5.5, height = 4.5)
 
