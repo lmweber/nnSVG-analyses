@@ -17,23 +17,19 @@ library(ggplot2)
 runtimes_nnSVG_DLPFC_singlegene <- readRDS(here("outputs", "scalability", "runtimes_scalability_nnSVG_DLPFC_singlegene.rds"))
 runtimes_nnSVG_mouseHPC_singlegene <- readRDS(here("outputs", "scalability", "runtimes_scalability_nnSVG_mouseHPC_singlegene.rds"))
 
-x_vals <- sort(unique(as.numeric(c(0, 
-  gsub("^n", "", names(runtimes_nnSVG_DLPFC_singlegene)), 
-  gsub("^n", "", names(runtimes_nnSVG_mouseHPC_singlegene))))))
-x_vals
-x_nms <- paste0("n", x_vals)
+mat_runtimes_DLPFC <- do.call("rbind", runtimes_nnSVG_DLPFC_singlegene)
+colnames(mat_runtimes_DLPFC) <- paste0("seed", 1:ncol(mat_runtimes_DLPFC))
+df_runtimes_DLPFC <- cbind(
+  n_spots = rownames(mat_runtimes_DLPFC), 
+  dataset = "DLPFC", 
+  as.data.frame(mat_runtimes_DLPFC))
 
-df_runtimes <- data.frame(
-  n_spots = x_vals, 
-  DLPFC = NA, 
-  mouseHPC = NA, 
-  row.names = x_nms
-)
-
-df_runtimes[names(unlist(runtimes_nnSVG_DLPFC_singlegene)), "DLPFC"] <- unlist(runtimes_nnSVG_DLPFC_singlegene)
-df_runtimes[names(unlist(runtimes_nnSVG_mouseHPC_singlegene)), "mouseHPC"] <- unlist(runtimes_nnSVG_mouseHPC_singlegene)
-
-df_runtimes
+mat_runtimes_mouseHPC <- do.call("rbind", runtimes_nnSVG_mouseHPC_singlegene)
+colnames(mat_runtimes_mouseHPC) <- paste0("seed", 1:ncol(mat_runtimes_mouseHPC))
+df_runtimes_mouseHPC <- cbind(
+  n_spots = rownames(mat_runtimes_mouseHPC), 
+  dataset = "mouseHPC", 
+  as.data.frame(mat_runtimes_mouseHPC))
 
 
 # --------------
@@ -42,18 +38,19 @@ df_runtimes
 
 # DLPFC dataset
 
-df <- pivot_longer(na.omit(df_runtimes[, c("n_spots", "DLPFC")]), 
-                   cols = "DLPFC", 
-                   names_to = "dataset", values_to = "runtime")
+df <- pivot_longer(df_runtimes_DLPFC, cols = starts_with("seed"), 
+                   names_to = "seed", values_to = "runtime")
+df$n_spots <- as.numeric(df$n_spots)
 df$dataset <- as.factor(df$dataset)
+
+x_vals <- c(0, unique(df$n_spots))
 
 pal <- "purple3"
 
-ggplot(df, aes(x = n_spots, y = runtime, color = dataset)) + 
-  geom_line() + 
-  geom_point() + 
+ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
+  geom_boxplot(lwd = 0.75, outlier.size = 0.75) + 
   scale_color_manual(values = pal) + 
-  scale_x_continuous(breaks = c(0, df$n_spots)) + 
+  scale_x_continuous(breaks = x_vals) + 
   ylim(c(0, max(df$runtime))) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
@@ -68,18 +65,19 @@ ggsave(here("plots", "scalability", "runtimes_DLPFC_singlegene.png"), width = 5.
 
 # mouseHPC dataset
 
-df <- pivot_longer(na.omit(df_runtimes[, c("n_spots", "mouseHPC")]), 
-                   cols = "mouseHPC", 
-                   names_to = "dataset", values_to = "runtime")
+df <- pivot_longer(df_runtimes_mouseHPC, cols = starts_with("seed"), 
+                   names_to = "seed", values_to = "runtime")
+df$n_spots <- as.numeric(df$n_spots)
 df$dataset <- as.factor(df$dataset)
+
+x_vals <- c(0, unique(df$n_spots))
 
 pal <- "red"
 
-ggplot(df, aes(x = n_spots, y = runtime, color = dataset)) + 
-  geom_line() + 
-  geom_point() + 
+ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
+  geom_boxplot(lwd = 0.75, outlier.size = 0.75) + 
   scale_color_manual(values = pal) + 
-  scale_x_continuous(breaks = c(0, df$n_spots)) + 
+  scale_x_continuous(breaks = x_vals) + 
   ylim(c(0, max(df$runtime))) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
