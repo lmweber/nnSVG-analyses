@@ -206,3 +206,51 @@ fn <- here(file.path("plots", "evaluations", "correlations_ranks_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
 ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
+
+# ---------------------
+# p-value distributions
+# ---------------------
+
+df_pvals_DLPFC <- 
+  as.data.frame(res_list$DLPFC_nnSVG) %>% 
+  mutate(is_known = gene_name %in% known_genes)
+
+# plot p-values
+ggplot(df_pvals_DLPFC, aes(x = pval_nnSVG)) + 
+  geom_histogram(color = "black", fill = "mediumturquoise") + 
+  xlab("adjusted p-values") + 
+  ggtitle("P-values: nnSVG, DLPFC dataset") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "pval_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# -----------------------
+# bandwidth distributions
+# -----------------------
+
+df_bandwidth_DLPFC <- 
+  as.data.frame(res_list$DLPFC_nnSVG) %>% 
+  mutate(is_known = gene_name %in% known_genes) %>% 
+  mutate(l_nnSVG = 1 / phi_nnSVG)
+
+phis <- df_bandwidth_DLPFC$phi_nnSVG
+names(phis) <- df_bandwidth_DLPFC$gene_name
+phis_known <- phis[known_genes]
+
+# plot bandwidths
+ggplot(df_bandwidth_DLPFC, aes(x = phi_nnSVG)) + 
+  geom_histogram(color = "royalblue", fill = "royalblue") + 
+  sapply(phis_known, function(xint) geom_vline(xintercept = xint, color = "red")) + 
+  geom_text(data = df_bandwidth_DLPFC %>% filter(gene_name %in% known_genes), 
+            aes(y = phi_nnSVG * 50, label = gene_name), size = 3) + 
+  xlab("phi") + 
+  ggtitle("Estimated bandwidth: nnSVG, DLPFC dataset") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "bandwidth_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
