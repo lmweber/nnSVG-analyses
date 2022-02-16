@@ -71,7 +71,34 @@ ggplot(as.data.frame(df_known_DLPFC),
   ggtitle("DLPFC dataset: known SVGs") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "known_genes_DLPFC"))
+fn <- here(file.path("plots", "evaluations", "known_genes_ranks_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# -------------------------------------
+# likelihood ratio statistics vs. ranks
+# -------------------------------------
+
+# plot likelihood ratio statistics vs. ranks
+
+df_nnSVG_DLPFC <- 
+  as.data.frame(res_list$DLPFC_nnSVG) %>% 
+  mutate(is_known = gene_name %in% known_genes) %>% 
+  filter(rank_nnSVG <= 1000)
+
+ggplot(as.data.frame(df_nnSVG_DLPFC), 
+       aes(x = rank_nnSVG, y = LR_stat_nnSVG, label = gene_name)) + 
+  geom_line(color = "navy") + 
+  geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% known_genes), 
+             size = 2, color = "firebrick3") + 
+  geom_text_repel(data = filter(df_nnSVG_DLPFC, gene_name %in% known_genes), 
+                  nudge_x = 80, nudge_y = 350, size = 3, color = "firebrick3") + 
+  labs(x = "rank", y = "likelihood ratio statistic") + 
+  ggtitle("nnSVG: DLPFC dataset") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
