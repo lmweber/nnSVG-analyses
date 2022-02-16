@@ -149,6 +149,33 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
+# ------------
+# effect sizes
+# ------------
+
+df_effect <- 
+  as.data.frame(df_nnSVG_DLPFC) %>% 
+  mutate(is_marker_or_known = is_marker | is_known) %>% 
+  filter(rank_nnSVG <= 1000)
+
+ggplot(df_effect, 
+       aes(x = prop_sv_nnSVG, y = LR_stat_nnSVG, 
+           color = is_marker_or_known, shape = is_marker_or_known)) + 
+  geom_point() + 
+  scale_color_manual(values = c("black", "red"), name = "marker or\nknown") + 
+  scale_shape_manual(values = c(1, 19), name = "marker or\nknown") + 
+  geom_text_repel(data = df_effect %>% filter(is_known), 
+                  aes(label = gene_name), nudge_y = 2000) + 
+  labs(x = "proportion of spatial variance", 
+       y = "likelihood ratio statistic") + 
+  ggtitle("nnSVG: DLPFC") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "effect_sizes_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
 # --------------------------------------------------------------------
 # proportion overlap between top n SVGs for each method and top n HVGs
 # --------------------------------------------------------------------
