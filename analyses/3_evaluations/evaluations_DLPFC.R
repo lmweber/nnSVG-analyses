@@ -146,6 +146,8 @@ ggplot(as.data.frame(df_nnSVG_DLPFC),
   geom_line(color = "navy") + 
   geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% manual_genes_all), 
              pch = 1, size = 2, color = "firebrick3") + 
+  geom_rug(data = df_nnSVG_DLPFC %>% filter(is_marker_or_known), 
+           aes(x = rank_nnSVG), sides = "b", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = "adjusted p-value = 0.05", 
@@ -192,6 +194,8 @@ ggplot(as.data.frame(df_SPARKX_DLPFC),
   geom_line(color = "navy") + 
   geom_point(data = filter(df_SPARKX_DLPFC, gene_name %in% manual_genes_all), 
              pch = 1, size = 2, color = "firebrick3") + 
+  geom_rug(data = df_SPARKX_DLPFC %>% filter(is_marker_or_known), 
+           aes(x = rank_SPARKX), sides = "b", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = "adjusted p-value\n = 0.05", 
