@@ -14,6 +14,8 @@ library(ggplot2)
 # load results
 # ------------
 
+# scalable methods: nnSVG, SPARK-X, HVGs
+
 res_list <- list(
   DLPFC_nnSVG = rowData(readRDS(here("outputs", "results", "nnSVG", "spe_DLPFC_nnSVG.rds"))), 
   DLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_DLPFC_SPARKX.rds"))), 
@@ -48,20 +50,25 @@ df_known_DLPFC <-
   pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs"), 
                names_to = "method", 
                values_to = "rank") %>% 
-  mutate(method = gsub("^rank_", "", method))
+  mutate(method = factor(gsub("^rank_", "", method), 
+                         levels = c("nnSVG", "SPARKX", "HVGs"))) %>% 
+  mutate(gene_name = factor(gene_name, levels = c("MOBP", "PCP4", "SNAP25", 
+                                                  "HBB", "IGKC", "NPY")))
 
 
 # plot ranks
 ggplot(as.data.frame(df_known_DLPFC), 
-       aes(x = rank, y = gene_name, group = method, color = method)) + 
-  geom_point(pch = 4, stroke = 2) + 
-  scale_x_log10() + 
-  #scale_color_manual(values = c("maroon", "#F8766D", "#00BFC4")) + 
-  ggtitle("DLPFC dataset, known SVGs") + 
-  theme_bw() + 
-  theme(axis.title.y = element_blank())
+       aes(x = gene_name, y = rank, group = method, color = method, shape = method)) + 
+  geom_point(stroke = 2, size = 2) + 
+  scale_shape_manual(values = c(4, 3, 1)) + 
+  scale_color_manual(values = c("royalblue3", "maroon", "orange")) + 
+  scale_y_log10(limits = range(df_known_DLPFC$rank)) + 
+  geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
+  labs(x = "gene", y = "rank") + 
+  ggtitle("DLPFC dataset: known SVGs") + 
+  theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "known_genes_all_DLPFC"))
+fn <- here(file.path("plots", "evaluations", "known_genes_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
