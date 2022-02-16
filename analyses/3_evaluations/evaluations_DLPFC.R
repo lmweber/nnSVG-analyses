@@ -317,7 +317,7 @@ df_pvals_DLPFC <- as.data.frame(res_list$DLPFC_nnSVG)
 ggplot(as.data.frame(df_pvals_DLPFC), aes(x = pval_nnSVG)) + 
   geom_histogram(color = "black", fill = "blue3", bins = 30) + 
   xlab("p-values") + 
-  ggtitle("P-value distribution: nnSVG, DLPFC") + 
+  ggtitle("P-values: nnSVG, DLPFC") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "pvals_DLPFC"))
@@ -356,7 +356,7 @@ ggplot(as.data.frame(df_bandwidth_DLPFC), aes(x = l_nnSVG)) +
                   nudge_x = 0.13, nudge_y = 1, color = "red", size = 3) + 
   xlab("bandwidth") + 
   ylab("density") + 
-  ggtitle("Bandwidth: nnSVG, DLPFC") + 
+  ggtitle("Bandwidths: nnSVG, DLPFC") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "bandwidths_DLPFC"))
