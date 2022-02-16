@@ -123,7 +123,7 @@ ggplot(as.data.frame(df_nnSVG_DLPFC),
                   nudge_x = 80, nudge_y = 350, size = 3, color = "firebrick3") + 
   xlim(c(0, 1000)) + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
-  ggtitle("nnSVG: DLPFC, 6 SVGs") + 
+  ggtitle("nnSVG: DLPFC, known SVGs") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_6known_DLPFC"))
@@ -141,7 +141,7 @@ ggplot(as.data.frame(df_nnSVG_DLPFC),
   annotate("text", label = "adjusted p-value  = 0.05", 
            x = 6750, y = 7000, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
-  ggtitle("nnSVG: DLPFC, 190 marker genes") + 
+  ggtitle("nnSVG: DLPFC, layer-specific marker genes") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_190markers_DLPFC"))
