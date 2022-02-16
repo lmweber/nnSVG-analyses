@@ -7,6 +7,7 @@ library(SpatialExperiment)
 library(here)
 library(dplyr)
 library(tidyr)
+library(readr)
 library(ggplot2)
 library(ggrepel)
 
@@ -61,14 +62,14 @@ df_known_DLPFC <-
 ggplot(as.data.frame(df_known_DLPFC), 
        aes(x = gene_name, y = rank, group = method, color = method, 
            shape = method, label = rank)) + 
-  geom_point(stroke = 2, size = 2) + 
+  geom_point(stroke = 1.5, size = 1.75) + 
   scale_shape_manual(values = c(4, 3, 1)) + 
   scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
   scale_y_log10() + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
-  geom_text_repel(nudge_x = 0.3, size = 3.5, segment.color = NA, show.legend = FALSE) + 
+  geom_text_repel(nudge_x = 0.25, size = 2, show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("DLPFC dataset: known SVGs") + 
+  ggtitle("Known SVGs: DLPFC dataset") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "known_genes_ranks_DLPFC"))
@@ -80,13 +81,39 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 # likelihood ratio statistics vs. ranks
 # -------------------------------------
 
+# layer-specific marker genes from manually guided analyses in spatialLIBD
+# see original code at:
+# https://github.com/LieberInstitute/HumanPilot/blob/master/Analysis/SpatialDE_clustering.Rmd
+sig_genes <- read_csv(here("inputs", "spatialLIBD", "sig_genes.csv"))
+manual_genes <- sig_genes[, c("ensembl", "gene")]
+colnames(manual_genes) <- c("gene_id", "gene_name")
+dim(manual_genes)
+# remove duplicates (genes from multiple layers)
+manual_genes <- distinct(manual_genes)
+manual_gene_names <- sort(manual_genes$gene_name)
+length(manual_gene_names)
+head(manual_gene_names)
+
+
 # plot likelihood ratio statistics vs. ranks
 
 df_nnSVG_DLPFC <- 
   as.data.frame(res_list$DLPFC_nnSVG) %>% 
   mutate(is_known = gene_name %in% known_genes) %>% 
-  filter(rank_nnSVG <= 1000)
+  mutate(is_marker = gene_name %in% manual_gene_names)
 
+# rank at p-value = 0.05 cutoff
+padj_cutoff <- 
+  as.data.frame(res_list$DLPFC_nnSVG) %>% 
+  filter(padj_nnSVG <= 0.05) %>% 
+  summarize(max(rank_nnSVG)) %>% 
+  unlist
+
+# number of 190 marker genes identified as significant
+table(filter(df_nnSVG_DLPFC, is_marker)$padj_nnSVG <= 0.05)
+
+
+# highlighting known 6 genes
 ggplot(as.data.frame(df_nnSVG_DLPFC), 
        aes(x = rank_nnSVG, y = LR_stat_nnSVG, label = gene_name)) + 
   geom_line(color = "navy") + 
@@ -94,11 +121,30 @@ ggplot(as.data.frame(df_nnSVG_DLPFC),
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_nnSVG_DLPFC, gene_name %in% known_genes), 
                   nudge_x = 80, nudge_y = 350, size = 3, color = "firebrick3") + 
+  xlim(c(0, 1000)) + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
-  ggtitle("nnSVG: DLPFC dataset") + 
+  ggtitle("nnSVG: DLPFC, 6 SVGs") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_DLPFC"))
+fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_6known_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# highlighting 190 layer-specific marker genes
+ggplot(as.data.frame(df_nnSVG_DLPFC), 
+       aes(x = rank_nnSVG, y = LR_stat_nnSVG, label = gene_name)) + 
+  geom_line(color = "navy") + 
+  geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% manual_gene_names), 
+             pch = 1, size = 2, color = "firebrick3") + 
+  geom_vline(xintercept = padj_cutoff, linetype = "dashed", color = "darkorange2") + 
+  annotate("text", label = "adjusted p-value  = 0.05", 
+           x = 6750, y = 7000, size = 4, color = "darkorange2") + 
+  labs(x = "rank", y = "likelihood ratio statistic") + 
+  ggtitle("nnSVG: DLPFC, 190 marker genes") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_190markers_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
