@@ -36,7 +36,7 @@ colnames(res_list[["DLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["DLPFC_H
 
 # known SVGs: SNAP25, MOBP, PCP4, HBB, IGKC, NPY
 
-known_genes <- c("SNAP25", "MOBP", "PCP4", "HBB", "IGKC", "NPY")
+known_genes <- c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY")
 
 all(res_list$DLPFC_nnSVG$gene_id == res_list$DLPFC_SPARKX$gene_id)
 all(res_list$DLPFC_nnSVG$gene_id == res_list$DLPFC_HVGs$gene_id)
