@@ -165,7 +165,7 @@ ggplot(df_effect,
   scale_color_manual(values = c("black", "red"), name = "marker or\nknown") + 
   scale_shape_manual(values = c(1, 19), name = "marker or\nknown") + 
   geom_text_repel(data = df_effect %>% filter(is_known), 
-                  aes(label = gene_name), nudge_y = 2000) + 
+                  aes(label = gene_name), nudge_y = 2000, show.legend = FALSE) + 
   labs(x = "proportion of spatial variance", 
        y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: DLPFC") + 
