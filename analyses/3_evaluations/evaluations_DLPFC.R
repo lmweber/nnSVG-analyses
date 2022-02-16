@@ -150,7 +150,7 @@ ggplot(as.data.frame(df_nnSVG_DLPFC),
            aes(x = rank_nnSVG), sides = "b", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
-  annotate("text", label = "adjusted p-value = 0.05", 
+  annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
            x = 6750, y = 7000, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: DLPFC, known and layer-specific marker genes") + 
@@ -198,7 +198,7 @@ ggplot(as.data.frame(df_SPARKX_DLPFC),
            aes(x = rank_SPARKX), sides = "b", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
-  annotate("text", label = "adjusted p-value\n = 0.05", 
+  annotate("text", label = paste0("adjusted p-value\n = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
            x = 12500, y = 225, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(adjusted p-value)") + 
   ggtitle("SPARK-X: DLPFC, known and layer-specific marker genes") + 
