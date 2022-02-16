@@ -8,6 +8,7 @@ library(here)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(ggrepel)
 
 
 # ------------
@@ -58,12 +59,14 @@ df_known_DLPFC <-
 
 # plot ranks
 ggplot(as.data.frame(df_known_DLPFC), 
-       aes(x = gene_name, y = rank, group = method, color = method, shape = method)) + 
+       aes(x = gene_name, y = rank, group = method, color = method, 
+           shape = method, label = rank)) + 
   geom_point(stroke = 2, size = 2) + 
   scale_shape_manual(values = c(4, 3, 1)) + 
   scale_color_manual(values = c("royalblue3", "maroon", "orange")) + 
   scale_y_log10(limits = range(df_known_DLPFC$rank)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
+  geom_text_repel(nudge_x = 0.3, size = 3.5, segment.color = NA) + 
   labs(x = "gene", y = "rank") + 
   ggtitle("DLPFC dataset: known SVGs") + 
   theme_bw()
