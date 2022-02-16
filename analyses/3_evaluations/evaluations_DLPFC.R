@@ -63,7 +63,7 @@ ggplot(as.data.frame(df_known_DLPFC),
            shape = method, label = rank)) + 
   geom_point(stroke = 2, size = 2) + 
   scale_shape_manual(values = c(4, 3, 1)) + 
-  scale_color_manual(values = c("royalblue3", "maroon", "darkorange")) + 
+  scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
   scale_y_log10() + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
   geom_text_repel(nudge_x = 0.3, size = 3.5, segment.color = NA, show.legend = FALSE) + 
