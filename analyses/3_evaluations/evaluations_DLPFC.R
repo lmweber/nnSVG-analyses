@@ -227,23 +227,27 @@ df_overlaps <-
 # plot overlaps
 ggplot(as.data.frame(df_overlaps), 
        aes(x = top_n, y = proportion, group = method, color = method)) + 
-  geom_line() + 
-  geom_point() + 
+  geom_line(lwd = 0.75) + 
+  geom_point(size = 2) + 
+  scale_color_manual(values = c("blue3", "maroon")) + 
   scale_x_continuous(breaks = overlaps, trans = "log10") + 
   ylim(c(0, 1)) + 
   xlab("top n genes") + 
-  ylab("proportion overlapping") + 
-  ggtitle("Proportion overlap between top n SVGs and HVGs") + 
-  theme_bw()
+  ylab("proportion overlap") + 
+  ggtitle("Overlap SVGs and HVGs: DLPFC") + 
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank())
 
 fn <- here(file.path("plots", "evaluations", "prop_overlap_DLPFC"))
-ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
-ggsave(paste0(fn, ".png"), width = 8, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
 # ---------------------------
 # scatterplot comparing ranks
 # ---------------------------
+
+# top 1000 ranked genes from each method
 
 df_ranks_DLPFC_nnSVG_HVGs <- 
   full_join(as.data.frame(res_list$DLPFC_nnSVG), 
@@ -268,53 +272,39 @@ df_ranks_DLPFC_SPARKX_HVGs <-
 df_ranks_DLPFC <- full_join(df_ranks_DLPFC_nnSVG_HVGs, df_ranks_DLPFC_SPARKX_HVGs)
 
 
+# calculate Spearman correlations
+cor_nnSVG <- cor(df_ranks_DLPFC_nnSVG_HVGs$rank_method, 
+                 df_ranks_DLPFC_nnSVG_HVGs$rank_HVGs, method = "spearman")
+cor_SPARKX <- cor(df_ranks_DLPFC_SPARKX_HVGs$rank_method, 
+                  df_ranks_DLPFC_SPARKX_HVGs$rank_HVGs, method = "spearman")
+
+ann_text <- data.frame(
+  x = 800, 
+  y = 50, 
+  label = paste0("cor = ", c(round(cor_nnSVG, 2), round(cor_SPARKX, 2))), 
+  method = factor(c("nnSVG", "SPARKX"), levels = c("nnSVG", "SPARKX"))
+)
+
+
 # plot comparisons of ranks
 ggplot(as.data.frame(df_ranks_DLPFC), 
        aes(x = rank_HVGs, y = rank_method, color = method)) + 
   facet_wrap(~ method) + 
   geom_point() + 
+  geom_text(data = ann_text, aes(x = x, y = y, label = label), 
+            size = 5, color = "black") + 
+  scale_color_manual(values = c("blue3", "maroon")) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
   xlab("rank HVGs") + 
-  ylab("rank method for SVGs") + 
-  ggtitle("Comparison of ranks SVGs vs. HVGs: DLPFC dataset") + 
+  ylab("rank SVGs") + 
+  ggtitle("Ranks SVGs vs. HVGs: DLPFC") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "ranks_scatter_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
 ggsave(paste0(fn, ".png"), width = 8, height = 4)
-
-
-# ---------------------
-# correlations of ranks
-# ---------------------
-
-# Spearman correlations comparing ranks against HVGs
-
-df_correlations_DLPFC <- data.frame(
-  nnSVG = cor(df_ranks_DLPFC_nnSVG_HVGs$rank_method, df_ranks_DLPFC_nnSVG_HVGs$rank_HVGs, method = "spearman"), 
-  SPARKX = cor(df_ranks_DLPFC_SPARKX_HVGs$rank_method, df_ranks_DLPFC_SPARKX_HVGs$rank_HVGs, method = "spearman"), 
-  dataset = "DLPFC"
-)
-
-df_correlations <- 
-  pivot_longer(df_correlations_DLPFC, cols = c("nnSVG", "SPARKX"), 
-               names_to = "method", values_to = "correlation")
-
-
-# plot correlations
-ggplot(as.data.frame(df_correlations), 
-       aes(x = correlation, y = dataset, color = method)) + 
-  geom_point(pch = 3, stroke = 2) + 
-  xlim(c(0, 1)) + 
-  xlab("Spearman correlation") + 
-  ggtitle("Correlation between ranks top 1000 SVGs vs. HVGs") + 
-  theme_bw()
-
-fn <- here(file.path("plots", "evaluations", "correlations_ranks_DLPFC"))
-ggsave(paste0(fn, ".pdf"), width = 6, height = 4)
-ggsave(paste0(fn, ".png"), width = 6, height = 4)
 
 
 # ---------------------
