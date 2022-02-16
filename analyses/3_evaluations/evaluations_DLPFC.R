@@ -34,7 +34,7 @@ colnames(res_list[["DLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["DLPFC_H
 # known SVGs in DLPFC dataset
 # ---------------------------
 
-# known SVGs: SNAP25, MOBP, PCP4, HBB, IGKC, NPY
+# known SVGs: MOBP, PCP4, SNAP25, HBB, IGKC, NPY
 
 known_genes <- c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY")
 
@@ -77,9 +77,9 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
-# -------------------------------------
-# likelihood ratio statistics vs. ranks
-# -------------------------------------
+# --------------------------------------------
+# nnSVG: likelihood ratio statistics vs. ranks
+# --------------------------------------------
 
 # layer-specific marker genes from manually guided analyses in spatialLIBD
 # see original code at:
@@ -94,23 +94,32 @@ manual_gene_names <- sort(manual_genes$gene_name)
 length(manual_gene_names)
 head(manual_gene_names)
 
+# combined set of 6 known and 198 marker (201 total)
+manual_genes_all <- unique(c(known_genes, manual_gene_names))
+length(manual_genes_all)
+
 
 # plot likelihood ratio statistics vs. ranks
 
 df_nnSVG_DLPFC <- 
   as.data.frame(res_list$DLPFC_nnSVG) %>% 
   mutate(is_known = gene_name %in% known_genes) %>% 
-  mutate(is_marker = gene_name %in% manual_gene_names)
+  mutate(is_marker = gene_name %in% manual_gene_names) %>% 
+  mutate(is_marker_or_known = is_marker | is_known)
 
 # rank at p-value = 0.05 cutoff
-padj_cutoff <- 
+padj_cutoff_nnSVG <- 
   as.data.frame(res_list$DLPFC_nnSVG) %>% 
   filter(padj_nnSVG <= 0.05) %>% 
-  summarize(max(rank_nnSVG)) %>% 
+  summarize(max = max(rank_nnSVG)) %>% 
   unlist
+
+padj_cutoff_nnSVG
 
 # number of 190 marker genes identified as significant
 table(filter(df_nnSVG_DLPFC, is_marker)$padj_nnSVG <= 0.05)
+# number of combined set identified as significant
+table(filter(df_nnSVG_DLPFC, is_marker_or_known)$padj_nnSVG <= 0.05)
 
 
 # highlighting known 6 genes
@@ -131,20 +140,67 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
-# highlighting 190 layer-specific marker genes
+# highlighting 193 (combined set of known and layer-specific marker)
 ggplot(as.data.frame(df_nnSVG_DLPFC), 
        aes(x = rank_nnSVG, y = LR_stat_nnSVG, label = gene_name)) + 
   geom_line(color = "navy") + 
-  geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% manual_gene_names), 
+  geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% manual_genes_all), 
              pch = 1, size = 2, color = "firebrick3") + 
-  geom_vline(xintercept = padj_cutoff, linetype = "dashed", color = "darkorange2") + 
-  annotate("text", label = "adjusted p-value  = 0.05", 
+  geom_vline(xintercept = padj_cutoff_nnSVG, 
+             linetype = "dashed", color = "darkorange2") + 
+  annotate("text", label = "adjusted p-value = 0.05", 
            x = 6750, y = 7000, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
-  ggtitle("nnSVG: DLPFC, layer-specific marker genes") + 
+  ggtitle("nnSVG: DLPFC, known and layer-specific marker genes") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_190markers_DLPFC"))
+fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_193knownAndMarkers_nnSVG_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# ------------------------------------
+# SPARK-X: adjusted p-values vs. ranks
+# ------------------------------------
+
+# plot adjusted p-values vs. ranks
+
+df_SPARKX_DLPFC <- 
+  as.data.frame(res_list$DLPFC_SPARKX) %>% 
+  mutate(is_known = gene_name %in% known_genes) %>% 
+  mutate(is_marker = gene_name %in% manual_gene_names) %>% 
+  mutate(is_marker_or_known = is_marker | is_known)
+
+# rank at p-value = 0.05 cutoff
+padj_cutoff_SPARKX <- 
+  as.data.frame(res_list$DLPFC_SPARKX) %>% 
+  filter(adjustedPval_SPARKX <= 0.05) %>% 
+  summarize(max = max(rank_SPARKX)) %>% 
+  unlist
+
+padj_cutoff_SPARKX
+
+# number of 190 marker genes identified as significant
+table(filter(df_SPARKX_DLPFC, is_marker)$adjustedPval_SPARKX <= 0.05)
+# number of combined set identified as significant
+table(filter(df_SPARKX_DLPFC, is_marker_or_known)$adjustedPval_SPARKX <= 0.05)
+
+
+# highlighting 193 (combined set of known and layer-specific marker)
+ggplot(as.data.frame(df_SPARKX_DLPFC), 
+       aes(x = rank_SPARKX, y = -log10(adjustedPval_SPARKX), label = gene_name)) + 
+  geom_line(color = "navy") + 
+  geom_point(data = filter(df_SPARKX_DLPFC, gene_name %in% manual_genes_all), 
+             pch = 1, size = 2, color = "firebrick3") + 
+  geom_vline(xintercept = padj_cutoff_SPARKX, 
+             linetype = "dashed", color = "darkorange2") + 
+  annotate("text", label = "adjusted p-value\n = 0.05", 
+           x = 12500, y = 225, size = 4, color = "darkorange2") + 
+  labs(x = "rank", y = "-log10(adjusted p-value)") + 
+  ggtitle("SPARK-X: DLPFC, known and layer-specific marker genes") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "adjPvals_ranks_193knownAndMarkers_SPARKX_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
