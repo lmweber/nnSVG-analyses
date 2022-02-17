@@ -67,7 +67,7 @@ ggplot(as.data.frame(df_known_DLPFC),
   scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
   scale_y_log10() + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
-  geom_text_repel(nudge_x = 0.25, size = 2, show.legend = FALSE) + 
+  geom_text_repel(nudge_x = 0.3, size = 1.75, segment.color = NA, show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
   ggtitle("Known SVGs: DLPFC dataset") + 
   theme_bw()
