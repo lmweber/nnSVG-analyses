@@ -399,7 +399,7 @@ ls_known
 
 ann_text <- data.frame(
   x = unname(ls_known), 
-  y =  c(0.5, 0.1, 1.5, 8, 9, 13), 
+  y =  c(0.1, 1.5, 0.5, 8, 9, 13), 
   label = paste0(names(ls_known), " = ", format(round(ls_known, 3), nsmall = 3))
 )
 
