@@ -68,7 +68,7 @@ ggplot(as.data.frame(df_known_DLPFC),
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
   geom_text_repel(nudge_x = 0.3, size = 1.75, segment.color = NA, show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Known SVGs: DLPFC") + 
+  ggtitle("Key SVGs: DLPFC") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "known_genes_ranks_DLPFC"))
