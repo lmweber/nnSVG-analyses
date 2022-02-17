@@ -140,15 +140,18 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
 # highlighting 6 known genes and 193 combined set of known and layer-specific markers
+# set seed for overlapping geom_text_repel
+set.seed(1)
 ggplot(as.data.frame(df_nnSVG_DLPFC), 
        aes(x = rank_nnSVG, y = LR_stat_nnSVG, label = gene_name)) + 
   geom_line(color = "navy") + 
   geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% manual_genes_all), 
              pch = 1, size = 2, color = "firebrick3") + 
   geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% known_genes), 
-             pch = 1, size = 2, color = "navy") + 
+             pch = 1, size = 2, stroke = 0.75, color = "black") + 
   geom_text_repel(data = filter(df_nnSVG_DLPFC, gene_name %in% known_genes), 
-                  nudge_x = 1600, nudge_y = 800, size = 3, color = "navy") + 
+                  nudge_x = 1600, nudge_y = 800, size = 3, 
+                  segment.color = "black", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
@@ -196,9 +199,10 @@ ggplot(as.data.frame(df_SPARKX_DLPFC),
   geom_point(data = filter(df_SPARKX_DLPFC, gene_name %in% manual_genes_all), 
              pch = 1, size = 2, color = "firebrick3") + 
   geom_point(data = filter(df_SPARKX_DLPFC, gene_name %in% known_genes), 
-             pch = 1, size = 2, color = "navy") + 
+             pch = 1, size = 2, stroke = 0.75, color = "black") + 
   geom_text_repel(data = filter(df_SPARKX_DLPFC, gene_name %in% known_genes), 
-                  nudge_x = 1500, nudge_y = 30, size = 3, color = "navy") + 
+                  nudge_x = 1500, nudge_y = 30, size = 3, 
+                  segment.color = "black", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value\n = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
