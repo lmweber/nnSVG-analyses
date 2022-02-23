@@ -57,7 +57,7 @@ ggplot(df, aes(x = x, y = y, color = counts)) +
   scale_color_gradientn(trans = "log1p", 
                         colors = c("gray90", mid = "blue", high = "black"), 
                         breaks = c(0, 500, 600), labels = c("0", "", "600")) + 
-  ggtitle("Key SVGs: DLPFC") + 
+  ggtitle("Example SVGs: DLPFC") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
   theme(panel.grid = element_blank(), 

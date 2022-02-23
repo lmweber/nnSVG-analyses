@@ -68,7 +68,7 @@ ggplot(as.data.frame(df_known_DLPFC),
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
   geom_text_repel(nudge_x = 0.3, size = 1.75, segment.color = NA, show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Key SVGs: DLPFC") + 
+  ggtitle("Example SVGs: DLPFC") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "known_genes_ranks_DLPFC"))
@@ -131,7 +131,7 @@ ggplot(as.data.frame(df_nnSVG_DLPFC),
                   nudge_x = 80, nudge_y = 350, size = 3, color = "firebrick3") + 
   xlim(c(0, 1000)) + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
-  ggtitle("nnSVG: DLPFC, known SVGs") + 
+  ggtitle("nnSVG: DLPFC, example SVGs") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_6known_DLPFC"))
@@ -157,7 +157,7 @@ ggplot(as.data.frame(df_nnSVG_DLPFC),
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
            x = 6750, y = 7000, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
-  ggtitle("nnSVG: DLPFC, known and layer-specific markers") + 
+  ggtitle("nnSVG: DLPFC, example SVGs and layer-specific markers") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "LR_stat_ranks_193knownAndMarkers_nnSVG_DLPFC"))
@@ -208,7 +208,7 @@ ggplot(as.data.frame(df_SPARKX_DLPFC),
   annotate("text", label = paste0("adjusted p-value\n = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
            x = 12500, y = 225, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(adjusted p-value)") + 
-  ggtitle("SPARK-X: DLPFC, known and layer-specific markers") + 
+  ggtitle("SPARK-X: DLPFC, example SVGs and layer-specific markers") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "adjPvals_ranks_193knownAndMarkers_SPARKX_DLPFC"))
@@ -229,8 +229,8 @@ ggplot(df_effect,
        aes(x = prop_sv_nnSVG, y = LR_stat_nnSVG, 
            color = is_marker_or_known, shape = is_marker_or_known)) + 
   geom_point() + 
-  scale_color_manual(values = c("black", "red"), name = "marker or\nknown") + 
-  scale_shape_manual(values = c(1, 19), name = "marker or\nknown") + 
+  scale_color_manual(values = c("black", "red"), name = "example SVG\nor marker") + 
+  scale_shape_manual(values = c(1, 19), name = "example SVG\nor marker") + 
   geom_text_repel(data = df_effect %>% filter(is_known), 
                   aes(label = gene_name), nudge_y = 2000, show.legend = FALSE) + 
   labs(x = "proportion of spatial variance", 
@@ -421,7 +421,7 @@ ggplot(as.data.frame(df_bandwidth_DLPFC), aes(x = l_nnSVG)) +
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
   geom_text_repel(data = ann_text, aes(x = x, y = y, label = label), 
                   nudge_x = 0.13, nudge_y = 1, color = "red", size = 3) + 
-  xlab("bandwidth") + 
+  xlab("bandwidth (1 / phi)") + 
   ylab("density") + 
   ggtitle("Bandwidths: nnSVG, DLPFC") + 
   theme_bw()
