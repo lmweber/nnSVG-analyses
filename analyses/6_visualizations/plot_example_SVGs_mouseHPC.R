@@ -6,6 +6,8 @@
 
 library(SpatialExperiment)
 library(STexampleData)
+library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(here)
 
@@ -49,7 +51,7 @@ ggplot() +
              size = 0.01) + 
   scale_color_manual(values = pal) + 
   coord_fixed() + 
-  ggtitle("Slide-seqV2 mouse hippocampus") + 
+  ggtitle("Mouse HPC") + 
   guides(color = guide_legend(override.aes = list(size = 2.5))) + 
   theme_bw() + 
   theme(panel.grid = element_blank(), 
@@ -57,55 +59,33 @@ ggplot() +
         axis.text = element_blank(), 
         axis.ticks = element_blank())
 
-ggsave(here("plots", "example_svgs", "mousehippo_all.png"), width = 6.75, height = 5)
+ggsave(here("plots", "example_svgs", "mouseHPC_celltypes.png"), width = 6.75, height = 5)
 
 
 # plot expression of genes of interest in CA3 region
 
 # subset CA3 region
-df_sub <- df[df$celltype == "CA3", ]
+df_sub <- 
+  filter(df, celltype == "CA3") %>% 
+  pivot_longer(., cols = c("Cpne9", "Rgs14"), 
+               names_to = "gene", values_to = "counts") %>% 
+  mutate(gene = factor(gene, levels = c("Cpne9", "Rgs14")))
 
 
-ggplot(df_sub, aes(x = xcoord, y = ycoord, color = Cpne9)) + 
-  geom_point(size = 0.1) + 
+ggplot(df_sub, aes(x = xcoord, y = ycoord, color = counts)) + 
+  facet_wrap(~ gene, nrow = 1) + 
+  geom_point(size = 0.1, alpha = 0.5) + 
   coord_fixed() + 
-  scale_color_gradient(trans = "sqrt", low = "gray85", high = "red") + 
-  ggtitle("Slide-seqV2 mouse hippocampus") + 
+  scale_color_gradientn(trans = "log1p", 
+                        colors = c("gray90", mid = "red", high = "black"), 
+                        breaks = c(0, 7, 8), labels = c("0", "", "8")) + 
+  ggtitle("Example SVGs: mouse HPC") + 
   theme_bw() + 
+  guides(color = guide_colorbar(ticks = FALSE)) + 
   theme(panel.grid = element_blank(), 
         axis.title = element_blank(), 
         axis.text = element_blank(), 
         axis.ticks = element_blank())
 
-ggsave(here("plots", "example_svgs", "mousehippo_Cpne9.png"), width = 6, height = 3.5)
-
-
-ggplot(df_sub, aes(x = xcoord, y = ycoord, color = Rgs14)) + 
-  geom_point(size = 0.1) + 
-  coord_fixed() + 
-  scale_color_gradient(trans = "sqrt", low = "gray85", high = "red") + 
-  ggtitle("Slide-seqV2 mouse hippocampus") + 
-  theme_bw() + 
-  theme(panel.grid = element_blank(), 
-        axis.title = element_blank(), 
-        axis.text = element_blank(), 
-        axis.ticks = element_blank())
-
-ggsave(here("plots", "example_svgs", "mousehippo_Rgs14.png"), width = 6, height = 3.5)
-
-
-
-ggplot(df_sub, aes(x = xcoord, y = ycoord, color = Cpne9)) + 
-  geom_point(size = 0.1) + 
-  coord_fixed() + 
-  scale_color_viridis_c(trans = "sqrt") + 
-  ggtitle("Slide-seqV2 mouse hippocampus") + 
-  theme_bw() + 
-  theme(panel.grid = element_blank(), 
-        axis.title = element_blank(), 
-        axis.text = element_blank(), 
-        axis.ticks = element_blank())
-
-ggsave(here("plots", "example_svgs", "mousehippo_Cpne9.png"), width = 6, height = 3.5)
-
+ggsave(here("plots", "example_svgs", "mouseHPC_known.png"), width = 7.25, height = 2.5)
 
