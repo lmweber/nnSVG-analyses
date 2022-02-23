@@ -208,7 +208,7 @@ ggplot(as.data.frame(df_SPARKX_DLPFC),
   annotate("text", label = paste0("adjusted p-value\n = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
            x = 12500, y = 225, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(adjusted p-value)") + 
-  ggtitle("SPARK-X: DLPFC, example SVGs and layer-specific markers") + 
+  ggtitle("SPARK-X: DLPFC, example SVGs and markers") + 
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "adjPvals_ranks_193knownAndMarkers_SPARKX_DLPFC"))
