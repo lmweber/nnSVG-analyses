@@ -28,8 +28,8 @@ res_list <- list(
 
 # add method names to all columns except gene IDs and gene names
 colnames(res_list[["mouseHPC_nnSVG"]])[-1] <- paste0(colnames(res_list[["mouseHPC_nnSVG"]]), "_nnSVG")[-1]
-colnames(res_list[["mouseHPC_nnSVG_covariate"]])[-1] <- paste0(colnames(res_list[["mouseHPC_nnSVG_covariate"]]), "_nnSVG")[-1]
-colnames(res_list[["mouseHPC_SPARKX"]])[-1] <- paste0(colnames(res_list[["mouseHPC_SPARKX"]]), "_nnSVG")[-1]
-colnames(res_list[["mouseHPC_SPARKX_covariate"]])[-1] <- paste0(colnames(res_list[["mouseHPC_SPARKX_covariate"]]), "_nnSVG")[-1]
-colnames(res_list[["mouseHPC_HVGs"]])[-1] <- paste0(colnames(res_list[["mouseHPC_HVGs"]]), "_nnSVG")[-1]
+colnames(res_list[["mouseHPC_nnSVG_covariate"]])[-1] <- paste0(colnames(res_list[["mouseHPC_nnSVG_covariate"]]), "_nnSVG_covariate")[-1]
+colnames(res_list[["mouseHPC_SPARKX"]])[-1] <- paste0(colnames(res_list[["mouseHPC_SPARKX"]]), "_SPARKX")[-1]
+colnames(res_list[["mouseHPC_SPARKX_covariate"]])[-1] <- paste0(colnames(res_list[["mouseHPC_SPARKX_covariate"]]), "_SPARKX_covariate")[-1]
+colnames(res_list[["mouseHPC_HVGs"]])[-1] <- paste0(colnames(res_list[["mouseHPC_HVGs"]]), "_HVGs")[-1]
 
