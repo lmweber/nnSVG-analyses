@@ -83,8 +83,8 @@ ggplot(as.data.frame(df_known_mouseHPC),
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "known_genes_ranks_mouseHPC"))
-ggsave(paste0(fn, ".pdf"), width = 4.5, height = 4)
-ggsave(paste0(fn, ".png"), width = 4.5, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 4)
+ggsave(paste0(fn, ".png"), width = 5, height = 4)
 
 
 # without covariates
@@ -117,8 +117,8 @@ ggplot(as.data.frame(df_known_mouseHPC_nocovariate),
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "known_genes_ranks_mouseHPC_nocovariate"))
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5.75, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.75, height = 4)
 
 
 # --------------------------------------------

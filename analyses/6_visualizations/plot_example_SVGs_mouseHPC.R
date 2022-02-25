@@ -73,7 +73,7 @@ df_sub <-
 
 
 ggplot(df_sub, aes(x = xcoord, y = ycoord, color = counts)) + 
-  facet_wrap(~ gene, nrow = 1) + 
+  facet_wrap(~ gene, nrow = 2) + 
   geom_point(size = 0.1, alpha = 0.5) + 
   coord_fixed() + 
   scale_color_gradientn(trans = "log1p", 
@@ -87,5 +87,5 @@ ggplot(df_sub, aes(x = xcoord, y = ycoord, color = counts)) +
         axis.text = element_blank(), 
         axis.ticks = element_blank())
 
-ggsave(here("plots", "example_svgs", "mouseHPC_known.png"), width = 7.25, height = 2.5)
+ggsave(here("plots", "example_svgs", "mouseHPC_known.png"), width = 4, height = 4.5)
 
