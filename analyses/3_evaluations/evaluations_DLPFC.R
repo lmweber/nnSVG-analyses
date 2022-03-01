@@ -220,9 +220,12 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 # effect sizes
 # ------------
 
+# LR statistic vs. effect size
+
 df_effect <- 
   as.data.frame(df_nnSVG_DLPFC) %>% 
   mutate(is_marker_or_known = is_marker | is_known) %>% 
+  mutate(l_nnSVG = 1 / phi_nnSVG) %>% 
   filter(rank_nnSVG <= 1000)
 
 ggplot(df_effect, 
@@ -238,7 +241,48 @@ ggplot(df_effect,
   ggtitle("nnSVG: DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "effect_sizes_DLPFC"))
+fn <- here(file.path("plots", "evaluations", "effect_sizes_LRstat_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# rank vs. effect size
+
+ggplot(df_effect, 
+       aes(x = prop_sv_nnSVG, y = rank_nnSVG, 
+           color = is_marker_or_known, shape = is_marker_or_known)) + 
+  geom_point() + 
+  scale_color_manual(values = c("black", "red"), name = "example SVG\nor marker") + 
+  scale_shape_manual(values = c(1, 19), name = "example SVG\nor marker") + 
+  geom_text_repel(data = df_effect %>% filter(is_known), 
+                  aes(label = gene_name), nudge_y = 100, show.legend = FALSE) + 
+  labs(x = "proportion of spatial variance", 
+       y = "rank") + 
+  ggtitle("nnSVG: DLPFC") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "effect_sizes_rank_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# bandwidth vs. effect size
+
+ggplot(df_effect, 
+       aes(x = prop_sv_nnSVG, y = l_nnSVG, 
+           color = is_marker_or_known, shape = is_marker_or_known)) + 
+  geom_point() + 
+  ylim(c(0, 1)) + 
+  scale_color_manual(values = c("black", "red"), name = "example SVG\nor marker") + 
+  scale_shape_manual(values = c(1, 19), name = "example SVG\nor marker") + 
+  geom_text_repel(data = df_effect %>% filter(is_known), 
+                  aes(label = gene_name), show.legend = FALSE) + 
+  labs(x = "proportion of spatial variance", 
+       y = "bandwidth (l = 1/phi)") + 
+  ggtitle("nnSVG: DLPFC") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "effect_sizes_bandwidth_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
