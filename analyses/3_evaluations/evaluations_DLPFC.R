@@ -10,6 +10,7 @@ library(tidyr)
 library(readr)
 library(ggplot2)
 library(ggrepel)
+library(viridis)
 
 
 # ------------
@@ -315,6 +316,49 @@ ggplot(df_adj_effect,
   theme_bw()
 
 fn <- here(file.path("plots", "evaluations", "adj_effect_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# effect size vs. mean
+
+ggplot(df_adj_effect, 
+       aes(x = mean_nnSVG, y = prop_sv_nnSVG, color = LR_stat_nnSVG)) + 
+  geom_point(size = 0.8) + 
+  scale_color_viridis(trans = "log10") + 
+  geom_point(data = df_adj_effect %>% filter(is_marker_or_known), 
+             color = "red", size = 0.8) + 
+  geom_text_repel(data = df_adj_effect %>% filter(is_known), 
+                  aes(label = gene_name), color = "red", show.legend = FALSE) + 
+  ylim(c(0, 1)) + 
+  labs(x = "mean", 
+       y = "proportion spatial variance", 
+       color = "LR statistic") + 
+  ggtitle("nnSVG: DLPFC") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "prop_SV_colors_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# adjusted effect size (subtracting HVGs trend) vs. mean
+
+ggplot(df_adj_effect, 
+       aes(x = mean_nnSVG, y = adj_effect_nnSVG, color = LR_stat_nnSVG)) + 
+  geom_point(size = 0.8) + 
+  scale_color_viridis(trans = "log10") + 
+  geom_point(data = df_adj_effect %>% filter(is_marker_or_known), 
+             color = "red", size = 0.8) + 
+  geom_text_repel(data = df_adj_effect %>% filter(is_known), 
+                  aes(label = gene_name), color = "red", show.legend = FALSE) + 
+  labs(x = "mean", 
+       y = "adjusted effect size", 
+       color = "LR statistic") + 
+  ggtitle("nnSVG: DLPFC") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "adj_effect_colors_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
