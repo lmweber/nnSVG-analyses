@@ -287,6 +287,38 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
+# LR stat vs. adjusted effect size (subtracting HVGs trend)
+
+# calculate adjusted effect size
+df_adj_effect <- 
+  full_join(as.data.frame(res_list$DLPFC_nnSVG), 
+            as.data.frame(res_list$DLPFC_HVGs), 
+            by = c("gene_id", "gene_name")) %>% 
+  mutate(adj_effect_nnSVG = (sigma.sq_nnSVG - tech_HVGs) / (sigma.sq_nnSVG + tau.sq_nnSVG - tech_HVGs)) %>% 
+  mutate(is_known = gene_name %in% known_genes) %>% 
+  mutate(is_marker = gene_name %in% manual_gene_names) %>% 
+  mutate(is_marker_or_known = is_marker | is_known) %>% 
+  mutate(l_nnSVG = 1 / phi_nnSVG) %>% 
+  filter(rank_nnSVG <= 1000)
+
+ggplot(df_adj_effect, 
+       aes(x = adj_effect_nnSVG, y = LR_stat_nnSVG, 
+           color = is_marker_or_known, shape = is_marker_or_known)) + 
+  geom_point() + 
+  scale_color_manual(values = c("black", "red"), name = "example SVG\nor marker") + 
+  scale_shape_manual(values = c(1, 19), name = "example SVG\nor marker") + 
+  geom_text_repel(data = df_adj_effect %>% filter(is_known), 
+                  aes(label = gene_name), show.legend = FALSE) + 
+  labs(x = "adjusted effect size", 
+       y = "likelihood ratio statistic") + 
+  ggtitle("nnSVG: DLPFC") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "adj_effect_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
 # --------------------------------------------------------------------
 # proportion overlap between top n SVGs for each method and top n HVGs
 # --------------------------------------------------------------------
