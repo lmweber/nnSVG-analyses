@@ -376,7 +376,7 @@ ggplot(df_adj_effect,
     data = df_adj_effect %>% filter(is_known | (is_marker_or_known & (mean_nnSVG > 0.6 & prop_sv_nnSVG > 0.48))), 
     aes(label = gene_name), color = "red", size = 3, nudge_x = 0.5, nudge_y = 0.07) + 
   ylim(c(0, 1)) + 
-  labs(x = "mean", 
+  labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
        color = "LR statistic") + 
   ggtitle("nnSVG: DLPFC") + 
