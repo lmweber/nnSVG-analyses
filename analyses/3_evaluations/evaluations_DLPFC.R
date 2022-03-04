@@ -369,9 +369,9 @@ ggplot(df_adj_effect,
        aes(x = mean_nnSVG, y = prop_sv_nnSVG, color = LR_stat_nnSVG)) + 
   geom_point(size = 0.75) + 
   scale_color_viridis(trans = "log10") + 
-  geom_point(
-    data = df_adj_effect %>% filter(is_marker_or_known), 
-    pch = 1, color = "red", size = 0.8) + 
+  geom_point(data = df_adj_effect %>% filter(is_marker_or_known), 
+             aes(shape = is_marker_or_known), color = "red", size = 0.8) + 
+  scale_shape_manual(values = 1, name = "markers") + 
   geom_text_repel(
     data = df_adj_effect %>% filter(is_known | (is_marker_or_known & (mean_nnSVG > 1 & prop_sv_nnSVG > 0.5))), 
     aes(label = gene_name), color = "red", nudge_x = 0.5, nudge_y = 0.05) + 
