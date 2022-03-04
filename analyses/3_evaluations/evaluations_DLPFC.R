@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, Feb 2022
+# Lukas Weber, Mar 2022
 #################################
 
 library(SpatialExperiment)
@@ -320,6 +320,27 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
+# adjusted effect size (subtracting HVGs trend) vs. mean
+
+ggplot(df_adj_effect, 
+       aes(x = mean_nnSVG, y = adj_effect_nnSVG, color = LR_stat_nnSVG)) + 
+  geom_point(size = 0.8) + 
+  scale_color_viridis(trans = "log10") + 
+  geom_point(data = df_adj_effect %>% filter(is_marker_or_known), 
+             color = "red", size = 0.8) + 
+  geom_text_repel(data = df_adj_effect %>% filter(is_known), 
+                  aes(label = gene_name), color = "red", show.legend = FALSE) + 
+  labs(x = "mean", 
+       y = "adjusted effect size", 
+       color = "LR statistic") + 
+  ggtitle("nnSVG: DLPFC") + 
+  theme_bw()
+
+fn <- here(file.path("plots", "evaluations", "adj_effect_colors_DLPFC"))
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
 # effect size vs. mean
 
 ggplot(df_adj_effect, 
@@ -342,23 +363,26 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
-# adjusted effect size (subtracting HVGs trend) vs. mean
+# effect size vs. mean (formatted)
 
 ggplot(df_adj_effect, 
-       aes(x = mean_nnSVG, y = adj_effect_nnSVG, color = LR_stat_nnSVG)) + 
-  geom_point(size = 0.8) + 
+       aes(x = mean_nnSVG, y = prop_sv_nnSVG, color = LR_stat_nnSVG)) + 
+  geom_point(size = 0.75) + 
   scale_color_viridis(trans = "log10") + 
-  geom_point(data = df_adj_effect %>% filter(is_marker_or_known), 
-             color = "red", size = 0.8) + 
-  geom_text_repel(data = df_adj_effect %>% filter(is_known), 
-                  aes(label = gene_name), color = "red", show.legend = FALSE) + 
+  geom_point(
+    data = df_adj_effect %>% filter(is_marker_or_known), 
+    pch = 1, color = "red", size = 0.8) + 
+  geom_text_repel(
+    data = df_adj_effect %>% filter(is_known | (is_marker_or_known & (mean_nnSVG > 1 & prop_sv_nnSVG > 0.5))), 
+    aes(label = gene_name), color = "red", nudge_x = 0.5, nudge_y = 0.05) + 
+  ylim(c(0, 1)) + 
   labs(x = "mean", 
-       y = "adjusted effect size", 
+       y = "proportion spatial variance", 
        color = "LR statistic") + 
   ggtitle("nnSVG: DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "adj_effect_colors_DLPFC"))
+fn <- here(file.path("plots", "evaluations", "effect_size_mean_DLPFC"))
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
