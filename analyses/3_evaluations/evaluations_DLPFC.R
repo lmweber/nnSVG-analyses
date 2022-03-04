@@ -373,8 +373,8 @@ ggplot(df_adj_effect,
              aes(shape = is_marker_or_known), color = "red", size = 0.8) + 
   scale_shape_manual(values = 1, name = "markers") + 
   geom_text_repel(
-    data = df_adj_effect %>% filter(is_known | (is_marker_or_known & (mean_nnSVG > 0.75 & prop_sv_nnSVG > 0.45))), 
-    aes(label = gene_name), color = "red", nudge_x = 0.5, nudge_y = 0.05) + 
+    data = df_adj_effect %>% filter(is_known | (is_marker_or_known & (mean_nnSVG > 0.6 & prop_sv_nnSVG > 0.48))), 
+    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.5, nudge_y = 0.07) + 
   ylim(c(0, 1)) + 
   labs(x = "mean", 
        y = "proportion spatial variance", 
