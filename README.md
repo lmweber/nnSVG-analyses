@@ -1,4 +1,4 @@
-# nnSVG-exploratory
+# nnSVG-analyses
 
-Repository containing exploratory analyses for nnSVG project (method for spatially variable genes).
+Repository containing scripts to reproduce analyses in our nnSVG paper.
 
