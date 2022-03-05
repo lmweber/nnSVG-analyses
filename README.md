@@ -5,7 +5,7 @@ Repository containing scripts to reproduce analyses in our nnSVG paper.
 
 ## Contents
 
-Analysis scripts are saved in the [analyses/](analyses/) directory
+Analysis scripts are saved in the [analyses/](analyses/) directory.
 
 
 ## nnSVG package
