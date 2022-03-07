@@ -3,7 +3,6 @@
 # Lukas Weber, Feb 2022
 #############################
 
-
 library(SpatialExperiment)
 library(STexampleData)
 library(ggplot2)
@@ -43,14 +42,19 @@ colData(spe)$NPY <- counts(spe)[ix_known["NPY"], ]
 # expression plots
 
 df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>% 
-  select(c("barcode_id", "in_tissue", known_genes, "x", "y")) %>% 
+  select(c("barcode_id", "in_tissue", known_genes, 
+           "pxl_col_in_fullres", "pxl_row_in_fullres")) %>% 
   filter(in_tissue == 1) %>% 
   pivot_longer(., cols = known_genes, 
                names_to = "gene", values_to = "counts") %>% 
   mutate(gene = factor(gene, levels = known_genes))
 
-ggplot(df, aes(x = x, y = y, color = counts)) + 
-  facet_wrap(~ gene, nrow = 2) + 
+df$bandwidth <- 
+  as.factor(ifelse(df$gene %in% c("MOBP", "PCP4", "SNAP25"), "large", "small"))
+
+
+ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) + 
+  facet_wrap(bandwidth ~ gene, nrow = 2, labeller = label_both) + 
   geom_point(size = 0.05) + 
   coord_fixed() + 
   scale_y_reverse() + 
