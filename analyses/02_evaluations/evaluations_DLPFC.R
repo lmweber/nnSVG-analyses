@@ -65,9 +65,11 @@ ggplot(as.data.frame(df_known_DLPFC),
   geom_point(stroke = 1.5, size = 1.75) + 
   scale_shape_manual(values = c(4, 3, 1)) + 
   scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
-  scale_y_log10() + 
+  scale_y_log10(limits = c(6, 22000)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
   geom_text_repel(nudge_x = 0.3, size = 1.75, segment.color = NA, show.legend = FALSE) + 
+  annotate("text", label = "large bandwidth", x = 2, y = 22000, size = 4) + 
+  annotate("text", label = "small bandwidth", x = 5, y = 22000, size = 4) + 
   labs(x = "gene", y = "rank") + 
   ggtitle("Example SVGs: DLPFC") + 
   theme_bw()
@@ -146,6 +148,7 @@ set.seed(1)
 ggplot(as.data.frame(df_nnSVG_DLPFC), 
        aes(x = rank_nnSVG, y = LR_stat_nnSVG, label = gene_name)) + 
   geom_line(color = "navy") + 
+  ylim(c(-2, 8700)) + 
   geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% manual_genes_all), 
              pch = 1, size = 2, color = "firebrick3") + 
   geom_point(data = filter(df_nnSVG_DLPFC, gene_name %in% known_genes), 
@@ -235,11 +238,11 @@ ggplot(df_effect,
        aes(x = mean_nnSVG, y = prop_sv_nnSVG, color = LR_stat_nnSVG)) + 
   geom_point(size = 0.75) + 
   scale_color_viridis(trans = "log10") + 
-  geom_point(data = df_adj_effect %>% filter(is_marker_or_known), 
+  geom_point(data = df_effect %>% filter(is_marker_or_known), 
              aes(shape = is_marker_or_known), color = "red", size = 0.8) + 
   scale_shape_manual(values = 1, name = "markers") + 
   geom_text_repel(
-    data = df_adj_effect %>% filter(is_known | (is_marker_or_known & (mean_nnSVG > 0.6 & prop_sv_nnSVG > 0.48))), 
+    data = df_effect %>% filter(is_known | (is_marker_or_known & (mean_nnSVG > 0.6 & prop_sv_nnSVG > 0.48))), 
     aes(label = gene_name), color = "red", size = 3, nudge_x = 0.5, nudge_y = 0.07) + 
   ylim(c(0, 1)) + 
   labs(x = "mean logcounts", 
