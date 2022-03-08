@@ -1,6 +1,6 @@
 #############################
 # Script to plot example SVGs
-# Lukas Weber, Feb 2022
+# Lukas Weber, Mar 2022
 #############################
 
 library(SpatialExperiment)
@@ -47,14 +47,13 @@ df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>%
   filter(in_tissue == 1) %>% 
   pivot_longer(., cols = known_genes, 
                names_to = "gene", values_to = "counts") %>% 
-  mutate(gene = factor(gene, levels = known_genes))
-
-df$bandwidth <- 
-  as.factor(ifelse(df$gene %in% c("MOBP", "PCP4", "SNAP25"), "large", "small"))
+  mutate(gene = factor(gene, levels = known_genes)) %>% 
+  mutate(bandwidth = factor(
+    ifelse(gene %in% c("MOBP", "PCP4", "SNAP25"), "large bandwidth", "small bandwidth")))
 
 
 ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) + 
-  facet_wrap(bandwidth ~ gene, nrow = 2, labeller = label_both) + 
+  facet_wrap(gene ~ bandwidth, nrow = 2) + 
   geom_point(size = 0.05) + 
   coord_fixed() + 
   scale_y_reverse() + 
@@ -69,5 +68,5 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
         axis.text = element_blank(), 
         axis.ticks = element_blank())
 
-ggsave(here("plots", "example_svgs", "humanDLPFC_6known.png"), width = 6.25, height = 4.75)
+ggsave(here("plots", "example_svgs", "humanDLPFC_6known.png"), width = 6, height = 5)
 
