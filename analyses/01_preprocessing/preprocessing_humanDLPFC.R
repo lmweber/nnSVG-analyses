@@ -68,15 +68,6 @@ spe <- filter_genes(
 dim(spe)
 
 
-# calculate log-transformed normalized counts using scran package
-set.seed(123)
-qclus <- quickCluster(spe)
-spe <- computeSumFactors(spe, cluster = qclus)
-spe <- logNormCounts(spe)
-
-assayNames(spe)
-
-
 # calculate deviance residuals using scry package
 spe <- nullResiduals(
   spe, 
@@ -84,6 +75,15 @@ spe <- nullResiduals(
   fam = "binomial", 
   type = "deviance"
 )
+
+assayNames(spe)
+
+
+# calculate log-transformed normalized counts using scran package
+set.seed(123)
+qclus <- quickCluster(spe)
+spe <- computeSumFactors(spe, cluster = qclus)
+spe <- logNormCounts(spe)
 
 assayNames(spe)
 
