@@ -21,7 +21,7 @@ library(here)
 fn <- here("outputs", "SPE", "spe_humanDLPFC_preprocessed.rds")
 spe <- readRDS(fn)
 
-spe
+dim(spe)
 
 
 # ----------
@@ -31,12 +31,13 @@ spe
 # run method and save results, runtime, peak memory usage
 
 # run nnSVG
+set.seed(123)
 runtime <- system.time({
   spe <- nnSVG(
     spe, 
     X = NULL, 
-    assay_name = "binomial_deviance_residuals", 
-    n_neighbors = 15,
+    assay_name = "logcounts", 
+    n_neighbors = 15, 
     n_threads = 10, 
     verbose = FALSE
   )
