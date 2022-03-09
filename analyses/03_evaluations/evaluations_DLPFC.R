@@ -238,12 +238,12 @@ ggplot(df_effect,
        aes(x = mean_nnSVG, y = prop_sv_nnSVG, color = LR_stat_nnSVG)) + 
   geom_point(size = 0.75) + 
   scale_color_viridis(trans = "log10") + 
-  geom_point(data = df_effect %>% filter(is_marker_or_known), 
-             aes(shape = is_marker_or_known), color = "red", size = 0.8) + 
-  scale_shape_manual(values = 1, name = "markers") + 
+  geom_point(data = df_effect %>% filter(is_known), 
+             aes(shape = is_known), color = "red", size = 0.8) + 
+  scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
-    data = df_effect %>% filter(is_known | (is_marker_or_known & (mean_nnSVG > 0.6 & prop_sv_nnSVG > 0.48))), 
-    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.5, nudge_y = 0.07) + 
+    data = df_effect %>% filter(is_known), 
+    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.4, nudge_y = 0.05) + 
   ylim(c(0, 1)) + 
   labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
