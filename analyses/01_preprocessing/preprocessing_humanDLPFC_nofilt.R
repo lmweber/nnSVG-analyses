@@ -3,7 +3,7 @@
 # Lukas Weber, Mar 2022
 ###################################
 
-# dataset: human DLPFC
+# dataset: human DLPFC, no filtering low-expressed genes
 
 
 library(SpatialExperiment)
@@ -56,14 +56,8 @@ spe <- spe[, !colData(spe)$discard]
 dim(spe)
 
 
-# filter low-expressed and mitochondrial genes
-# using gene filtering function from nnSVG package
-spe <- filter_genes(
-  spe, 
-  filter_genes_ncounts = 3, 
-  filter_genes_pcspots = 0.5, 
-  filter_mito = TRUE
-)
+# filter mitochondrial genes
+spe <- spe[!is_mito, ]
 
 dim(spe)
 
@@ -92,6 +86,6 @@ assayNames(spe)
 # save object
 # -----------
 
-fn <- here("outputs", "SPE", "spe_humanDLPFC_preprocessed.rds")
+fn <- here("outputs", "SPE", "spe_humanDLPFC_preprocessed_nofilt.rds")
 saveRDS(spe, file = fn)
 
