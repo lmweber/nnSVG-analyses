@@ -154,18 +154,18 @@ set.seed(1)
 ggplot(as.data.frame(df_nnSVG_humanDLPFC), 
        aes(x = rank_nnSVG, y = LR_stat_nnSVG, label = gene_name)) + 
   geom_line(color = "navy") + 
-  ylim(c(-2, 8700)) + 
+  ylim(c(-1, 6200)) + 
   geom_point(data = filter(df_nnSVG_humanDLPFC, gene_name %in% manual_genes_all), 
              pch = 1, size = 2, color = "firebrick3") + 
   geom_point(data = filter(df_nnSVG_humanDLPFC, gene_name %in% known_genes), 
              pch = 1, size = 2, stroke = 0.75, color = "black") + 
   geom_text_repel(data = filter(df_nnSVG_humanDLPFC, gene_name %in% known_genes), 
-                  nudge_x = 300, nudge_y = 700, size = 3, 
+                  nudge_x = 500, nudge_y = 800, size = 3, 
                   segment.color = "black", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 1450, y = 7000, size = 4, color = "darkorange2") + 
+           x = 1500, y = 5000, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: human DLPFC, example SVGs and markers") + 
   theme_bw()
