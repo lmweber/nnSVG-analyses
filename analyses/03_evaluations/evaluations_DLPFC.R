@@ -165,7 +165,7 @@ ggplot(as.data.frame(df_nnSVG_humanDLPFC),
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 1500, y = 5000, size = 4, color = "darkorange2") + 
+           x = 2850, y = 5000, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: human DLPFC, example SVGs and markers") + 
   theme_bw()
