@@ -21,14 +21,23 @@ library(viridis)
 
 res_list <- list(
   humanDLPFC_nnSVG = rowData(readRDS(here("outputs", "results", "nnSVG", "spe_humanDLPFC_nnSVG.rds"))), 
-  humanDLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_humanDLPFC_SPARKX.rds"))), 
-  humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "HVGs", "spe_humanDLPFC_HVGs.rds")))
+  humanDLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_humanDLPFC_SPARKX_nofilt.rds"))), 
+  humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "HVGs", "spe_humanDLPFC_HVGs_nofilt.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
 colnames(res_list[["humanDLPFC_nnSVG"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_nnSVG"]]), "_nnSVG")[-(1:2)]
 colnames(res_list[["humanDLPFC_SPARKX"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_SPARKX"]]), "_SPARKX")[-(1:2)]
 colnames(res_list[["humanDLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_HVGs"]]), "_HVGs")[-(1:2)]
+
+
+# nnSVG includes additional gene filtering
+
+table(res_list$humanDLPFC_SPARKX$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
+all(res_list$humanDLPFC_nnSVG$gene_id %in% res_list$humanDLPFC_SPARKX$gene_id)
+
+table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
+all(res_list$humanDLPFC_nnSVG$gene_id %in% res_list$humanDLPFC_HVGs$gene_id)
 
 
 # ---------------------------------
@@ -38,9 +47,6 @@ colnames(res_list[["humanDLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["hu
 # known SVGs: MOBP, PCP4, SNAP25, HBB, IGKC, NPY
 
 known_genes <- c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY")
-
-all(res_list$humanDLPFC_nnSVG$gene_id == res_list$humanDLPFC_SPARKX$gene_id)
-all(res_list$humanDLPFC_nnSVG$gene_id == res_list$humanDLPFC_HVGs$gene_id)
 
 df_known_humanDLPFC <- 
   full_join(as.data.frame(res_list$humanDLPFC_nnSVG), 
@@ -65,11 +71,11 @@ ggplot(as.data.frame(df_known_humanDLPFC),
   geom_point(stroke = 1.5, size = 1.75) + 
   scale_shape_manual(values = c(4, 3, 1)) + 
   scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
-  scale_y_log10(limits = c(3, 5000)) + 
+  scale_y_log10(limits = c(3, 35000)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
   geom_text_repel(nudge_x = 0.3, size = 1.75, segment.color = NA, show.legend = FALSE) + 
-  annotate("text", label = "large bandwidth", x = 2, y = 5000, size = 4) + 
-  annotate("text", label = "small bandwidth", x = 5, y = 5000, size = 4) + 
+  annotate("text", label = "large bandwidth", x = 2, y = 35000, size = 4) + 
+  annotate("text", label = "small bandwidth", x = 5, y = 35000, size = 4) + 
   labs(x = "gene", y = "rank") + 
   ggtitle("Example SVGs: human DLPFC") + 
   theme_bw()
