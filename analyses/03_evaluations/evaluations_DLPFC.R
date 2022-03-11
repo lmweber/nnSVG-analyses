@@ -108,8 +108,9 @@ length(manual_genes_all)
 # note: numbers of genes
 # 198 manual marker genes
 length(manual_gene_names)
-# 201 total manual marker genes and known genes (198 + 6 - 3, i.e. 3 overlapping
-# and 195 new marker genes)
+# 195 additional manual marker genes excluding overlap with 6 known genes
+length(manual_gene_names) - sum(known_genes %in% manual_gene_names)
+# 201 total manual marker genes and known genes (i.e. 3 overlapping)
 length(manual_genes_all)
 
 
