@@ -108,7 +108,8 @@ length(manual_genes_all)
 # note: numbers of genes
 # 198 manual marker genes
 length(manual_gene_names)
-# 201 total manual marker genes and known genes (198 + 6 - 3, i.e. 3 overlapping)
+# 201 total manual marker genes and known genes (198 + 6 - 3, i.e. 3 overlapping
+# and 195 new marker genes)
 length(manual_genes_all)
 
 
@@ -155,7 +156,7 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
-# highlighting 6 known genes and 193 combined set of known and layer-specific markers
+# highlighting 6 known genes and combined set of known and layer-specific markers
 # set seed for overlapping geom_text_repel
 set.seed(1)
 ggplot(as.data.frame(df_nnSVG_humanDLPFC), 
@@ -211,7 +212,7 @@ table(filter(df_SPARKX_humanDLPFC, is_marker)$adjustedPval_SPARKX <= 0.05)
 table(filter(df_SPARKX_humanDLPFC, is_marker_or_known)$adjustedPval_SPARKX <= 0.05)
 
 
-# highlighting 193 (combined set of known and layer-specific marker)
+# highlighting combined set of known and layer-specific markers
 ggplot(as.data.frame(df_SPARKX_humanDLPFC), 
        aes(x = rank_SPARKX, y = -log10(adjustedPval_SPARKX), label = gene_name)) + 
   geom_line(color = "navy") + 
