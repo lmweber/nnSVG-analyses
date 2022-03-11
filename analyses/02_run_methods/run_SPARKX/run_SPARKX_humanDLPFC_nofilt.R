@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-fn <- here("outputs", "SPE", "spe_humanDLPFC_preprocessed.rds")
+fn <- here("outputs", "SPE", "spe_humanDLPFC_preprocessed_nofilt.rds")
 spe <- readRDS(fn)
 
 dim(spe)
@@ -37,7 +37,7 @@ runtime <- system.time({
     count_in = counts(spe), 
     locus_in = spatialCoords(spe), 
     X_in = NULL, 
-    numCores = 10, 
+    numCores = 4, 
     option = "mixture", 
     verbose = TRUE
   )
@@ -67,6 +67,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARKX", "spe_humanDLPFC_SPARKX.rds")
+file <- here("outputs", "results", "SPARKX", "spe_humanDLPFC_SPARKX_nofilt.rds")
 saveRDS(spe, file = file)
 
