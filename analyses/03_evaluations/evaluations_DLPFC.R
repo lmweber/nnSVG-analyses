@@ -160,12 +160,12 @@ ggplot(as.data.frame(df_nnSVG_humanDLPFC),
   geom_point(data = filter(df_nnSVG_humanDLPFC, gene_name %in% known_genes), 
              pch = 1, size = 2, stroke = 0.75, color = "black") + 
   geom_text_repel(data = filter(df_nnSVG_humanDLPFC, gene_name %in% known_genes), 
-                  nudge_x = 400, nudge_y = 800, size = 3, 
+                  nudge_x = 300, nudge_y = 700, size = 3, 
                   segment.color = "black", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 1500, y = 7500, size = 4, color = "darkorange2") + 
+           x = 1450, y = 7000, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: human DLPFC, example SVGs and markers") + 
   theme_bw()
@@ -211,12 +211,12 @@ ggplot(as.data.frame(df_SPARKX_humanDLPFC),
   geom_point(data = filter(df_SPARKX_humanDLPFC, gene_name %in% known_genes), 
              pch = 1, size = 2, stroke = 0.75, color = "black") + 
   geom_text_repel(data = filter(df_SPARKX_humanDLPFC, gene_name %in% known_genes), 
-                  nudge_x = 500, nudge_y = 30, size = 3, 
+                  nudge_x = 2000, nudge_y = 20, size = 3, 
                   segment.color = "black", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value\n = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 2600, y = 250, size = 4, color = "darkorange2") + 
+           x = 14000, y = 230, size = 4, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(adjusted p-value)") + 
   ggtitle("SPARK-X: human DLPFC, example SVGs and markers") + 
   theme_bw()
@@ -365,7 +365,7 @@ cor_SPARKX <- cor(df_ranks_humanDLPFC_SPARKX_HVGs$rank_method,
                   df_ranks_humanDLPFC_SPARKX_HVGs$rank_HVGs, method = "spearman")
 
 ann_text <- data.frame(
-  x = 800, 
+  x = 820, 
   y = 50, 
   label = paste0("cor = ", c(round(cor_nnSVG, 2), round(cor_SPARKX, 2))), 
   method = factor(c("nnSVG", "SPARKX"), levels = c("nnSVG", "SPARKX"))
@@ -402,7 +402,8 @@ df_pvals_humanDLPFC <- as.data.frame(res_list$humanDLPFC_nnSVG)
 # plot p-values
 ggplot(as.data.frame(df_pvals_humanDLPFC), aes(x = pval_nnSVG)) + 
   geom_histogram(color = "black", fill = "blue3", bins = 30) + 
-  xlab("p-values") + 
+  labs(x = "p-values", 
+       y = "frequency") + 
   ggtitle("P-values: nnSVG, human DLPFC") + 
   theme_bw()
 
@@ -429,7 +430,7 @@ ls_known
 
 ann_text <- data.frame(
   x = unname(ls_known), 
-  y =  c(0.1, 1.5, 0.5, 8, 9, 13), 
+  y =  c(0.25, 2.25, 1.25, 6.2, 6.15, 5), 
   label = paste0(names(ls_known), " = ", format(round(ls_known, 3), nsmall = 3))
 )
 
@@ -439,7 +440,7 @@ ggplot(as.data.frame(df_bandwidth_humanDLPFC), aes(x = l_nnSVG)) +
   xlim(c(0, 1)) + 
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
   geom_text_repel(data = ann_text, aes(x = x, y = y, label = label), 
-                  nudge_x = 0.13, nudge_y = 1, color = "red", size = 3) + 
+                  nudge_x = 0.15, nudge_y = 0.1, color = "red", size = 3) + 
   xlab("bandwidth (1 / phi)") + 
   ylab("density") + 
   ggtitle("Bandwidths: nnSVG, human DLPFC") + 
