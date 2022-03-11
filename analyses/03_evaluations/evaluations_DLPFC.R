@@ -101,9 +101,14 @@ manual_genes <- distinct(manual_genes)
 manual_gene_names <- sort(manual_genes$gene_name)
 length(manual_gene_names)
 head(manual_gene_names)
-
 # combined set of 6 known and 198 marker (201 total)
 manual_genes_all <- unique(c(known_genes, manual_gene_names))
+length(manual_genes_all)
+
+# note: numbers of genes
+# 198 manual marker genes
+length(manual_gene_names)
+# 201 total manual marker genes and known genes (198 + 6 - 3, i.e. 3 overlapping)
 length(manual_genes_all)
 
 
@@ -124,7 +129,9 @@ padj_cutoff_nnSVG <-
 
 padj_cutoff_nnSVG
 
-# number of 190 marker genes identified as significant
+# number of manual and known in nnSVG gene set (i.e. pass filtering)
+table(df_nnSVG_humanDLPFC$gene_name %in% manual_genes_all)
+# number of marker genes identified as significant
 table(filter(df_nnSVG_humanDLPFC, is_marker)$padj_nnSVG <= 0.05)
 # number of combined set identified as significant
 table(filter(df_nnSVG_humanDLPFC, is_marker_or_known)$padj_nnSVG <= 0.05)
@@ -196,7 +203,9 @@ padj_cutoff_SPARKX <-
 
 padj_cutoff_SPARKX
 
-# number of 190 marker genes identified as significant
+# number of manual and known in SPARK-X gene set
+table(df_SPARKX_humanDLPFC$gene_name %in% manual_genes_all)
+# number of marker genes identified as significant
 table(filter(df_SPARKX_humanDLPFC, is_marker)$adjustedPval_SPARKX <= 0.05)
 # number of combined set identified as significant
 table(filter(df_SPARKX_humanDLPFC, is_marker_or_known)$adjustedPval_SPARKX <= 0.05)
