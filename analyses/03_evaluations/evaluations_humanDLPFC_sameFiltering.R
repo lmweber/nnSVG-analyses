@@ -3,6 +3,10 @@
 # Lukas Weber, Mar 2022
 #################################
 
+# data set: human DLPFC
+# gene filtering: same for all methods
+
+
 library(SpatialExperiment)
 library(here)
 library(dplyr)
@@ -21,8 +25,8 @@ library(viridis)
 
 res_list <- list(
   humanDLPFC_nnSVG = rowData(readRDS(here("outputs", "results", "nnSVG", "spe_humanDLPFC_nnSVG.rds"))), 
-  humanDLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_humanDLPFC_SPARKX_nofilt.rds"))), 
-  humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "HVGs", "spe_humanDLPFC_HVGs_nofilt.rds")))
+  humanDLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "SPARKX", "spe_humanDLPFC_SPARKX.rds"))), 
+  humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "HVGs", "spe_humanDLPFC_HVGs.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
@@ -31,13 +35,13 @@ colnames(res_list[["humanDLPFC_SPARKX"]])[-(1:2)] <- paste0(colnames(res_list[["
 colnames(res_list[["humanDLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_HVGs"]]), "_HVGs")[-(1:2)]
 
 
-# nnSVG includes additional gene filtering
+# filtering: same genes for all methods
 
 table(res_list$humanDLPFC_SPARKX$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
-all(res_list$humanDLPFC_nnSVG$gene_id %in% res_list$humanDLPFC_SPARKX$gene_id)
+all(res_list$humanDLPFC_nnSVG$gene_id == res_list$humanDLPFC_SPARKX$gene_id)
 
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
-all(res_list$humanDLPFC_nnSVG$gene_id %in% res_list$humanDLPFC_HVGs$gene_id)
+all(res_list$humanDLPFC_nnSVG$gene_id == res_list$humanDLPFC_HVGs$gene_id)
 
 
 # ---------------------------------
@@ -131,6 +135,9 @@ padj_cutoff_nnSVG <-
 
 padj_cutoff_nnSVG
 
+# number of significant SVGs
+table(df_nnSVG_humanDLPFC$padj_nnSVG <= 0.05)
+
 # number of manual and known in nnSVG gene set (i.e. pass filtering)
 table(df_nnSVG_humanDLPFC$gene_name %in% manual_genes_all)
 # number of marker genes identified as significant
@@ -204,6 +211,9 @@ padj_cutoff_SPARKX <-
   unlist
 
 padj_cutoff_SPARKX
+
+# number of significant SVGs
+table(df_SPARKX_humanDLPFC$adjustedPval_SPARKX <= 0.05)
 
 # number of manual and known in SPARK-X gene set
 table(df_SPARKX_humanDLPFC$gene_name %in% manual_genes_all)
