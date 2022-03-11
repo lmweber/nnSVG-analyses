@@ -62,6 +62,13 @@ spe <- spe[!is_mito, ]
 dim(spe)
 
 
+# filter zero-expressed genes
+is_zero <- rowSums(counts(spe)) == 0
+spe <- spe[!is_zero, ]
+
+dim(spe)
+
+
 # calculate deviance residuals using scry package
 set.seed(123)
 spe <- nullResiduals(
