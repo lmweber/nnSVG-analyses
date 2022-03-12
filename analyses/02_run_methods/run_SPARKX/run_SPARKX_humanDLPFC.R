@@ -37,7 +37,7 @@ runtime <- system.time({
     count_in = counts(spe), 
     locus_in = spatialCoords(spe), 
     X_in = NULL, 
-    numCores = 10, 
+    numCores = 1, 
     option = "mixture", 
     verbose = TRUE
   )
