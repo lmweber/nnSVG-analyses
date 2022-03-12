@@ -3,7 +3,7 @@
 # Lukas Weber, Mar 2022
 ###################################
 
-# dataset: human DLPFC, no filtering low-expressed genes
+# dataset: Visium human DLPFC, without filtering low-expressed genes
 
 
 library(SpatialExperiment)
@@ -64,6 +64,8 @@ dim(spe)
 
 # filter zero-expressed genes
 is_zero <- rowSums(counts(spe)) == 0
+table(is_zero)
+
 spe <- spe[!is_zero, ]
 
 dim(spe)
