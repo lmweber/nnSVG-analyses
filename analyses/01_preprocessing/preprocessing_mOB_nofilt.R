@@ -11,7 +11,6 @@ library(STexampleData)
 library(nnSVG)
 library(scater)
 library(scran)
-library(scry)
 library(here)
 
 
@@ -53,18 +52,6 @@ dim(spe)
 # note: no zero-expressed genes in this dataset
 is_zero <- rowSums(counts(spe)) == 0
 table(is_zero)
-
-
-# calculate deviance residuals using scry package
-set.seed(123)
-spe <- nullResiduals(
-  spe, 
-  assay = "counts", 
-  fam = "binomial", 
-  type = "deviance"
-)
-
-assayNames(spe)
 
 
 # calculate log-transformed normalized counts using scran package

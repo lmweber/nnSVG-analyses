@@ -11,7 +11,6 @@ library(STexampleData)
 library(nnSVG)
 library(scater)
 library(scran)
-library(scry)
 library(here)
 
 
@@ -62,18 +61,6 @@ spe <- filter_genes(
 )
 
 dim(spe)
-
-
-# calculate deviance residuals using scry package
-set.seed(123)
-spe <- nullResiduals(
-  spe, 
-  assay = "counts", 
-  fam = "binomial", 
-  type = "deviance"
-)
-
-assayNames(spe)
 
 
 # calculate log-transformed normalized counts using scran package
