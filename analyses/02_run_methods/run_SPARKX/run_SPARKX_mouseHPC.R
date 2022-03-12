@@ -59,7 +59,7 @@ head(sparkx_out$res_stest)
 head(sparkx_out$res_mtest)
 
 # store results in SPE object
-stopifnot(all(rownames(sparkx_out$res_mtest) == rowData(spe)$gene_id))
+stopifnot(all(rownames(sparkx_out$res_mtest) == rowData(spe)$gene_name))
 
 rowData(spe) <- cbind(rowData(spe), sparkx_out$res_mtest)
 

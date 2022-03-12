@@ -37,7 +37,7 @@ runtime <- system.time({
 })
 
 # store in object
-stopifnot(all(rownames(dec) == rowData(spe)$gene_id))
+stopifnot(all(rownames(dec) == rowData(spe)$gene_name))
 rowData(spe) <- cbind(rowData(spe), dec)
 
 # calculate ranks

@@ -59,9 +59,14 @@ head(sparkx_out$res_stest)
 head(sparkx_out$res_mtest)
 
 # store results in SPE object
-stopifnot(all(rownames(sparkx_out$res_mtest) == rowData(spe)$gene_id))
-
-rowData(spe) <- cbind(rowData(spe), sparkx_out$res_mtest)
+# note: some additional genes have been filtered out by SPARK-X
+table(rowData(spe)$gene_name %in% rownames(sparkx_out$res_mtest))
+# match rows and store NAs for missing genes
+colnames(sparkx_out$res_mtest)
+rowData(spe)$combinedPval <- NA
+rowData(spe)$adjustedPval <- NA
+rowData(spe)[rownames(sparkx_out$res_mtest), "combinedPval"] <- sparkx_out$res_mtest$combinedPval
+rowData(spe)[rownames(sparkx_out$res_mtest), "adjustedPval"] <- sparkx_out$res_mtest$adjustedPval
 
 # calculate ranks
 rowData(spe)$rank <- rank(rowData(spe)$combinedPval, ties.method = "first")
