@@ -32,6 +32,11 @@ dim(spe)
 
 # remove spots with NA cell type labels
 spe <- spe[, !is.na(colData(spe)$celltype)]
+# remove genes with zero logcounts after removing spots with NA cell type labels
+is_zero_logcounts <- rowSums(logcounts(spe)) == 0
+table(is_zero_logcounts)
+spe <- spe[!is_zero_logcounts, ]
+dim(spe)
 
 # create model matrix for cell type CA3 vs. all other cell types
 X <- model.matrix(~ as.factor(as.numeric(colData(spe)$celltype == "CA3")))
@@ -59,14 +64,9 @@ head(sparkx_out$res_stest)
 head(sparkx_out$res_mtest)
 
 # store results in SPE object
-# note: some additional genes have been filtered out by SPARK-X
-table(rowData(spe)$gene_name %in% rownames(sparkx_out$res_mtest))
-# match rows and store NAs for missing genes
-colnames(sparkx_out$res_mtest)
-rowData(spe)$combinedPval <- NA
-rowData(spe)$adjustedPval <- NA
-rowData(spe)[rownames(sparkx_out$res_mtest), "combinedPval"] <- sparkx_out$res_mtest$combinedPval
-rowData(spe)[rownames(sparkx_out$res_mtest), "adjustedPval"] <- sparkx_out$res_mtest$adjustedPval
+stopifnot(all(rownames(sparkx_out$res_mtest) == rowData(spe)$gene_name))
+
+rowData(spe) <- cbind(rowData(spe), sparkx_out$res_mtest)
 
 # calculate ranks
 rowData(spe)$rank <- rank(rowData(spe)$combinedPval, ties.method = "first")

@@ -32,6 +32,11 @@ dim(spe)
 
 # remove spots with NA cell type labels
 spe <- spe[, !is.na(colData(spe)$celltype)]
+# remove genes with zero logcounts after removing spots with NA cell type labels
+is_zero_logcounts <- rowSums(logcounts(spe)) == 0
+table(is_zero_logcounts)
+spe <- spe[!is_zero_logcounts, ]
+dim(spe)
 
 # create model matrix for cell type CA3 vs. all other cell types
 X <- model.matrix(~ as.factor(as.numeric(colData(spe)$celltype == "CA3")))
