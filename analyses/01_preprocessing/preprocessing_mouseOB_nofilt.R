@@ -67,6 +67,6 @@ assayNames(spe)
 # save object
 # -----------
 
-fn <- here("outputs", "SPE", "spe_mOB_preprocessed_nofilt.rds")
+fn <- here("outputs", "SPE", "spe_mouseOB_preprocessed_nofilt.rds")
 saveRDS(spe, file = fn)
 
