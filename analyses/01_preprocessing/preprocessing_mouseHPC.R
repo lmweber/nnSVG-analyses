@@ -61,9 +61,8 @@ dim(spe)
 
 
 # calculate log-transformed normalized counts using scran package
-set.seed(123)
-qclus <- quickCluster(spe)
-spe <- computeSumFactors(spe, cluster = qclus)
+# using library size normalization
+spe <- computeLibraryFactors(spe)
 spe <- logNormCounts(spe)
 
 assayNames(spe)
