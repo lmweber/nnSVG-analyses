@@ -4,7 +4,7 @@
 #######################
 
 # method: nnSVG
-# dataset: human DLPFC
+# dataset: Visium human DLPFC
 
 
 library(SpatialExperiment)

@@ -4,7 +4,7 @@
 #######################
 
 # method: nnSVG
-# dataset: human DLPFC, without filtering low-expressed genes
+# dataset: Visium human DLPFC, without filtering low-expressed genes
 
 
 library(SpatialExperiment)

@@ -3,12 +3,12 @@
 # Lukas Weber, Mar 2022
 #######################
 
-# method: HVGs
-# dataset: Visium human DLPFC, without filtering low-expressed genes
+# method: nnSVG
+# dataset: ST mouse OB, without filtering low-expressed genes
 
 
 library(SpatialExperiment)
-library(scran)
+library(nnSVG)
 library(here)
 
 
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-fn <- here("outputs", "preprocessed", "spe_humanDLPFC_preprocessed_noFilt.rds")
+fn <- here("outputs", "preprocessed", "spe_mouseOB_preprocessed_noFilt.rds")
 spe <- readRDS(fn)
 
 dim(spe)
@@ -30,18 +30,18 @@ dim(spe)
 
 # run method and save results, runtime, peak memory usage
 
-# run HVGs
+# run nnSVG
 set.seed(123)
 runtime <- system.time({
-  dec <- modelGeneVar(spe)
+  spe <- nnSVG(
+    spe, 
+    X = NULL, 
+    assay_name = "logcounts", 
+    n_neighbors = 15, 
+    n_threads = 10, 
+    verbose = FALSE
+  )
 })
-
-# store in object
-stopifnot(all(rownames(dec) == rowData(spe)$gene_id))
-rowData(spe) <- cbind(rowData(spe), dec)
-
-# calculate ranks
-rowData(spe)$rank <- rank(-1 * rowData(spe)$bio, ties.method = "first")
 
 # store runtime in object
 metadata(spe) <- list(
@@ -53,6 +53,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "spe_humanDLPFC_HVGs_noFilt.rds")
+file <- here("outputs", "results", "spe_mouseOB_nnSVG_noFilt.rds")
 saveRDS(spe, file = file)
 

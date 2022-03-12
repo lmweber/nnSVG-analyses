@@ -4,7 +4,7 @@
 #######################
 
 # method: HVGs
-# dataset: human DLPFC
+# dataset: Visium human DLPFC
 
 
 library(SpatialExperiment)

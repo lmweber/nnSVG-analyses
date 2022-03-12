@@ -4,7 +4,7 @@
 #######################
 
 # method: SPARK-X
-# dataset: human DLPFC
+# dataset: Visium human DLPFC
 
 
 library(SpatialExperiment)

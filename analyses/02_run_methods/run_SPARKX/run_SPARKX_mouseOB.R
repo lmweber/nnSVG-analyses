@@ -4,7 +4,7 @@
 #######################
 
 # method: SPARK-X
-# dataset: Visium human DLPFC, without filtering low-expressed genes
+# dataset: ST mouse OB
 
 
 library(SpatialExperiment)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-fn <- here("outputs", "preprocessed", "spe_humanDLPFC_preprocessed_noFilt.rds")
+fn <- here("outputs", "preprocessed", "spe_mouseOB_preprocessed.rds")
 spe <- readRDS(fn)
 
 dim(spe)
@@ -67,6 +67,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "spe_humanDLPFC_SPARKX_noFilt.rds")
+file <- here("outputs", "results", "spe_mouseOB_SPARKX.rds")
 saveRDS(spe, file = file)
 
