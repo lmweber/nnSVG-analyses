@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-fn <- here("outputs", "SPE", "spe_humanDLPFC_preprocessed_noFilt.rds")
+fn <- here("outputs", "preprocessed", "spe_humanDLPFC_preprocessed_noFilt.rds")
 spe <- readRDS(fn)
 
 dim(spe)
@@ -67,6 +67,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "SPARKX", "spe_humanDLPFC_SPARKX_noFilt.rds")
+file <- here("outputs", "results", "spe_humanDLPFC_SPARKX_noFilt.rds")
 saveRDS(spe, file = file)
 

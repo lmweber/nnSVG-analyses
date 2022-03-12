@@ -93,6 +93,6 @@ assayNames(spe)
 # save object
 # -----------
 
-fn <- here("outputs", "SPE", "spe_humanDLPFC_preprocessed.rds")
+fn <- here("outputs", "preprocessed", "spe_humanDLPFC_preprocessed.rds")
 saveRDS(spe, file = fn)
 
