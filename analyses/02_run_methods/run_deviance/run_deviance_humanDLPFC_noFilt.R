@@ -4,7 +4,7 @@
 #######################
 
 # method: deviance
-# dataset: human DLPFC
+# dataset: human DLPFC, without filtering low-expressed genes
 
 
 library(SpatialExperiment)
