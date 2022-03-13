@@ -155,8 +155,8 @@ ggplot(as.data.frame(df_SPARKX),
                   segment.color = "black", color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
-  annotate("text", label = paste0("adjusted p-value\n = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 14000, y = 230, size = 4, color = "darkorange2") + 
+  annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
+           x = 14000, y = 250, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: human DLPFC") + 
   theme_bw()
