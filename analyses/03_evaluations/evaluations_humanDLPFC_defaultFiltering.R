@@ -17,6 +17,10 @@ library(ggrepel)
 library(viridis)
 
 
+# directory to save plots
+dir_plots <- here(file.path("plots", "evaluations", "humanDLPFC", "default_filtering"))
+
+
 # ------------
 # load results
 # ------------
@@ -85,7 +89,7 @@ ggplot(as.data.frame(df_known),
   ggtitle("Example SVGs: human DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "example_SVGs_ranks_humanDLPFC"))
+fn <- file.path(dir_plots, "example_SVGs_ranks_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -160,7 +164,7 @@ ggplot(as.data.frame(df_nnSVG),
   ggtitle("nnSVG: human DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "stat_vs_rank_top1000_nnSVG_humanDLPFC"))
+fn <- file.path(dir_plots, "stat_vs_rank_top1000_nnSVG_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -187,7 +191,7 @@ ggplot(as.data.frame(df_nnSVG),
   ggtitle("nnSVG: human DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "stat_vs_rank_markers_nnSVG_humanDLPFC"))
+fn <- file.path(dir_plots, "stat_vs_rank_markers_nnSVG_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -243,7 +247,7 @@ ggplot(as.data.frame(df_SPARKX),
   ggtitle("SPARK-X: human DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "stat_vs_rank_SPARKX_humanDLPFC"))
+fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -279,7 +283,7 @@ ggplot(df_effect,
   ggtitle("nnSVG: human DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "effect_size_nnSVG_humanDLPFC"))
+fn <- file.path(dir_plots, "effect_size_nnSVG_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -346,7 +350,7 @@ ggplot(as.data.frame(df_overlaps),
   theme_bw() + 
   theme(panel.grid.minor = element_blank())
 
-fn <- here(file.path("plots", "evaluations", "overlaps_humanDLPFC"))
+fn <- file.path(dir_plots, "overlaps_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -410,7 +414,7 @@ ggplot(as.data.frame(df_ranks),
   ggtitle("Ranks SVGs and HVGs: human DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "ranks_humanDLPFC"))
+fn <- file.path(dir_plots, "ranks_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
 ggsave(paste0(fn, ".png"), width = 8, height = 4)
 
@@ -429,7 +433,7 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
   ggtitle("nnSVG p-values: human DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "pvals_nnSVG_humanDLPFC"))
+fn <- file.path(dir_plots, "pvals_nnSVG_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -468,7 +472,7 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
   ggtitle("nnSVG length scales: human DLPFC") + 
   theme_bw()
 
-fn <- here(file.path("plots", "evaluations", "lengthscales_nnSVG_humanDLPFC"))
+fn <- file.path(dir_plots, "lengthscales_nnSVG_humanDLPFC_defaultFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
