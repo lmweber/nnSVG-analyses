@@ -131,7 +131,7 @@ df_nnSVG <-
   mutate(is_marker = gene_name %in% markers_names) %>% 
   mutate(is_marker_or_known = is_marker | is_known)
 
-# rank at p-value = 0.05 cutoff
+# rank at adjusted p-value = 0.05 cutoff
 padj_cutoff_nnSVG <- 
   as.data.frame(res_list$humanDLPFC_nnSVG) %>% 
   filter(padj_nnSVG <= 0.05) %>% 
@@ -197,10 +197,10 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
 # ------------------------------------
-# SPARK-X: adjusted p-values vs. ranks
+# SPARK-X: combined p-values vs. ranks
 # ------------------------------------
 
-# plot adjusted p-values vs. ranks
+# plot combined p-values vs. ranks
 
 df_SPARKX <- 
   as.data.frame(res_list$humanDLPFC_SPARKX) %>% 
@@ -208,7 +208,7 @@ df_SPARKX <-
   mutate(is_marker = gene_name %in% markers_names) %>% 
   mutate(is_marker_or_known = is_marker | is_known)
 
-# rank at p-value = 0.05 cutoff
+# rank at adjusted p-value = 0.05 cutoff
 padj_cutoff_SPARKX <- 
   as.data.frame(res_list$humanDLPFC_SPARKX) %>% 
   filter(adjustedPval_SPARKX <= 0.05) %>% 
@@ -230,7 +230,7 @@ table(filter(df_SPARKX, is_marker_or_known)$adjustedPval_SPARKX <= 0.05)
 
 # highlighting combined set of known and layer-specific markers
 ggplot(as.data.frame(df_SPARKX), 
-       aes(x = rank_SPARKX, y = -log10(adjustedPval_SPARKX), label = gene_name)) + 
+       aes(x = rank_SPARKX, y = -log10(combinedPval_SPARKX), label = gene_name)) + 
   geom_line(color = "navy") + 
   geom_point(data = filter(df_SPARKX, gene_name %in% markers_names_all), 
              pch = 1, size = 2, color = "firebrick3") + 
@@ -243,7 +243,7 @@ ggplot(as.data.frame(df_SPARKX),
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value\n = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
            x = 14000, y = 230, size = 4, color = "darkorange2") + 
-  labs(x = "rank", y = "-log10(adjusted p-value)") + 
+  labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: human DLPFC") + 
   theme_bw()
 
