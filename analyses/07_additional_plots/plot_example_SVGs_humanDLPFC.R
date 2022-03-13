@@ -11,6 +11,10 @@ library(tidyr)
 library(here)
 
 
+# directory to save plots
+dir_plots <- here(file.path("plots", "example_genes"))
+
+
 # ------------------
 # Visium human DLPFC
 # ------------------
@@ -49,7 +53,7 @@ df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>%
                names_to = "gene", values_to = "counts") %>% 
   mutate(gene = factor(gene, levels = known_genes)) %>% 
   mutate(bandwidth = factor(
-    ifelse(gene %in% c("MOBP", "PCP4", "SNAP25"), "large bandwidth", "small bandwidth")))
+    ifelse(gene %in% c("MOBP", "PCP4", "SNAP25"), "large length scale", "small length scale")))
 
 
 ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) + 
@@ -60,7 +64,7 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
   scale_color_gradientn(trans = "log1p", 
                         colors = c("gray90", mid = "blue", high = "black"), 
                         breaks = c(0, 500, 600), labels = c("0", "", "600")) + 
-  ggtitle("Example SVGs: DLPFC") + 
+  ggtitle("Example SVGs: human DLPFC") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
   theme(panel.grid = element_blank(), 
@@ -68,5 +72,6 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
         axis.text = element_blank(), 
         axis.ticks = element_blank())
 
-ggsave(here("plots", "example_svgs", "humanDLPFC_6known.png"), width = 6, height = 5)
+fn <- file.path(dir_plots, "example_genes_humanDLPFC")
+ggsave(paste0(fn, ".png"), width = 6, height = 5)
 
