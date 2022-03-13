@@ -48,7 +48,7 @@ runtime <- system.time({
     X = X, 
     assay_name = "logcounts", 
     n_neighbors = 15, 
-    n_threads = 20, 
+    n_threads = 10, 
     verbose = FALSE
   )
 })
