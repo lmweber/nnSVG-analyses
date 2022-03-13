@@ -1,6 +1,6 @@
 #############################
 # Script to plot example SVGs
-# Lukas Weber, Feb 2022
+# Lukas Weber, Mar 2022
 #############################
 
 
@@ -12,9 +12,13 @@ library(ggplot2)
 library(here)
 
 
-# -----------------------------
-# Slide-seqV2 mouse hippocampus
-# -----------------------------
+# directory to save plots
+dir_plots <- here(file.path("plots", "example_genes"))
+
+
+# ---------------------
+# Slide-seqV2 mouse HPC
+# ---------------------
 
 # Stickels et al. (2020) and Cable et al. (2021)
 
@@ -39,7 +43,7 @@ pal <- unname(palette.colors(36, "Polychrome 36"))
 pal <- pal[c(1, 3:36)]
 
 
-# plot all cells
+# plot all spots
 
 # add points in two steps to avoid overplotting NA points
 ggplot() + 
@@ -59,12 +63,13 @@ ggplot() +
         axis.text = element_blank(), 
         axis.ticks = element_blank())
 
-ggsave(here("plots", "example_svgs", "mouseHPC_celltypes.png"), width = 6.75, height = 5)
+fn <- file.path(dir_plots, "mouseHPC_celltypes")
+ggsave(paste0(fn, ".png"), width = 6.75, height = 5)
 
 
-# plot expression of genes of interest in CA3 region
+# plot expression of example genes in CA3 cell type
 
-# subset CA3 region
+# subset CA3 cell type
 df_sub <- 
   filter(df, celltype == "CA3") %>% 
   pivot_longer(., cols = c("Cpne9", "Rgs14"), 
@@ -87,5 +92,6 @@ ggplot(df_sub, aes(x = xcoord, y = ycoord, color = counts)) +
         axis.text = element_blank(), 
         axis.ticks = element_blank())
 
-ggsave(here("plots", "example_svgs", "mouseHPC_known.png"), width = 4, height = 4.5)
+fn <- file.path(dir_plots, "example_genes_mouseHPC")
+ggsave(paste0(fn, ".png"), width = 4, height = 4.5)
 
