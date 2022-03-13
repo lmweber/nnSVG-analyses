@@ -4,7 +4,7 @@
 #################################
 
 # data set: human DLPFC
-# gene filtering: default for each method
+# gene filtering: defaults for nnSVG and SPARK-X
 
 
 library(SpatialExperiment)
@@ -46,7 +46,6 @@ table(res_list$humanDLPFC_SPARKX$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
 all(res_list$humanDLPFC_nnSVG$gene_id %in% res_list$humanDLPFC_SPARKX$gene_id)
 
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
-all(res_list$humanDLPFC_nnSVG$gene_id %in% res_list$humanDLPFC_HVGs$gene_id)
 
 
 # --------------------------

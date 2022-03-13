@@ -4,7 +4,7 @@
 #################################
 
 # data set: human DLPFC
-# gene filtering: same for all methods
+# gene filtering: same for both nnSVG and SPARK-X
 
 
 library(SpatialExperiment)
@@ -31,7 +31,7 @@ dir_plots <- here(file.path("plots", "evaluations", "humanDLPFC", "same_filterin
 res_list <- list(
   humanDLPFC_nnSVG = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_nnSVG.rds"))), 
   humanDLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_SPARKX.rds"))), 
-  humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_HVGs.rds")))
+  humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_HVGs_nofilt.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
@@ -40,13 +40,12 @@ colnames(res_list[["humanDLPFC_SPARKX"]])[-(1:2)] <- paste0(colnames(res_list[["
 colnames(res_list[["humanDLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_HVGs"]]), "_HVGs")[-(1:2)]
 
 
-# note filtering per method: same for all methods
+# note filtering per method: same for both nnSVG and SPARK-X
 
 table(res_list$humanDLPFC_SPARKX$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
 all(res_list$humanDLPFC_nnSVG$gene_id == res_list$humanDLPFC_SPARKX$gene_id)
 
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
-all(res_list$humanDLPFC_nnSVG$gene_id == res_list$humanDLPFC_HVGs$gene_id)
 
 
 # --------------------------
