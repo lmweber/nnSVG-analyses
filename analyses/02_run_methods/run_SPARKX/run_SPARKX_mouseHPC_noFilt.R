@@ -30,13 +30,9 @@ dim(spe)
 
 # run method and save results, runtime, peak memory usage
 
-# remove spots with NA cell type labels
-spe <- spe[, !is.na(colData(spe)$celltype)]
-# remove genes with zero logcounts after removing spots with NA cell type labels
-is_zero_logcounts <- rowSums(logcounts(spe)) == 0
-table(is_zero_logcounts)
-spe <- spe[!is_zero_logcounts, ]
-dim(spe)
+# replace NA cell type labels to include in model matrix
+colData(spe)$celltype[is.na(colData(spe)$celltype)] <- "none"
+table(colData(spe)$celltype)
 
 # create model matrix for cell type CA3 vs. all other cell types
 X <- model.matrix(~ as.factor(as.numeric(colData(spe)$celltype == "CA3")))
@@ -51,7 +47,7 @@ runtime <- system.time({
     count_in = counts(spe), 
     locus_in = spatialCoords(spe), 
     X_in = X, 
-    numCores = 10, 
+    numCores = 20, 
     option = "mixture", 
     verbose = FALSE
   )
