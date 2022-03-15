@@ -4,7 +4,7 @@
 #################################
 
 # data set: human DLPFC
-# filtering: same filtering of low-expressed genes for both nnSVG and SPARK-X
+# filtering: with filtering of low-expressed genes (using nnSVG default filtering)
 
 
 library(SpatialExperiment)
@@ -18,7 +18,7 @@ library(viridis)
 
 
 # directory to save plots
-dir_plots <- here(file.path("plots", "evaluations", "humanDLPFC", "same_filtering"))
+dir_plots <- here(file.path("plots", "evaluations", "humanDLPFC", "with_filtering"))
 
 
 # ------------
@@ -46,6 +46,7 @@ table(res_list$humanDLPFC_SPARKX$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
 all(res_list$humanDLPFC_nnSVG$gene_id == res_list$humanDLPFC_SPARKX$gene_id)
 
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
+table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_SPARKX$gene_id)
 
 
 # --------------------------
@@ -88,7 +89,7 @@ ggplot(as.data.frame(df_known),
   ggtitle("Example SVGs: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "example_SVGs_ranks_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "example_SVGs_ranks_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -163,7 +164,7 @@ ggplot(as.data.frame(df_nnSVG),
   ggtitle("nnSVG: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "stat_vs_rank_top1000_nnSVG_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "stat_vs_rank_top1000_nnSVG_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -190,7 +191,7 @@ ggplot(as.data.frame(df_nnSVG),
   ggtitle("nnSVG: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "stat_vs_rank_markers_nnSVG_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "stat_vs_rank_markers_nnSVG_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -246,7 +247,7 @@ ggplot(as.data.frame(df_SPARKX),
   ggtitle("SPARK-X: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -282,7 +283,7 @@ ggplot(df_effect,
   ggtitle("nnSVG: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "effect_size_nnSVG_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "effect_size_nnSVG_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -349,7 +350,7 @@ ggplot(as.data.frame(df_overlaps),
   theme_bw() + 
   theme(panel.grid.minor = element_blank())
 
-fn <- file.path(dir_plots, "overlaps_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "overlaps_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -413,7 +414,7 @@ ggplot(as.data.frame(df_ranks),
   ggtitle("Ranks SVGs and HVGs: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "ranks_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "ranks_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 8, height = 4)
 ggsave(paste0(fn, ".png"), width = 8, height = 4)
 
@@ -432,7 +433,7 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
   ggtitle("nnSVG p-values: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "pvals_nnSVG_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "pvals_nnSVG_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -471,7 +472,7 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
   ggtitle("nnSVG length scales: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "lengthscales_nnSVG_humanDLPFC_sameFilt")
+fn <- file.path(dir_plots, "lengthscales_nnSVG_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
