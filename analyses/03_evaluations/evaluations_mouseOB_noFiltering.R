@@ -97,7 +97,7 @@ ggplot(as.data.frame(df_nnSVG),
   ggtitle("nnSVG: mouse OB") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "stat_vs_rank_markers_nnSVG_mouseOB_noFilt")
+fn <- file.path(dir_plots, "stat_vs_rank_all_nnSVG_mouseOB_noFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -131,7 +131,7 @@ ggplot(as.data.frame(df_SPARKX),
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 5000, y = 12, size = 3, color = "darkorange2") + 
+           x = 5000, y = 11, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouse OB") + 
   theme_bw()

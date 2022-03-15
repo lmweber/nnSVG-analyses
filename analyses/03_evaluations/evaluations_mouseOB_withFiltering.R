@@ -92,12 +92,12 @@ ggplot(as.data.frame(df_nnSVG),
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 1500, y = 250, size = 3, color = "darkorange2") + 
+           x = 1500, y = 200, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: mouse OB") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "stat_vs_rank_markers_nnSVG_mouseOB_withFilt")
+fn <- file.path(dir_plots, "stat_vs_rank_all_nnSVG_mouseOB_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
