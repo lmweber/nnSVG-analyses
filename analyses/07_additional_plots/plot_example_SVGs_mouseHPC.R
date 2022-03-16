@@ -3,7 +3,6 @@
 # Lukas Weber, Mar 2022
 #############################
 
-
 library(SpatialExperiment)
 library(STexampleData)
 library(dplyr)
