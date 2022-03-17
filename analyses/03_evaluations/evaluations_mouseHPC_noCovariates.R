@@ -104,8 +104,8 @@ df_nnSVG <-
 # rank at adjusted p-value = 0.05 cutoff
 padj_cutoff_nnSVG <- 
   as.data.frame(res_list$mouseHPC_nnSVG_noCovariates) %>% 
-  filter(padj_nnSVG <= 0.05) %>% 
-  summarize(max = max(rank_nnSVG)) %>% 
+  filter(padj_nnSVG_noCovariates <= 0.05) %>% 
+  summarize(max = max(rank_nnSVG_noCovariates)) %>% 
   unlist
 
 padj_cutoff_nnSVG
@@ -113,7 +113,7 @@ padj_cutoff_nnSVG
 
 # highlighting known genes
 ggplot(as.data.frame(df_nnSVG), 
-       aes(x = rank_nnSVG, y = LR_stat_nnSVG, label = gene_name)) + 
+       aes(x = rank_nnSVG_noCovariates, y = LR_stat_nnSVG_noCovariates, label = gene_name)) + 
   geom_line(color = "navy") + 
   geom_point(data = filter(df_nnSVG, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
@@ -145,8 +145,8 @@ df_SPARKX <-
 # rank at adjusted p-value = 0.05 cutoff
 padj_cutoff_SPARKX <- 
   as.data.frame(res_list$mouseHPC_SPARKX_noCovariates) %>% 
-  filter(adjustedPval_SPARKX <= 0.05) %>% 
-  summarize(max = max(rank_SPARKX)) %>% 
+  filter(adjustedPval_SPARKX_noCovariates <= 0.05) %>% 
+  summarize(max = max(rank_SPARKX_noCovariates)) %>% 
   unlist
 
 padj_cutoff_SPARKX
@@ -154,7 +154,7 @@ padj_cutoff_SPARKX
 
 # highlighting known genes
 ggplot(as.data.frame(df_SPARKX), 
-       aes(x = rank_SPARKX, y = -log10(combinedPval_SPARKX), label = gene_name)) + 
+       aes(x = rank_SPARKX_noCovariates, y = -log10(combinedPval_SPARKX_noCovariates), label = gene_name)) + 
   geom_line(color = "navy") + 
   geom_point(data = filter(df_SPARKX, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
@@ -163,7 +163,7 @@ ggplot(as.data.frame(df_SPARKX),
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 3500, y = 200, size = 3, color = "darkorange2") + 
+           x = 3300, y = 200, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouseHPC") + 
   theme_bw()
@@ -180,13 +180,13 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 # LR statistic vs. effect size
 
 df_effect <- 
-  as.data.frame(df_nnSVG_noCovariates) %>% 
-  filter(rank_nnSVG <= 1000)
+  as.data.frame(df_nnSVG) %>% 
+  filter(rank_nnSVG_noCovariates <= 1000)
 
 
 # effect size vs. mean
 ggplot(df_effect, 
-       aes(x = mean_nnSVG, y = prop_sv_nnSVG, color = LR_stat_nnSVG)) + 
+       aes(x = mean_nnSVG_noCovariates, y = prop_sv_nnSVG_noCovariates, color = LR_stat_nnSVG_noCovariates)) + 
   geom_point(size = 0.75) + 
   scale_color_viridis(trans = "log10") + 
   geom_point(data = df_effect %>% filter(is_known), 
@@ -214,7 +214,7 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 df_pvals <- as.data.frame(res_list$mouseHPC_nnSVG_noCovariates)
 
 # plot p-values
-ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) + 
+ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG_noCovariates)) + 
   geom_histogram(color = "black", fill = "blue3", bins = 30) + 
   labs(x = "p-values", 
        y = "frequency") + 
@@ -233,9 +233,9 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 df_bandwidth <- 
   as.data.frame(res_list$mouseHPC_nnSVG_noCovariates) %>% 
   mutate(is_known = gene_name %in% known_genes) %>% 
-  mutate(l_nnSVG = 1 / phi_nnSVG)
+  mutate(l_nnSVG_noCovariates = 1 / phi_nnSVG_noCovariates)
 
-phis <- df_bandwidth$phi_nnSVG
+phis <- df_bandwidth$phi_nnSVG_noCovariates
 names(phis) <- df_bandwidth$gene_name
 phis_known <- phis[known_genes]
 
@@ -249,7 +249,7 @@ ann_text <- data.frame(
 )
 
 # plot bandwidth l (inverse of phi, scaled to distances 0 to 1)
-ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) + 
+ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG_noCovariates)) + 
   geom_density(color = "black", fill = "skyblue") + 
   xlim(c(0, 1)) + 
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
