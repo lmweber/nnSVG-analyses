@@ -29,16 +29,22 @@ dir_plots <- here(file.path("plots", "evaluations", "mouseOB", "no_filtering"))
 
 # note choice of filtering per method
 res_list <- list(
+  mouseOB_nnSVG = rowData(readRDS(here("outputs", "results", "spe_mouseOB_nnSVG_noFilt.rds"))), 
   mouseOB_SPARKX = rowData(readRDS(here("outputs", "results", "spe_mouseOB_SPARKX_noFilt.rds"))), 
   mouseOB_HVGs = rowData(readRDS(here("outputs", "results", "spe_mouseOB_HVGs_noFilt.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
+colnames(res_list[["mouseOB_nnSVG"]])[-1] <- paste0(colnames(res_list[["mouseOB_nnSVG"]]), "_nnSVG")[-1]
 colnames(res_list[["mouseOB_SPARKX"]])[-1] <- paste0(colnames(res_list[["mouseOB_SPARKX"]]), "_SPARKX")[-1]
 colnames(res_list[["mouseOB_HVGs"]])[-1] <- paste0(colnames(res_list[["mouseOB_HVGs"]]), "_HVGs")[-1]
 
 
-# note filtering per method: no filtering for SPARK-X
+# note filtering per method: no filtering for either nnSVG or SPARK-X
+table(res_list$mouseOB_SPARKX$gene_name %in% res_list$mouseOB_nnSVG$gene_name)
+all(res_list$mouseOB_SPARKX$gene_name == res_list$mouseOB_nnSVG$gene_name)
+
+table(res_list$mouseOB_HVGs$gene_name %in% res_list$mouseOB_nnSVG$gene_name)
 table(res_list$mouseOB_HVGs$gene_name %in% res_list$mouseOB_SPARKX$gene_name)
 
 
@@ -197,4 +203,23 @@ ggplot(as.data.frame(df_ranks),
 fn <- file.path(dir_plots, "ranks_mouseOB_noFilt")
 ggsave(paste0(fn, ".pdf"), width = 4.75, height = 4)
 ggsave(paste0(fn, ".png"), width = 4.75, height = 4)
+
+
+# ---------------------
+# p-value distributions
+# ---------------------
+
+df_pvals <- as.data.frame(res_list$mouseOB_nnSVG)
+
+# plot p-values
+ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) + 
+  geom_histogram(color = "black", fill = "blue3", bins = 30) + 
+  labs(x = "p-values", 
+       y = "frequency") + 
+  ggtitle("nnSVG p-values: mouse OB") + 
+  theme_bw()
+
+fn <- file.path(dir_plots, "pvals_nnSVG_mouseOB_noFilt")
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
