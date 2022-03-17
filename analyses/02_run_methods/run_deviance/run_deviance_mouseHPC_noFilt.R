@@ -4,7 +4,7 @@
 #######################
 
 # method: deviance
-# dataset: Slide-seqV2 mouse HPC
+# dataset: Slide-seqV2 mouse HPC, without filtering low-expressed genes
 
 
 library(SpatialExperiment)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-fn <- here("outputs", "preprocessed", "spe_mouseHPC_preprocessed.rds")
+fn <- here("outputs", "preprocessed", "spe_mouseHPC_preprocessed_noFilt.rds")
 spe <- readRDS(fn)
 
 dim(spe)
@@ -49,6 +49,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "spe_mouseHPC_deviance.rds")
+file <- here("outputs", "results", "spe_mouseHPC_deviance_noFilt.rds")
 saveRDS(spe, file = file)
 

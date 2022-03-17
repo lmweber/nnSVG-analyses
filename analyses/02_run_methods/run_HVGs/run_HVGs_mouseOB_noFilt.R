@@ -4,7 +4,7 @@
 #######################
 
 # method: HVGs
-# dataset: Visium human DLPFC
+# dataset: ST mouse OB, without filtering low-expressed genes
 
 
 library(SpatialExperiment)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-fn <- here("outputs", "preprocessed", "spe_humanDLPFC_preprocessed.rds")
+fn <- here("outputs", "preprocessed", "spe_mouseOB_preprocessed_noFilt.rds")
 spe <- readRDS(fn)
 
 dim(spe)
@@ -37,7 +37,7 @@ runtime <- system.time({
 })
 
 # store in object
-stopifnot(all(rownames(dec) == rowData(spe)$gene_id))
+stopifnot(all(rownames(dec) == rowData(spe)$gene_name))
 rowData(spe) <- cbind(rowData(spe), dec)
 
 # calculate ranks
@@ -53,6 +53,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "spe_humanDLPFC_HVGs.rds")
+file <- here("outputs", "results", "spe_mouseOB_HVGs_noFilt.rds")
 saveRDS(spe, file = file)
 
