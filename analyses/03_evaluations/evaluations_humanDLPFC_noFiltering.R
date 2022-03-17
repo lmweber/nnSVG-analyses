@@ -223,7 +223,7 @@ ggplot(as.data.frame(df_overlaps),
        aes(x = top_n, y = proportion, group = method, color = method)) + 
   geom_line(lwd = 0.75) + 
   geom_point(size = 2) + 
-  scale_color_manual(values = c("blue3", "maroon")) + 
+  scale_color_manual(values = "maroon") + 
   scale_x_continuous(breaks = overlaps, trans = "log10") + 
   ylim(c(0, 1)) + 
   xlab("top n genes") + 
