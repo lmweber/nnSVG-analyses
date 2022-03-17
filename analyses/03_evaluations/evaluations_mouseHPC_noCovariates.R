@@ -4,6 +4,7 @@
 #################################
 
 # data set: mouse HPC
+# methods: nnSVG and SPARK-X without covariates
 # filtering: with filtering of low-expressed genes (using nnSVG default filtering)
 
 
@@ -18,7 +19,7 @@ library(viridis)
 
 
 # directory to save plots
-dir_plots <- here(file.path("plots", "evaluations", "mouseHPC", "with_filtering"))
+dir_plots <- here(file.path("plots", "evaluations", "mouseHPC", "no_covariates"))
 
 
 # ------------
@@ -29,23 +30,23 @@ dir_plots <- here(file.path("plots", "evaluations", "mouseHPC", "with_filtering"
 
 # note choice of filtering per method
 res_list <- list(
-  mouseHPC_nnSVG = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_nnSVG.rds"))), 
-  mouseHPC_SPARKX = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_SPARKX.rds"))), 
+  mouseHPC_nnSVG_noCovariates = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_nnSVG_noCovariates.rds"))), 
+  mouseHPC_SPARKX_noCovariates = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_SPARKX_noCovariates.rds"))), 
   mouseHPC_HVGs = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_HVGs_noFilt.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
-colnames(res_list[["mouseHPC_nnSVG"]])[-1] <- paste0(colnames(res_list[["mouseHPC_nnSVG"]]), "_nnSVG")[-1]
-colnames(res_list[["mouseHPC_SPARKX"]])[-1] <- paste0(colnames(res_list[["mouseHPC_SPARKX"]]), "_SPARKX")[-1]
+colnames(res_list[["mouseHPC_nnSVG_noCovariates"]])[-1] <- paste0(colnames(res_list[["mouseHPC_nnSVG_noCovariates"]]), "_nnSVG_noCovariates")[-1]
+colnames(res_list[["mouseHPC_SPARKX_noCovariates"]])[-1] <- paste0(colnames(res_list[["mouseHPC_SPARKX_noCovariates"]]), "_SPARKX_noCovariates")[-1]
 colnames(res_list[["mouseHPC_HVGs"]])[-1] <- paste0(colnames(res_list[["mouseHPC_HVGs"]]), "_HVGs")[-1]
 
 
 # note filtering per method: same for both nnSVG and SPARK-X
-table(res_list$mouseHPC_SPARKX$gene_name %in% res_list$mouseHPC_nnSVG$gene_name)
-all(res_list$mouseHPC_nnSVG$gene_name == res_list$mouseHPC_SPARKX$gene_name)
+table(res_list$mouseHPC_SPARKX_noCovariates$gene_name %in% res_list$mouseHPC_nnSVG_noCovariates$gene_name)
+all(res_list$mouseHPC_nnSVG_noCovariates$gene_name == res_list$mouseHPC_SPARKX_noCovariates$gene_name)
 
-table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_nnSVG$gene_name)
-table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_SPARKX$gene_name)
+table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_nnSVG_noCovariates$gene_name)
+table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_SPARKX_noCovariates$gene_name)
 
 
 # --------------------------
@@ -57,18 +58,18 @@ table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_SPARKX$gene_name)
 known_genes <- c("Cpne9", "Rgs14")
 
 df_known <- 
-  full_join(as.data.frame(res_list$mouseHPC_nnSVG), 
-            as.data.frame(res_list$mouseHPC_SPARKX), 
+  full_join(as.data.frame(res_list$mouseHPC_nnSVG_noCovariates), 
+            as.data.frame(res_list$mouseHPC_SPARKX_noCovariates), 
             by = c("gene_name")) %>% 
   full_join(., 
             as.data.frame(res_list$mouseHPC_HVGs), 
             by = c("gene_name")) %>% 
   filter(gene_name %in% known_genes) %>% 
-  pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs"), 
+  pivot_longer(c("rank_nnSVG_noCovariates", "rank_SPARKX_noCovariates", "rank_HVGs"), 
                names_to = "method", 
                values_to = "rank") %>% 
   mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("nnSVG", "SPARKX", "HVGs"))) %>% 
+                         levels = c("nnSVG_noCovariates", "SPARKX_noCovariates", "HVGs"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -85,9 +86,9 @@ ggplot(as.data.frame(df_known),
   ggtitle("Example SVGs: mouseHPC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "example_SVGs_ranks_mouseHPC_withFilt")
-ggsave(paste0(fn, ".pdf"), width = 5, height = 4)
-ggsave(paste0(fn, ".png"), width = 5, height = 4)
+fn <- file.path(dir_plots, "example_SVGs_ranks_mouseHPC_noCovariates")
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
 # --------------------------------------------
@@ -97,12 +98,12 @@ ggsave(paste0(fn, ".png"), width = 5, height = 4)
 # plot likelihood ratio statistics vs. ranks
 
 df_nnSVG <- 
-  as.data.frame(res_list$mouseHPC_nnSVG) %>% 
+  as.data.frame(res_list$mouseHPC_nnSVG_noCovariates) %>% 
   mutate(is_known = gene_name %in% known_genes)
 
 # rank at adjusted p-value = 0.05 cutoff
 padj_cutoff_nnSVG <- 
-  as.data.frame(res_list$mouseHPC_nnSVG) %>% 
+  as.data.frame(res_list$mouseHPC_nnSVG_noCovariates) %>% 
   filter(padj_nnSVG <= 0.05) %>% 
   summarize(max = max(rank_nnSVG)) %>% 
   unlist
@@ -126,7 +127,7 @@ ggplot(as.data.frame(df_nnSVG),
   ggtitle("nnSVG: mouseHPC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "stat_vs_rank_nnSVG_mouseHPC_withFilt")
+fn <- file.path(dir_plots, "stat_vs_rank_nnSVG_mouseHPC_noCovariates")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -138,12 +139,12 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 # plot combined p-values vs. ranks
 
 df_SPARKX <- 
-  as.data.frame(res_list$mouseHPC_SPARKX) %>% 
+  as.data.frame(res_list$mouseHPC_SPARKX_noCovariates) %>% 
   mutate(is_known = gene_name %in% known_genes)
 
 # rank at adjusted p-value = 0.05 cutoff
 padj_cutoff_SPARKX <- 
-  as.data.frame(res_list$mouseHPC_SPARKX) %>% 
+  as.data.frame(res_list$mouseHPC_SPARKX_noCovariates) %>% 
   filter(adjustedPval_SPARKX <= 0.05) %>% 
   summarize(max = max(rank_SPARKX)) %>% 
   unlist
@@ -167,7 +168,7 @@ ggplot(as.data.frame(df_SPARKX),
   ggtitle("SPARK-X: mouseHPC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_mouseHPC_withFilt")
+fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_mouseHPC_noCovariates")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -179,7 +180,7 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 # LR statistic vs. effect size
 
 df_effect <- 
-  as.data.frame(df_nnSVG) %>% 
+  as.data.frame(df_nnSVG_noCovariates) %>% 
   filter(rank_nnSVG <= 1000)
 
 
@@ -201,7 +202,7 @@ ggplot(df_effect,
   ggtitle("nnSVG: mouse HPC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "effect_size_nnSVG_mouseHPC_withFilt")
+fn <- file.path(dir_plots, "effect_size_nnSVG_mouseHPC_noCovariates")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -210,7 +211,7 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 # p-value distributions
 # ---------------------
 
-df_pvals <- as.data.frame(res_list$mouseHPC_nnSVG)
+df_pvals <- as.data.frame(res_list$mouseHPC_nnSVG_noCovariates)
 
 # plot p-values
 ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) + 
@@ -220,7 +221,7 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
   ggtitle("nnSVG p-values: mouse HPC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "pvals_nnSVG_mouseHPC_withFilt")
+fn <- file.path(dir_plots, "pvals_nnSVG_mouseHPC_noCovariates")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
@@ -230,7 +231,7 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 # --------------------------------------
 
 df_bandwidth <- 
-  as.data.frame(res_list$mouseHPC_nnSVG) %>% 
+  as.data.frame(res_list$mouseHPC_nnSVG_noCovariates) %>% 
   mutate(is_known = gene_name %in% known_genes) %>% 
   mutate(l_nnSVG = 1 / phi_nnSVG)
 
@@ -259,7 +260,7 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
   ggtitle("nnSVG length scales: mouseHPC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "lengthscales_nnSVG_mouseHPC_withFilt")
+fn <- file.path(dir_plots, "lengthscales_nnSVG_mouseHPC_noCovariates")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
