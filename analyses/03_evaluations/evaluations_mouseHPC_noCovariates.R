@@ -87,8 +87,8 @@ ggplot(as.data.frame(df_known),
   theme_bw()
 
 fn <- file.path(dir_plots, "example_SVGs_ranks_mouseHPC_noCovariates")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5.75, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.75, height = 4)
 
 
 # --------------------------------------------
