@@ -1,0 +1,51 @@
+#################################
+# Script to plot cell type layers
+# Lukas Weber, Mar 2022
+#################################
+
+library(SpatialExperiment)
+library(STexampleData)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(here)
+
+
+# directory to save plots
+dir_plots <- here(file.path("plots", "example_genes"))
+
+
+# -----------
+# ST mouse OB
+# -----------
+
+# Stahl et al. (2016)
+
+spe <- ST_mouseOB()
+
+# cell type layer labels are stored in colData
+colData(spe)
+
+df <- as.data.frame(cbind(colData(spe), spatialCoords(spe)))
+levs <- c(sort(unique(df$layer)), "none")
+df$layer[is.na(df$layer)] <- "none"
+df$layer <- factor(df$layer, levels = levs)
+
+pal <- unname(palette.colors(8, "Okabe-Ito"))
+pal <- c(pal[c(2, 3, 7, 5, 6)], "gray80")
+
+
+ggplot(df, aes(x = x, y = y, color = layer)) + 
+  geom_point(size = 4) + 
+  scale_color_manual(values = pal) + 
+  coord_fixed() + 
+  ggtitle("Mouse OB") + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank())
+
+fn <- file.path(dir_plots, "mouseOB_layers")
+ggsave(paste0(fn, ".png"), width = 6, height = 3.75)
+
