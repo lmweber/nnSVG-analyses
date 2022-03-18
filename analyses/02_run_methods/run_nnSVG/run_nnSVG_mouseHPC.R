@@ -30,12 +30,13 @@ dim(spe)
 
 # run method and save results, runtime, peak memory usage
 
-# replace NA cell type labels to include in model matrix
-colData(spe)$celltype[is.na(colData(spe)$celltype)] <- "none"
+# remove NA cell type labels
+spe <- spe[, !is.na(colData(spe)$celltype)]
+dim(spe)
 table(colData(spe)$celltype)
 
-# create model matrix for cell type CA3 vs. all other cell types
-X <- model.matrix(~ as.factor(as.numeric(colData(spe)$celltype == "CA3")))
+# create model matrix for cell type labels
+X <- model.matrix(~ colData(spe)$celltype)
 dim(X)
 head(X)
 stopifnot(nrow(X) == ncol(spe))

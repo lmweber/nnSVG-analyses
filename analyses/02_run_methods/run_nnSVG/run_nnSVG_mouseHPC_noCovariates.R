@@ -30,6 +30,11 @@ dim(spe)
 
 # run method and save results, runtime, peak memory usage
 
+# remove NA cell type labels
+spe <- spe[, !is.na(colData(spe)$celltype)]
+dim(spe)
+table(colData(spe)$celltype)
+
 # run nnSVG without covariates
 set.seed(123)
 runtime <- system.time({
