@@ -74,7 +74,7 @@ ggplot(as.data.frame(df_known),
        aes(x = gene_name, y = rank, group = method, color = method, 
            shape = method, label = rank)) + 
   geom_point(stroke = 1.5, size = 1.75) + 
-  scale_shape_manual(values = c(4, 3, 1)) + 
+  scale_shape_manual(values = c(3, 1)) + 
   scale_color_manual(values = c("maroon", "darkorange")) + 
   scale_y_log10(limits = c(3, 35000)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
