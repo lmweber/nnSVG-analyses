@@ -35,6 +35,12 @@ spe <- spe[, !is.na(colData(spe)$celltype)]
 dim(spe)
 table(colData(spe)$celltype)
 
+# remove any zero-expression genes after removing NA cell type labels
+ix_zeros <- rowSums(counts(spe)) == 0
+table(ix_zeros)
+spe <- spe[!ix_zeros, ]
+dim(spe)
+
 # create model matrix for cell type labels
 X <- model.matrix(~ colData(spe)$celltype)
 dim(X)
