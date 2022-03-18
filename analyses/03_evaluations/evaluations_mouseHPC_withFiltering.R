@@ -253,7 +253,7 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
   xlim(c(0, 1)) + 
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
   geom_text_repel(data = ann_text, aes(x = x, y = y, label = label), 
-                  nudge_x = 0.1, nudge_y = 1, color = "red", size = 3) + 
+                  nudge_x = 0.15, nudge_y = 2, color = "red", size = 3) + 
   xlab("estimated length scale") + 
   ylab("density") + 
   ggtitle("nnSVG length scales: mouseHPC") + 
