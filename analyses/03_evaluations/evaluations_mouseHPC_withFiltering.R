@@ -117,7 +117,7 @@ ggplot(as.data.frame(df_nnSVG),
   geom_point(data = filter(df_nnSVG, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_nnSVG, gene_name %in% known_genes), 
-                  nudge_x = 300, nudge_y = 2000, size = 3, color = "firebrick3") + 
+                  nudge_x = 500, nudge_y = 3000, size = 3, color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
