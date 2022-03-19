@@ -1,9 +1,9 @@
-#################################################
-# Script for null simulation: preprocessing steps
+##################################################
+# Script for null simulations: preprocessing steps
 # Lukas Weber, Mar 2022
-#################################################
+##################################################
 
-# dataset: Visium human DLPFC
+# dataset: ST mouse OB
 
 
 library(SpatialExperiment)
@@ -11,7 +11,6 @@ library(STexampleData)
 library(nnSVG)
 library(scater)
 library(scran)
-library(scry)
 library(here)
 
 
@@ -20,7 +19,7 @@ library(here)
 # ---------
 
 # load dataset as SpatialExperiment object from STexampleData package
-spe <- Visium_humanDLPFC()
+spe <- ST_mouseOB()
 dim(spe)
 
 
@@ -28,15 +27,10 @@ dim(spe)
 # preprocessing
 # -------------
 
-# keep only spots over tissue
-spe <- spe[, colData(spe)$in_tissue == 1]
-
-dim(spe)
-
-
 # spot-level quality control (QC) using scater package
 
 # identify mitochondrial genes
+# note: mitochondrial genes have already been filtered out
 is_mito <- grepl("(^MT-)|(^mt-)", rowData(spe)$gene_name)
 table(is_mito)
 # calculate per-spot QC metrics
@@ -44,10 +38,8 @@ spe <- addPerCellQC(spe, subsets = list(mito = is_mito))
 # select QC thresholds
 qc_lib_size <- colData(spe)$sum < 500
 qc_detected <- colData(spe)$detected < 250
-qc_mito <- colData(spe)$subsets_mito_percent > 30
-qc_cell_count <- colData(spe)$cell_count > 12
 # spots to discard
-discard <- qc_lib_size | qc_detected | qc_mito | qc_cell_count
+discard <- qc_lib_size | qc_detected
 table(discard)
 colData(spe)$discard <- discard
 # filter low-quality spots
@@ -58,20 +50,22 @@ dim(spe)
 
 # filter low-expressed and mitochondrial genes
 # using gene filtering function from nnSVG package
+# note: using higher filtering parameters for ST platform due to higher number
+# of cells per spot (compared to Visium)
+# note: mitochondrial genes have already been filtered out
 spe <- filter_genes(
   spe, 
-  filter_genes_ncounts = 3, 
-  filter_genes_pcspots = 0.5, 
-  filter_mito = TRUE
+  filter_genes_ncounts = 5, 
+  filter_genes_pcspots = 1, 
+  filter_mito = FALSE
 )
 
 dim(spe)
 
 
 # calculate log-transformed normalized counts using scran package
-set.seed(123)
-qclus <- quickCluster(spe)
-spe <- computeSumFactors(spe, cluster = qclus)
+# using library size normalization
+spe <- computeLibraryFactors(spe)
 spe <- logNormCounts(spe)
 
 assayNames(spe)
@@ -96,6 +90,6 @@ rownames(spatialCoords(spe)) <- rownames(colData(spe))
 # save object
 # -----------
 
-fn <- here("outputs", "null_sim", "spe_humanDLPFC_nullSim_preprocessed.rds")
+fn <- here("outputs", "null_sims", "spe_mouseOB_nullSim_preprocessed.rds")
 saveRDS(spe, file = fn)
 

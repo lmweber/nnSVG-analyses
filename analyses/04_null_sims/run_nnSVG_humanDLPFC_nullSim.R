@@ -1,10 +1,10 @@
-#######################################
-# Script to run method: null simulation
+########################################
+# Script to run method: null simulations
 # Lukas Weber, Mar 2022
-#######################################
+########################################
 
 # method: nnSVG
-# dataset: ST mouse OB
+# dataset: Visium human DLPFC
 
 
 library(SpatialExperiment)
@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-fn <- here("outputs", "preprocessed", "spe_mouseOB_nullSim_preprocessed.rds")
+fn <- here("outputs", "null_sims", "spe_humanDLPFC_nullSim_preprocessed.rds")
 spe <- readRDS(fn)
 
 dim(spe)
@@ -53,6 +53,6 @@ metadata(spe) <- list(
 # save object
 # -----------
 
-file <- here("outputs", "results", "spe_mouseOB_nnSVG_nullSim.rds")
+file <- here("outputs", "null_sims", "spe_humanDLPFC_nnSVG_nullSim.rds")
 saveRDS(spe, file = file)
 
