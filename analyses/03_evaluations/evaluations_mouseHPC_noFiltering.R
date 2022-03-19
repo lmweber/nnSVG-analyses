@@ -70,7 +70,7 @@ ggplot(as.data.frame(df_known),
   geom_point(stroke = 1.5, size = 1.75) + 
   scale_shape_manual(values = c(4, 3, 1)) + 
   scale_color_manual(values = c("maroon", "darkorange")) + 
-  scale_y_log10(limits = c(50, 25000)) + 
+  scale_y_log10(limits = c(10, 25000)) + 
   geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
   ggtitle("Example SVGs: mouseHPC") + 
@@ -108,11 +108,11 @@ ggplot(as.data.frame(df_SPARKX),
   geom_point(data = filter(df_SPARKX, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_SPARKX, gene_name %in% known_genes), 
-                  nudge_x = 2000, nudge_y = 20, size = 3, color = "firebrick3") + 
+                  nudge_x = 1500, nudge_y = 15, size = 3, color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 15000, y = 220, size = 3, color = "darkorange2") + 
+           x = 5500, y = 100, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouseHPC") + 
   theme_bw()
