@@ -68,7 +68,7 @@ ggplot(as.data.frame(df_known),
        aes(x = gene_name, y = rank, group = method, color = method, 
            shape = method, label = rank)) + 
   geom_point(stroke = 1.5, size = 1.75) + 
-  scale_shape_manual(values = c(4, 3, 1)) + 
+  scale_shape_manual(values = c(3, 1)) + 
   scale_color_manual(values = c("maroon", "darkorange")) + 
   scale_y_log10(limits = c(10, 25000)) + 
   geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, show.legend = FALSE) + 
