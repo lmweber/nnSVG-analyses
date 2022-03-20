@@ -13,8 +13,6 @@ library(dplyr)
 library(tidyr)
 library(readr)
 library(ggplot2)
-library(ggrepel)
-library(viridis)
 
 
 # directory to save plots
