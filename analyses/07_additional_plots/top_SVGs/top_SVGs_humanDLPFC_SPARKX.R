@@ -68,7 +68,7 @@ max_counts
 
 
 ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) + 
-  facet_wrap(~ gene, nrow = 5) + 
+  facet_wrap(~ gene, nrow = 4) + 
   geom_point(size = 0.05) + 
   coord_fixed() + 
   scale_y_reverse() + 
