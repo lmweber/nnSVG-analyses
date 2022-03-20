@@ -108,11 +108,11 @@ ggplot(as.data.frame(df_SPARKX),
   geom_point(data = filter(df_SPARKX, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_SPARKX, gene_name %in% known_genes), 
-                  nudge_x = 1500, nudge_y = 15, size = 3, color = "firebrick3") + 
+                  nudge_x = 1600, nudge_y = 12, size = 3, color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 5500, y = 100, size = 3, color = "darkorange2") + 
+           x = 5500, y = 120, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouseHPC") + 
   theme_bw()
