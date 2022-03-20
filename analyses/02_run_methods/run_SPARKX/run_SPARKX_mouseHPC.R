@@ -30,11 +30,6 @@ dim(spe)
 
 # run method and save results, runtime, peak memory usage
 
-# remove NA cell type labels
-spe <- spe[, !is.na(colData(spe)$celltype)]
-dim(spe)
-table(colData(spe)$celltype)
-
 # create model matrix for cell type labels
 X <- model.matrix(~ colData(spe)$celltype)
 dim(X)

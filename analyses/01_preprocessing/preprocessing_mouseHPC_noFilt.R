@@ -27,28 +27,18 @@ dim(spe)
 # preprocessing
 # -------------
 
-# spot-level quality control (QC) using scater package
-
-# identify mitochondrial genes
-is_mito <- grepl("(^MT-)|(^mt-)", rowData(spe)$gene_name)
-table(is_mito)
-# calculate per-spot QC metrics
-spe <- addPerCellQC(spe, subsets = list(mito = is_mito))
-# select QC thresholds
-qc_lib_size <- colData(spe)$sum < 20
-qc_detected <- colData(spe)$detected < 15
-qc_mito <- colData(spe)$subsets_mito_percent > 30
-# spots to discard
-discard <- qc_lib_size | qc_detected | qc_mito
-table(discard)
-colData(spe)$discard <- discard
-# filter low-quality spots
-spe <- spe[, !colData(spe)$discard]
-
+# remove spots with NA cell type labels
+spe <- spe[, !is.na(colData(spe)$celltype)]
 dim(spe)
+
+table(colData(spe)$celltype)
 
 
 # filter mitochondrial genes
+is_mito <- grepl("(^MT-)|(^mt-)", rowData(spe)$gene_name)
+table(is_mito)
+rowData(spe)$gene_name[is_mito]
+
 spe <- spe[!is_mito, ]
 
 dim(spe)
