@@ -57,15 +57,18 @@ table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_SPARKX$gene_id)
 known_genes <- c("MOBP", "PCP4", "SNAP25", "HBB", "IGKC", "NPY")
 
 df_known <- 
-  full_join(as.data.frame(res_list$humanDLPFC_SPARKX), 
+  full_join(as.data.frame(res_list$humanDLPFC_nnSVG), 
+            as.data.frame(res_list$humanDLPFC_SPARKX), 
+            by = c("gene_id", "gene_name")) %>% 
+  full_join(., 
             as.data.frame(res_list$humanDLPFC_HVGs), 
             by = c("gene_id", "gene_name")) %>% 
   filter(gene_name %in% known_genes) %>% 
-  pivot_longer(c("rank_SPARKX", "rank_HVGs"), 
+  pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs"), 
                names_to = "method", 
                values_to = "rank") %>% 
   mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("SPARKX", "HVGs"))) %>% 
+                         levels = c("nnSVG", "SPARKX", "HVGs"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -74,8 +77,8 @@ ggplot(as.data.frame(df_known),
        aes(x = gene_name, y = rank, group = method, color = method, 
            shape = method, label = rank)) + 
   geom_point(stroke = 1.5, size = 1.75) + 
-  scale_shape_manual(values = c(3, 1)) + 
-  scale_color_manual(values = c("maroon", "darkorange")) + 
+  scale_shape_manual(values = c(4, 3, 1)) + 
+  scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
   scale_y_log10(limits = c(3, 35000)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
   geom_text_repel(nudge_x = 0.3, size = 1.75, segment.color = NA, show.legend = FALSE) + 
@@ -161,7 +164,7 @@ ggplot(as.data.frame(df_SPARKX),
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 14000, y = 250, size = 3, color = "darkorange2") + 
+           x = 14500, y = 250, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: human DLPFC") + 
   theme_bw()
