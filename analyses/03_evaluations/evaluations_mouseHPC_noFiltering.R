@@ -29,16 +29,22 @@ dir_plots <- here(file.path("plots", "evaluations", "mouseHPC", "no_filtering"))
 
 # note choice of filtering per method
 res_list <- list(
+  mouseHPC_nnSVG = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_nnSVG_noFilt.rds"))), 
   mouseHPC_SPARKX = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_SPARKX_noFilt.rds"))), 
   mouseHPC_HVGs = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_HVGs_noFilt.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
+colnames(res_list[["mouseHPC_nnSVG"]])[-1] <- paste0(colnames(res_list[["mouseHPC_nnSVG"]]), "_nnSVG")[-1]
 colnames(res_list[["mouseHPC_SPARKX"]])[-1] <- paste0(colnames(res_list[["mouseHPC_SPARKX"]]), "_SPARKX")[-1]
 colnames(res_list[["mouseHPC_HVGs"]])[-1] <- paste0(colnames(res_list[["mouseHPC_HVGs"]]), "_HVGs")[-1]
 
 
-# note filtering per method: no filtering for SPARK-X
+# note filtering per method: no filtering for either nnSVG or SPARK-X
+table(res_list$mouseHPC_SPARKX$gene_name %in% res_list$mouseHPC_nnSVG$gene_name)
+all(res_list$mouseHPC_SPARKX$gene_name == res_list$mouseHPC_nnSVG$gene_name)
+
+table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_nnSVG$gene_name)
 table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_SPARKX$gene_name)
 
 
@@ -51,15 +57,18 @@ table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_SPARKX$gene_name)
 known_genes <- c("Cpne9", "Rgs14")
 
 df_known <- 
-  full_join(as.data.frame(res_list$mouseHPC_SPARKX), 
+  full_join(as.data.frame(res_list$mouseHPC_nnSVG), 
+            as.data.frame(res_list$mouseHPC_SPARKX), 
+            by = c("gene_name")) %>% 
+  full_join(., 
             as.data.frame(res_list$mouseHPC_HVGs), 
             by = c("gene_name")) %>% 
   filter(gene_name %in% known_genes) %>% 
-  pivot_longer(c("rank_SPARKX", "rank_HVGs"), 
+  pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs"), 
                names_to = "method", 
                values_to = "rank") %>% 
   mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("SPARKX", "HVGs"))) %>% 
+                         levels = c("nnSVG", "SPARKX", "HVGs"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -68,8 +77,8 @@ ggplot(as.data.frame(df_known),
        aes(x = gene_name, y = rank, group = method, color = method, 
            shape = method, label = rank)) + 
   geom_point(stroke = 1.5, size = 1.75) + 
-  scale_shape_manual(values = c(3, 1)) + 
-  scale_color_manual(values = c("maroon", "darkorange")) + 
+  scale_shape_manual(values = c(4, 3, 1)) + 
+  scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
   scale_y_log10(limits = c(10, 25000)) + 
   geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
@@ -118,6 +127,25 @@ ggplot(as.data.frame(df_SPARKX),
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_mouseHPC_noFilt")
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+
+
+# ---------------------
+# p-value distributions
+# ---------------------
+
+df_pvals <- as.data.frame(res_list$mouseHPC_nnSVG)
+
+# plot p-values
+ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) + 
+  geom_histogram(color = "black", fill = "blue3", bins = 30) + 
+  labs(x = "p-values", 
+       y = "frequency") + 
+  ggtitle("nnSVG p-values: mouse HPC") + 
+  theme_bw()
+
+fn <- file.path(dir_plots, "pvals_nnSVG_mouseHPC_noFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
