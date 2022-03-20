@@ -85,5 +85,5 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
         axis.ticks = element_blank())
 
 fn <- file.path(dir_plots, "top_SVGs_humanDLPFC_SPARKX")
-ggsave(paste0(fn, ".png"), width = 7, height = 10)
+ggsave(paste0(fn, ".png"), width = 8.25, height = 8)
 
