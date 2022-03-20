@@ -118,11 +118,11 @@ ggplot(as.data.frame(df_nnSVG),
   geom_point(data = filter(df_nnSVG, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_nnSVG, gene_name %in% known_genes), 
-                  nudge_x = 200, nudge_y = 1000, size = 3, color = "firebrick3") + 
+                  nudge_x = 400, nudge_y = 1200, size = 3, color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 3300, y = 8000, size = 3, color = "darkorange2") + 
+           x = 5300, y = 8000, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: mouseHPC") + 
   theme_bw()
@@ -159,11 +159,11 @@ ggplot(as.data.frame(df_SPARKX),
   geom_point(data = filter(df_SPARKX, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_SPARKX, gene_name %in% known_genes), 
-                  nudge_x = 500, nudge_y = 15, size = 3, color = "firebrick3") + 
+                  nudge_x = 600, nudge_y = 20, size = 3, color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 2700, y = 150, size = 3, color = "darkorange2") + 
+           x = 6500, y = 170, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouseHPC") + 
   theme_bw()
@@ -194,7 +194,7 @@ ggplot(df_effect,
   scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
     data = df_effect %>% filter(is_known), 
-    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.2, nudge_y = 0.1) + 
+    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.25, nudge_y = 0.15) + 
   ylim(c(0, 1)) + 
   labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
@@ -244,8 +244,8 @@ ls_known
 
 ann_text <- data.frame(
   x = unname(ls_known), 
-  y =  c(18, 1), 
-  label = paste0(names(ls_known), " = ", format(round(ls_known, 3), nsmall = 3))
+  y =  c(17, 1), 
+  label = paste0(names(ls_known), " = ", round(ls_known, 3))
 )
 
 # plot bandwidth l (inverse of phi, scaled to distances 0 to 1)
@@ -254,7 +254,7 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG_noCovariates)) +
   xlim(c(0, 1)) + 
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
   geom_text_repel(data = ann_text, aes(x = x, y = y, label = label), 
-                  nudge_x = 0.1, nudge_y = 1, color = "red", size = 3) + 
+                  nudge_x = 0.13, nudge_y = 2, color = "red", size = 3) + 
   xlab("estimated length scale") + 
   ylab("density") + 
   ggtitle("nnSVG length scales: mouseHPC") + 
