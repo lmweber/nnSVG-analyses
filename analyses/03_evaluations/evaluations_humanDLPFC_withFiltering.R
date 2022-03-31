@@ -314,7 +314,7 @@ calc_overlaps <- function(method1, method2) {
     genes_k <- rownames(filter(as.data.frame(res_method1), 
                                rank <= overlaps[k]))
     # calculate overlaps
-    top_method2[k] <- nrow(filter(as.data.frame(res_method2[genes_k, ]), 
+    top_method2[k] <- nrow(filter(as.data.frame(na.omit(res_method2[genes_k, ])), 
                                   rank <= overlaps[k]))
   }
   
