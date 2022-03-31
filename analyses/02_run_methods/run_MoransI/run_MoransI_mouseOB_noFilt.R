@@ -49,9 +49,11 @@ runtime <- system.time({
       scaled = FALSE, 
       R = 0
     )
-    as.numeric(out_i[1])
+    unname(out_i[1])
   }, BPPARAM = MulticoreParam(workers = 1))
 })
+
+res <- unlist(res)
 
 # store in object
 stopifnot(length(res) == nrow(spe))
