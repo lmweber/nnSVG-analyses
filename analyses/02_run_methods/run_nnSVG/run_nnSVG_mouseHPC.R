@@ -43,7 +43,8 @@ runtime <- system.time({
     spe, 
     X = X, 
     assay_name = "logcounts", 
-    n_neighbors = 15, 
+    n_neighbors = 10, 
+    order = "AMMD", 
     n_threads = 10, 
     verbose = FALSE
   )
