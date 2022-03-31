@@ -9,6 +9,7 @@
 
 library(SpatialExperiment)
 library(Rfast2)
+library(BiocParallel)
 library(here)
 
 
@@ -38,11 +39,9 @@ w <- 1 / (d_mat ^ 2)
 diag(w) <- 0
 
 # run Moran's I
-res <- rep(NA, nrow(spe))
-
 set.seed(123)
 runtime <- system.time({
-  for (i in seq_len(nrow(spe))) {
+  res <- bplapply(seq_len(nrow(spe)), function(i) {
     y_i <- logcounts(spe)[i, ]
     out_i <- moranI(
       x = y_i, 
@@ -50,8 +49,8 @@ runtime <- system.time({
       scaled = FALSE, 
       R = 0
     )
-    res[i] <- out_i[1]
-  }
+    as.numeric(out_i[1])
+  }, BPPARAM = MulticoreParam(workers = 10))
 })
 
 # store in object
