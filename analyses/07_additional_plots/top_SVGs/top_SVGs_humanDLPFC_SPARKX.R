@@ -13,6 +13,7 @@ library(dplyr)
 library(tidyr)
 library(readr)
 library(ggplot2)
+library(scales)
 
 
 # directory to save plots
@@ -73,9 +74,9 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
   coord_fixed() + 
   scale_y_reverse() + 
   scale_color_gradientn(trans = "sqrt", 
-                        colors = c("gray90", mid = "blue", high = "black"), 
-                        breaks = c(0, 150, 195), 
-                        labels = c("0", "", 195)) + 
+                        colors = c("gray90", "blue", "black"), 
+                        values = rescale(c(0, 120, 195)), 
+                        labels = c("0", "", "", "120", "")) + 
   ggtitle("Top SVGs: human DLPFC, SPARK-X") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 

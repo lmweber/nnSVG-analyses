@@ -73,7 +73,7 @@ ggplot(df, aes(x = xcoord, y = ycoord, color = counts)) +
   scale_color_gradientn(trans = "sqrt", 
                         colors = c("gray90", "blue", "black"), 
                         values = rescale(c(0, 350, 1815)), 
-                        labels = c("0", "", "", "1815", "")) + 
+                        labels = c("0", "", "", "350", "")) + 
   ggtitle("Top SVGs: mouse HPC, nnSVG") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
