@@ -74,7 +74,7 @@ ggplot(df, aes(x = xcoord, y = ycoord, color = counts)) +
                         colors = c("gray90", "blue", "black"), 
                         values = rescale(c(0, 80, 236)), 
                         labels = c("0", "", "", "", "200", "")) + 
-  ggtitle("Top SVGs: mouse HPC, nnSVG") + 
+  ggtitle("Top SVGs: mouse HPC, SPARK-X") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
   theme(panel.grid = element_blank(), 
