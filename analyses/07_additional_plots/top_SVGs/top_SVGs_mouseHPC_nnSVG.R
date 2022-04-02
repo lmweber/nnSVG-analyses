@@ -13,6 +13,7 @@ library(dplyr)
 library(tidyr)
 library(readr)
 library(ggplot2)
+library(scales)
 
 
 # directory to save plots
@@ -66,12 +67,13 @@ max_counts
 
 
 ggplot(df, aes(x = xcoord, y = ycoord, color = counts)) + 
-  facet_wrap(~ gene, nrow = 4) + 
+  facet_wrap(~ gene, nrow = 5) + 
   geom_point(size = 0.05) + 
   coord_fixed() + 
   scale_color_gradientn(trans = "sqrt", 
                         colors = c("gray90", "blue", "black"), 
-                        values = scales::rescale(c(0, 350, 1815))) + 
+                        values = rescale(c(0, 350, 1815)), 
+                        labels = c("0", "", "", "1815", "")) + 
   ggtitle("Top SVGs: mouse HPC, nnSVG") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
@@ -81,5 +83,5 @@ ggplot(df, aes(x = xcoord, y = ycoord, color = counts)) +
         axis.ticks = element_blank())
 
 fn <- file.path(dir_plots, "top_SVGs_mouseHPC_nnSVG")
-ggsave(paste0(fn, ".png"), width = 8.25, height = 8)
+ggsave(paste0(fn, ".png"), width = 8.25, height = 7.75)
 
