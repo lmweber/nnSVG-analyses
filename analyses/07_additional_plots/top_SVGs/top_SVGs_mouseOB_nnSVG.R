@@ -68,7 +68,7 @@ max_counts
 
 ggplot(df, aes(x = x, y = y, color = counts)) + 
   facet_wrap(~ gene, nrow = 5) + 
-  geom_point(size = 2) + 
+  geom_point(size = 1.8) + 
   coord_fixed() + 
   scale_y_reverse() + 
   scale_color_gradientn(trans = "sqrt", 
