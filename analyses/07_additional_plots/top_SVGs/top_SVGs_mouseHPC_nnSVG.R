@@ -68,7 +68,7 @@ max_counts
 
 ggplot(df, aes(x = xcoord, y = ycoord, color = counts)) + 
   facet_wrap(~ gene, nrow = 5) + 
-  geom_point(size = 0.05) + 
+  geom_point(size = 0.01) + 
   coord_fixed() + 
   scale_color_gradientn(trans = "sqrt", 
                         colors = c("gray90", "blue", "black"), 
@@ -77,11 +77,15 @@ ggplot(df, aes(x = xcoord, y = ycoord, color = counts)) +
   ggtitle("Top SVGs: mouse HPC, nnSVG") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
-  theme(panel.grid = element_blank(), 
+  theme(title = element_text(size = 20), 
+        strip.text.x = element_text(size = 16), 
+        legend.title = element_text(size = 16), 
+        legend.text = element_text(size = 16), 
+        panel.grid = element_blank(), 
         axis.title = element_blank(), 
         axis.text = element_blank(), 
         axis.ticks = element_blank())
 
 fn <- file.path(dir_plots, "top_SVGs_mouseHPC_nnSVG")
-ggsave(paste0(fn, ".png"), width = 8.25, height = 7.75)
+ggsave(paste0(fn, ".png"), width = 14, height = 13)
 
