@@ -437,7 +437,7 @@ ggplot(as.data.frame(df_ranks_nnSVG),
   facet_wrap(~ baseline) + 
   geom_point(size = 0.75) + 
   geom_text(data = ann_text_nnSVG, aes(x = x, y = y, label = label), 
-            size = 4, color = "black") + 
+            size = 3.75, color = "black") + 
   scale_color_manual(values = c("darkorange", "firebrick3")) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
@@ -458,7 +458,7 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   facet_wrap(~ baseline) + 
   geom_point(size = 0.75) + 
   geom_text(data = ann_text_SPARKX, aes(x = x, y = y, label = label), 
-            size = 4, color = "black") + 
+            size = 3.75, color = "black") + 
   scale_color_manual(values = c("darkorange", "firebrick3")) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
