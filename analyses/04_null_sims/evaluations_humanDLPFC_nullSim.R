@@ -1,6 +1,6 @@
 ###################################################
 # Script to calculate evaluations: null simulations
-# Lukas Weber, Mar 2022
+# Lukas Weber, Apr 2022
 ###################################################
 
 # data set: human DLPFC
@@ -25,8 +25,6 @@ dir_plots <- here(file.path("plots", "null_sims"))
 # load results
 # ------------
 
-# scalable methods: nnSVG, SPARK-X, HVGs
-
 # note choice of filtering per method
 res_list <- list(
   humanDLPFC_nnSVG = rowData(readRDS(here("outputs", "null_sims", "spe_humanDLPFC_nnSVG_nullSim.rds")))
@@ -50,11 +48,12 @@ df_pvals <- as.data.frame(res_list$humanDLPFC_nnSVG)
 ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) + 
   geom_histogram(color = "black", fill = "blue3", bins = 30) + 
   labs(x = "p-values", 
-       y = "frequency") + 
-  ggtitle("nnSVG p-values: human DLPFC (null simulation)") + 
+       y = "frequency", 
+       title = "nnSVG p-values: human DLPFC", 
+       subtitle = "null simulation") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_humanDLPFC_nullSim")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 4, height = 3.5)
+ggsave(paste0(fn, ".png"), width = 4, height = 3.5)
 
