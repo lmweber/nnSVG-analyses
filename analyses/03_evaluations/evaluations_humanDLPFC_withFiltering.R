@@ -415,14 +415,14 @@ cor_SPARKX_MoransI <- cor(df_ranks_SPARKX_MoransI$rank_SPARKX,
 
 
 ann_text_nnSVG <- data.frame(
-  x = 820, 
+  x = 800, 
   y = 50, 
   label = paste0("cor = ", c(round(cor_nnSVG_HVGs, 2), round(cor_nnSVG_MoransI, 2))), 
   baseline = factor(c("HVGs", "MoransI"), levels = c("HVGs", "MoransI"))
 )
 
 ann_text_SPARKX <- data.frame(
-  x = 820, 
+  x = 800, 
   y = 50, 
   label = paste0("cor = ", c(round(cor_SPARKX_HVGs, 2), round(cor_SPARKX_MoransI, 2))), 
   baseline = factor(c("HVGs", "MoransI"), levels = c("HVGs", "MoransI"))
@@ -435,9 +435,9 @@ ann_text_SPARKX <- data.frame(
 ggplot(as.data.frame(df_ranks_nnSVG), 
        aes(x = rank_baseline, y = rank_nnSVG, color = baseline)) + 
   facet_wrap(~ baseline) + 
-  geom_point() + 
+  geom_point(size = 0.75) + 
   geom_text(data = ann_text_nnSVG, aes(x = x, y = y, label = label), 
-            size = 5, color = "black") + 
+            size = 4, color = "black") + 
   scale_color_manual(values = c("darkorange", "firebrick3")) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
@@ -448,17 +448,17 @@ ggplot(as.data.frame(df_ranks_nnSVG),
   theme_bw()
 
 fn <- file.path(dir_plots, "ranks_nnSVG_humanDLPFC_withFilt")
-ggsave(paste0(fn, ".pdf"), width = 6.75, height = 3.5)
-ggsave(paste0(fn, ".png"), width = 6.75, height = 3.5)
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 2.75)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 2.75)
 
 
 # SPARK-X
 ggplot(as.data.frame(df_ranks_SPARKX), 
        aes(x = rank_baseline, y = rank_SPARKX, color = baseline)) + 
   facet_wrap(~ baseline) + 
-  geom_point() + 
+  geom_point(size = 0.75) + 
   geom_text(data = ann_text_SPARKX, aes(x = x, y = y, label = label), 
-            size = 5, color = "black") + 
+            size = 4, color = "black") + 
   scale_color_manual(values = c("darkorange", "firebrick3")) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
@@ -469,8 +469,8 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   theme_bw()
 
 fn <- file.path(dir_plots, "ranks_SPARKX_humanDLPFC_withFilt")
-ggsave(paste0(fn, ".pdf"), width = 6.75, height = 3.5)
-ggsave(paste0(fn, ".png"), width = 6.75, height = 3.5)
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 2.75)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 2.75)
 
 
 # ---------------------
