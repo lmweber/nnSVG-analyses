@@ -442,8 +442,8 @@ ggplot(as.data.frame(df_ranks_nnSVG),
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
-  xlab("rank HVGs") + 
-  ylab("rank SVGs (nnSVG)") + 
+  xlab("rank baseline") + 
+  ylab("rank nnSVG") + 
   ggtitle("Ranks nnSVG vs. baselines: human DLPFC") + 
   theme_bw()
 
@@ -463,8 +463,8 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
-  xlab("rank HVGs") + 
-  ylab("rank SVGs (SPARK-X)") + 
+  xlab("rank baseline") + 
+  ylab("rank SPARK-X") + 
   ggtitle("Ranks SPARKX vs. baselines: human DLPFC") + 
   theme_bw()
 
