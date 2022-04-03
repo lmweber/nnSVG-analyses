@@ -90,7 +90,8 @@ ggplot(as.data.frame(df_known),
   scale_color_manual(values = c("blue3", "deepskyblue2", "darkorange", "firebrick3")) + 
   scale_y_log10(limits = c(3, 6000)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
-  geom_text_repel(nudge_x = 0.3, size = 2, segment.color = NA, show.legend = FALSE) + 
+  geom_text_repel(nudge_x = 0.3, size = 2, segment.color = NA, box.padding = 0.1, 
+                  show.legend = FALSE) + 
   annotate("text", label = "large length scale", x = 2, y = 6000, size = 4) + 
   annotate("text", label = "small length scale", x = 5, y = 6000, size = 4) + 
   labs(x = "gene", y = "rank") + 
