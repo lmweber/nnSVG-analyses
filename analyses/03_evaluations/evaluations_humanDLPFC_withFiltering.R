@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, Mar 2022
+# Lukas Weber, Apr 2022
 #################################
 
 # data set: human DLPFC
@@ -25,7 +25,7 @@ dir_plots <- here(file.path("plots", "evaluations", "humanDLPFC", "with_filterin
 # load results
 # ------------
 
-# scalable methods: nnSVG, SPARK-X, HVGs
+# scalable methods: nnSVG, SPARK-X, HVGs, Moran's I
 
 # note choice of filtering per method
 res_list <- list(
@@ -90,7 +90,7 @@ ggplot(as.data.frame(df_known),
   scale_color_manual(values = c("blue3", "deepskyblue2", "darkorange", "firebrick3")) + 
   scale_y_log10(limits = c(3, 6000)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
-  geom_text_repel(nudge_x = 0.3, size = 2, segment.color = NA, box.padding = 0.1, 
+  geom_text_repel(nudge_x = 0.35, size = 2, segment.color = NA, box.padding = 0.1, 
                   show.legend = FALSE) + 
   annotate("text", label = "large length scale", x = 2, y = 6000, size = 4) + 
   annotate("text", label = "small length scale", x = 5, y = 6000, size = 4) + 
@@ -332,7 +332,7 @@ ggplot(as.data.frame(df_overlaps),
        aes(x = top_n, y = proportion, group = method, color = method)) + 
   geom_line(lwd = 0.75) + 
   geom_point(size = 2) + 
-  scale_color_manual(values = c("blue3", "maroon")) + 
+  scale_color_manual(values = c("blue3", "deepskyblue2")) + 
   scale_x_continuous(breaks = overlaps, trans = "log10") + 
   ylim(c(0, 1)) + 
   xlab("top n genes") + 

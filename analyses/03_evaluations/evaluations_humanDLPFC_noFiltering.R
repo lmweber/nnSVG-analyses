@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, Mar 2022
+# Lukas Weber, Apr 2022
 #################################
 
 # data set: human DLPFC
@@ -25,19 +25,21 @@ dir_plots <- here(file.path("plots", "evaluations", "humanDLPFC", "no_filtering"
 # load results
 # ------------
 
-# scalable methods: nnSVG, SPARK-X, HVGs
+# scalable methods: nnSVG, SPARK-X, HVGs, Moran's I
 
 # note choice of filtering per method
 res_list <- list(
   humanDLPFC_nnSVG = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_nnSVG_noFilt.rds"))), 
   humanDLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_SPARKX_noFilt.rds"))), 
-  humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_HVGs_noFilt.rds")))
+  humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_HVGs_noFilt.rds"))), 
+  humanDLPFC_MoransI = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_MoransI_noFilt.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
 colnames(res_list[["humanDLPFC_nnSVG"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_nnSVG"]]), "_nnSVG")[-(1:2)]
 colnames(res_list[["humanDLPFC_SPARKX"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_SPARKX"]]), "_SPARKX")[-(1:2)]
 colnames(res_list[["humanDLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_HVGs"]]), "_HVGs")[-(1:2)]
+colnames(res_list[["humanDLPFC_MoransI"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_MoransI"]]), "_MoransI")[-(1:2)]
 
 
 # note filtering per method: no filtering for either nnSVG or SPARK-X
@@ -46,6 +48,9 @@ all(res_list$humanDLPFC_SPARKX$gene_id == res_list$humanDLPFC_nnSVG$gene_id)
 
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_SPARKX$gene_id)
+
+table(res_list$humanDLPFC_MoransI$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
+table(res_list$humanDLPFC_MoransI$gene_id %in% res_list$humanDLPFC_SPARKX$gene_id)
 
 
 # --------------------------
@@ -63,12 +68,15 @@ df_known <-
   full_join(., 
             as.data.frame(res_list$humanDLPFC_HVGs), 
             by = c("gene_id", "gene_name")) %>% 
+  full_join(., 
+            as.data.frame(res_list$humanDLPFC_MoransI), 
+            by = c("gene_id", "gene_name")) %>% 
   filter(gene_name %in% known_genes) %>% 
-  pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs"), 
+  pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs", "rank_MoransI"), 
                names_to = "method", 
                values_to = "rank") %>% 
   mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("nnSVG", "SPARKX", "HVGs"))) %>% 
+                         levels = c("nnSVG", "SPARKX", "HVGs", "MoransI"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -76,12 +84,13 @@ df_known <-
 ggplot(as.data.frame(df_known), 
        aes(x = gene_name, y = rank, group = method, color = method, 
            shape = method, label = rank)) + 
-  geom_point(stroke = 1.5, size = 1.75) + 
-  scale_shape_manual(values = c(4, 3, 1)) + 
-  scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
+  geom_point(stroke = 1.25, size = 1.5) + 
+  scale_shape_manual(values = c(4, 3, 1, 2)) + 
+  scale_color_manual(values = c("blue3", "deepskyblue2", "darkorange", "firebrick3")) + 
   scale_y_log10(limits = c(3, 35000)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
-  geom_text_repel(nudge_x = 0.3, size = 1.75, segment.color = NA, show.legend = FALSE) + 
+  geom_text_repel(nudge_x = 0.35, size = 2, segment.color = NA, box.padding = 0.1, 
+                  show.legend = FALSE) + 
   annotate("text", label = "large length scale", x = 2, y = 35000, size = 4) + 
   annotate("text", label = "small length scale", x = 5, y = 35000, size = 4) + 
   labs(x = "gene", y = "rank") + 
@@ -89,8 +98,8 @@ ggplot(as.data.frame(df_known),
   theme_bw()
 
 fn <- file.path(dir_plots, "example_SVGs_ranks_humanDLPFC_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 4)
+ggsave(paste0(fn, ".png"), width = 5, height = 4)
 
 
 # ------------------------------------
@@ -170,8 +179,8 @@ ggplot(as.data.frame(df_SPARKX),
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_humanDLPFC_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
 
 # --------------------------------------------------------------------
@@ -226,7 +235,7 @@ ggplot(as.data.frame(df_overlaps),
        aes(x = top_n, y = proportion, group = method, color = method)) + 
   geom_line(lwd = 0.75) + 
   geom_point(size = 2) + 
-  scale_color_manual(values = "maroon") + 
+  scale_color_manual(values = "deepskyblue2") + 
   scale_x_continuous(breaks = overlaps, trans = "log10") + 
   ylim(c(0, 1)) + 
   xlab("top n genes") + 
@@ -236,8 +245,8 @@ ggplot(as.data.frame(df_overlaps),
   theme(panel.grid.minor = element_blank())
 
 fn <- file.path(dir_plots, "overlaps_humanDLPFC_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
 
 # ---------------------------
@@ -246,50 +255,68 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 # top 1000 ranked genes from each method
 
+# SPARK-X
+
 df_ranks_SPARKX_HVGs <- 
   full_join(as.data.frame(res_list$humanDLPFC_SPARKX), 
             as.data.frame(res_list$humanDLPFC_HVGs), 
             by = c("gene_id", "gene_name")) %>% 
-  mutate(rank_method = rank_SPARKX) %>% 
-  mutate(method = "SPARKX") %>% 
-  filter(rank_method <= 1000) %>% 
-  filter(rank_HVGs <= 1000) %>% 
-  select(c("gene_id", "gene_name", "rank_HVGs", "rank_method", "method"))
+  mutate(rank_baseline = rank_HVGs) %>% 
+  mutate(baseline = "HVGs") %>% 
+  filter(rank_SPARKX <= 1000) %>% 
+  filter(rank_baseline <= 1000) %>% 
+  select(c("gene_id", "gene_name", "rank_SPARKX", "rank_baseline", "baseline"))
 
-df_ranks <- df_ranks_SPARKX_HVGs
+df_ranks_SPARKX_MoransI <- 
+  full_join(as.data.frame(res_list$humanDLPFC_SPARKX), 
+            as.data.frame(res_list$humanDLPFC_MoransI), 
+            by = c("gene_id", "gene_name")) %>% 
+  mutate(rank_baseline = rank_MoransI) %>% 
+  mutate(baseline = "MoransI") %>% 
+  filter(rank_SPARKX <= 1000) %>% 
+  filter(rank_baseline <= 1000) %>% 
+  select(c("gene_id", "gene_name", "rank_SPARKX", "rank_baseline", "baseline"))
+
+df_ranks_SPARKX <- full_join(df_ranks_SPARKX_HVGs, df_ranks_SPARKX_MoransI)
 
 
 # calculate Spearman correlations
-cor_SPARKX <- cor(df_ranks_SPARKX_HVGs$rank_method, 
-                  df_ranks_SPARKX_HVGs$rank_HVGs, method = "spearman")
 
-ann_text <- data.frame(
-  x = 820, 
+cor_SPARKX_HVGs <- cor(df_ranks_SPARKX_HVGs$rank_SPARKX, 
+                       df_ranks_SPARKX_HVGs$rank_baseline, method = "spearman")
+cor_SPARKX_MoransI <- cor(df_ranks_SPARKX_MoransI$rank_SPARKX, 
+                          df_ranks_SPARKX_MoransI$rank_baseline, method = "spearman")
+
+
+ann_text_SPARKX <- data.frame(
+  x = 800, 
   y = 50, 
-  label = paste0("cor = ", round(cor_SPARKX, 2)), 
-  method = factor("SPARKX")
+  label = paste0("cor = ", c(round(cor_SPARKX_HVGs, 2), round(cor_SPARKX_MoransI, 2))), 
+  baseline = factor(c("HVGs", "MoransI"), levels = c("HVGs", "MoransI"))
 )
 
 
 # plot comparisons of ranks
-ggplot(as.data.frame(df_ranks), 
-       aes(x = rank_HVGs, y = rank_method, color = method)) + 
-  facet_wrap(~ method) + 
-  geom_point() + 
-  geom_text(data = ann_text, aes(x = x, y = y, label = label), 
-            size = 5, color = "black") + 
-  scale_color_manual(values = "maroon") + 
+
+# SPARK-X
+ggplot(as.data.frame(df_ranks_SPARKX), 
+       aes(x = rank_baseline, y = rank_SPARKX, color = baseline)) + 
+  facet_wrap(~ baseline) + 
+  geom_point(size = 0.75) + 
+  geom_text(data = ann_text_SPARKX, aes(x = x, y = y, label = label), 
+            size = 3.75, color = "black") + 
+  scale_color_manual(values = c("darkorange", "firebrick3")) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
-  xlab("rank HVGs") + 
-  ylab("rank SVGs") + 
-  ggtitle("Ranks SVGs and HVGs: human DLPFC") + 
+  xlab("rank baseline") + 
+  ylab("rank SPARK-X") + 
+  ggtitle("Ranks SPARKX vs. baselines: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "ranks_humanDLPFC_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 4.75, height = 4)
-ggsave(paste0(fn, ".png"), width = 4.75, height = 4)
+fn <- file.path(dir_plots, "ranks_SPARKX_humanDLPFC_noFilt")
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 2.75)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 2.75)
 
 
 # ---------------------
@@ -307,6 +334,6 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_humanDLPFC_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 4, height = 3.25)
+ggsave(paste0(fn, ".png"), width = 4, height = 3.25)
 

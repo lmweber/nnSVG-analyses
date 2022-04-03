@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, Mar 2022
+# Lukas Weber, Apr 2022
 #################################
 
 # data set: mouse OB
@@ -25,19 +25,21 @@ dir_plots <- here(file.path("plots", "evaluations", "mouseOB", "no_filtering"))
 # load results
 # ------------
 
-# scalable methods: nnSVG, SPARK-X, HVGs
+# scalable methods: nnSVG, SPARK-X, HVGs, Moran's I
 
 # note choice of filtering per method
 res_list <- list(
   mouseOB_nnSVG = rowData(readRDS(here("outputs", "results", "spe_mouseOB_nnSVG_noFilt.rds"))), 
   mouseOB_SPARKX = rowData(readRDS(here("outputs", "results", "spe_mouseOB_SPARKX_noFilt.rds"))), 
-  mouseOB_HVGs = rowData(readRDS(here("outputs", "results", "spe_mouseOB_HVGs_noFilt.rds")))
+  mouseOB_HVGs = rowData(readRDS(here("outputs", "results", "spe_mouseOB_HVGs_noFilt.rds"))), 
+  mouseOB_MoransI = rowData(readRDS(here("outputs", "results", "spe_mouseOB_MoransI_noFilt.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
 colnames(res_list[["mouseOB_nnSVG"]])[-1] <- paste0(colnames(res_list[["mouseOB_nnSVG"]]), "_nnSVG")[-1]
 colnames(res_list[["mouseOB_SPARKX"]])[-1] <- paste0(colnames(res_list[["mouseOB_SPARKX"]]), "_SPARKX")[-1]
 colnames(res_list[["mouseOB_HVGs"]])[-1] <- paste0(colnames(res_list[["mouseOB_HVGs"]]), "_HVGs")[-1]
+colnames(res_list[["mouseOB_MoransI"]])[-1] <- paste0(colnames(res_list[["mouseOB_MoransI"]]), "_MoransI")[-1]
 
 
 # note filtering per method: no filtering for either nnSVG or SPARK-X
@@ -46,6 +48,9 @@ all(res_list$mouseOB_SPARKX$gene_name == res_list$mouseOB_nnSVG$gene_name)
 
 table(res_list$mouseOB_HVGs$gene_name %in% res_list$mouseOB_nnSVG$gene_name)
 table(res_list$mouseOB_HVGs$gene_name %in% res_list$mouseOB_SPARKX$gene_name)
+
+table(res_list$mouseOB_MoransI$gene_name %in% res_list$mouseOB_nnSVG$gene_name)
+table(res_list$mouseOB_MoransI$gene_name %in% res_list$mouseOB_SPARKX$gene_name)
 
 
 # ------------------------------------
@@ -83,8 +88,8 @@ ggplot(as.data.frame(df_SPARKX),
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_mouseOB_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
 
 # --------------------------------------------------------------------
@@ -139,7 +144,7 @@ ggplot(as.data.frame(df_overlaps),
        aes(x = top_n, y = proportion, group = method, color = method)) + 
   geom_line(lwd = 0.75) + 
   geom_point(size = 2) + 
-  scale_color_manual(values = "maroon") + 
+  scale_color_manual(values = "deepskyblue2") + 
   scale_x_continuous(breaks = overlaps, trans = "log10") + 
   ylim(c(0, 1)) + 
   xlab("top n genes") + 
@@ -149,8 +154,8 @@ ggplot(as.data.frame(df_overlaps),
   theme(panel.grid.minor = element_blank())
 
 fn <- file.path(dir_plots, "overlaps_mouseOB_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
 
 # ---------------------------
@@ -159,50 +164,68 @@ ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 # top 1000 ranked genes from each method
 
+# SPARK-X
+
 df_ranks_SPARKX_HVGs <- 
   full_join(as.data.frame(res_list$mouseOB_SPARKX), 
             as.data.frame(res_list$mouseOB_HVGs), 
-            by = "gene_name") %>% 
-  mutate(rank_method = rank_SPARKX) %>% 
-  mutate(method = "SPARKX") %>% 
-  filter(rank_method <= 1000) %>% 
-  filter(rank_HVGs <= 1000) %>% 
-  select(c("gene_name", "rank_HVGs", "rank_method", "method"))
+            by = c("gene_name")) %>% 
+  mutate(rank_baseline = rank_HVGs) %>% 
+  mutate(baseline = "HVGs") %>% 
+  filter(rank_SPARKX <= 1000) %>% 
+  filter(rank_baseline <= 1000) %>% 
+  select(c("gene_name", "rank_SPARKX", "rank_baseline", "baseline"))
 
-df_ranks <- df_ranks_SPARKX_HVGs
+df_ranks_SPARKX_MoransI <- 
+  full_join(as.data.frame(res_list$mouseOB_SPARKX), 
+            as.data.frame(res_list$mouseOB_MoransI), 
+            by = c("gene_name")) %>% 
+  mutate(rank_baseline = rank_MoransI) %>% 
+  mutate(baseline = "MoransI") %>% 
+  filter(rank_SPARKX <= 1000) %>% 
+  filter(rank_baseline <= 1000) %>% 
+  select(c("gene_name", "rank_SPARKX", "rank_baseline", "baseline"))
+
+df_ranks_SPARKX <- full_join(df_ranks_SPARKX_HVGs, df_ranks_SPARKX_MoransI)
 
 
 # calculate Spearman correlations
-cor_SPARKX <- cor(df_ranks_SPARKX_HVGs$rank_method, 
-                  df_ranks_SPARKX_HVGs$rank_HVGs, method = "spearman")
 
-ann_text <- data.frame(
-  x = 820, 
+cor_SPARKX_HVGs <- cor(df_ranks_SPARKX_HVGs$rank_SPARKX, 
+                       df_ranks_SPARKX_HVGs$rank_baseline, method = "spearman")
+cor_SPARKX_MoransI <- cor(df_ranks_SPARKX_MoransI$rank_SPARKX, 
+                          df_ranks_SPARKX_MoransI$rank_baseline, method = "spearman")
+
+
+ann_text_SPARKX <- data.frame(
+  x = 800, 
   y = 50, 
-  label = paste0("cor = ", round(cor_SPARKX, 2)), 
-  method = factor("SPARKX")
+  label = paste0("cor = ", c(round(cor_SPARKX_HVGs, 2), round(cor_SPARKX_MoransI, 2))), 
+  baseline = factor(c("HVGs", "MoransI"), levels = c("HVGs", "MoransI"))
 )
 
 
 # plot comparisons of ranks
-ggplot(as.data.frame(df_ranks), 
-       aes(x = rank_HVGs, y = rank_method, color = method)) + 
-  facet_wrap(~ method) + 
-  geom_point() + 
-  geom_text(data = ann_text, aes(x = x, y = y, label = label), 
-            size = 5, color = "black") + 
-  scale_color_manual(values = "maroon") + 
+
+# SPARK-X
+ggplot(as.data.frame(df_ranks_SPARKX), 
+       aes(x = rank_baseline, y = rank_SPARKX, color = baseline)) + 
+  facet_wrap(~ baseline) + 
+  geom_point(size = 0.75) + 
+  geom_text(data = ann_text_SPARKX, aes(x = x, y = y, label = label), 
+            size = 3.75, color = "black") + 
+  scale_color_manual(values = c("darkorange", "firebrick3")) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
-  xlab("rank HVGs") + 
-  ylab("rank SVGs") + 
-  ggtitle("Ranks SVGs and HVGs: mouse OB") + 
+  xlab("rank baseline") + 
+  ylab("rank SPARK-X") + 
+  ggtitle("Ranks SPARKX vs. baselines: mouse OB") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "ranks_mouseOB_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 4.75, height = 4)
-ggsave(paste0(fn, ".png"), width = 4.75, height = 4)
+fn <- file.path(dir_plots, "ranks_SPARKX_mouseOB_noFilt")
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 2.75)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 2.75)
 
 
 # ---------------------
@@ -220,6 +243,6 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_mouseOB_noFilt")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 4, height = 3.25)
+ggsave(paste0(fn, ".png"), width = 4, height = 3.25)
 

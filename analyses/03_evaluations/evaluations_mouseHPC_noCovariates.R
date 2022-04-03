@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, Mar 2022
+# Lukas Weber, Apr 2022
 #################################
 
 # data set: mouse HPC
@@ -26,19 +26,21 @@ dir_plots <- here(file.path("plots", "evaluations", "mouseHPC", "no_covariates")
 # load results
 # ------------
 
-# scalable methods: nnSVG, SPARK-X, HVGs
+# scalable methods: nnSVG, SPARK-X, HVGs, Moran's I
 
 # note choice of filtering per method
 res_list <- list(
   mouseHPC_nnSVG_noCovariates = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_nnSVG_noCovariates.rds"))), 
   mouseHPC_SPARKX_noCovariates = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_SPARKX_noCovariates.rds"))), 
-  mouseHPC_HVGs = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_HVGs_noFilt.rds")))
+  mouseHPC_HVGs = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_HVGs_noFilt.rds"))), 
+  mouseHPC_MoransI = rowData(readRDS(here("outputs", "results", "spe_mouseHPC_MoransI_noFilt.rds")))
 )
 
 # add method names to all columns except gene IDs and gene names
 colnames(res_list[["mouseHPC_nnSVG_noCovariates"]])[-1] <- paste0(colnames(res_list[["mouseHPC_nnSVG_noCovariates"]]), "_nnSVG_noCovariates")[-1]
 colnames(res_list[["mouseHPC_SPARKX_noCovariates"]])[-1] <- paste0(colnames(res_list[["mouseHPC_SPARKX_noCovariates"]]), "_SPARKX_noCovariates")[-1]
 colnames(res_list[["mouseHPC_HVGs"]])[-1] <- paste0(colnames(res_list[["mouseHPC_HVGs"]]), "_HVGs")[-1]
+colnames(res_list[["mouseHPC_MoransI"]])[-1] <- paste0(colnames(res_list[["mouseHPC_MoransI"]]), "_MoransI")[-1]
 
 
 # note filtering per method: same for both nnSVG and SPARK-X
@@ -47,6 +49,9 @@ all(res_list$mouseHPC_nnSVG_noCovariates$gene_name == res_list$mouseHPC_SPARKX_n
 
 table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_nnSVG_noCovariates$gene_name)
 table(res_list$mouseHPC_HVGs$gene_name %in% res_list$mouseHPC_SPARKX_noCovariates$gene_name)
+
+table(res_list$mouseHPC_MoransI$gene_name %in% res_list$mouseHPC_nnSVG_noCovariates$gene_name)
+table(res_list$mouseHPC_MoransI$gene_name %in% res_list$mouseHPC_SPARKX_noCovariates$gene_name)
 
 
 # --------------------------
@@ -64,12 +69,15 @@ df_known <-
   full_join(., 
             as.data.frame(res_list$mouseHPC_HVGs), 
             by = c("gene_name")) %>% 
+  full_join(., 
+            as.data.frame(res_list$mouseHPC_MoransI), 
+            by = c("gene_name")) %>% 
   filter(gene_name %in% known_genes) %>% 
-  pivot_longer(c("rank_nnSVG_noCovariates", "rank_SPARKX_noCovariates", "rank_HVGs"), 
+  pivot_longer(c("rank_nnSVG_noCovariates", "rank_SPARKX_noCovariates", "rank_HVGs", "rank_MoransI"), 
                names_to = "method", 
                values_to = "rank") %>% 
   mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("nnSVG_noCovariates", "SPARKX_noCovariates", "HVGs"))) %>% 
+                         levels = c("nnSVG_noCovariates", "SPARKX_noCovariates", "HVGs", "MoransI"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -77,18 +85,19 @@ df_known <-
 ggplot(as.data.frame(df_known), 
        aes(x = gene_name, y = rank, group = method, color = method, 
            shape = method, label = rank)) + 
-  geom_point(stroke = 1.5, size = 1.75) + 
-  scale_shape_manual(values = c(4, 3, 1)) + 
-  scale_color_manual(values = c("blue3", "maroon", "darkorange")) + 
+  geom_point(stroke = 1.25, size = 1.5) + 
+  scale_shape_manual(values = c(4, 3, 1, 2)) + 
+  scale_color_manual(values = c("blue3", "deepskyblue2", "darkorange", "firebrick3")) + 
   scale_y_log10(limits = c(10, 25000)) + 
-  geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, show.legend = FALSE) + 
+  geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, box.padding = 0.1, 
+                  show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Example SVGs: mouseHPC") + 
+  ggtitle("Example SVGs: mouseHPC (no covariates)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "example_SVGs_ranks_mouseHPC_noCovariates")
-ggsave(paste0(fn, ".pdf"), width = 5.75, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.75, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
 
 
 # --------------------------------------------
@@ -118,18 +127,18 @@ ggplot(as.data.frame(df_nnSVG),
   geom_point(data = filter(df_nnSVG, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_nnSVG, gene_name %in% known_genes), 
-                  nudge_x = 400, nudge_y = 1200, size = 3, color = "firebrick3") + 
+                  nudge_x = 500, nudge_y = 1200, size = 3, color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 5300, y = 8000, size = 3, color = "darkorange2") + 
+           x = 5000, y = 7000, size = 3, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: mouseHPC") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_nnSVG_mouseHPC_noCovariates")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
 
 # ------------------------------------
@@ -159,7 +168,7 @@ ggplot(as.data.frame(df_SPARKX),
   geom_point(data = filter(df_SPARKX, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_SPARKX, gene_name %in% known_genes), 
-                  nudge_x = 600, nudge_y = 20, size = 3, color = "firebrick3") + 
+                  nudge_x = 700, nudge_y = 20, size = 3, color = "firebrick3") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
@@ -169,8 +178,8 @@ ggplot(as.data.frame(df_SPARKX),
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_mouseHPC_noCovariates")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
 
 # ------------
@@ -194,7 +203,7 @@ ggplot(df_effect,
   scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
     data = df_effect %>% filter(is_known), 
-    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.25, nudge_y = 0.15) + 
+    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.4, nudge_y = 0.25) + 
   ylim(c(0, 1)) + 
   labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
@@ -203,8 +212,8 @@ ggplot(df_effect,
   theme_bw()
 
 fn <- file.path(dir_plots, "effect_size_nnSVG_mouseHPC_noCovariates")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
 
 # ---------------------
@@ -222,8 +231,8 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG_noCovariates)) +
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_mouseHPC_noCovariates")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 4, height = 3.25)
+ggsave(paste0(fn, ".png"), width = 4, height = 3.25)
 
 
 # --------------------------------------
@@ -244,7 +253,7 @@ ls_known
 
 ann_text <- data.frame(
   x = unname(ls_known), 
-  y =  c(17, 1), 
+  y =  c(1.6, 1.0), 
   label = paste0(names(ls_known), " = ", round(ls_known, 3))
 )
 
@@ -254,13 +263,13 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG_noCovariates)) +
   xlim(c(0, 1)) + 
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
   geom_text_repel(data = ann_text, aes(x = x, y = y, label = label), 
-                  nudge_x = 0.13, nudge_y = 2, color = "red", size = 3) + 
+                  nudge_x = 0.13, nudge_y = 3, color = "red", size = 3) + 
   xlab("estimated length scale") + 
   ylab("density") + 
   ggtitle("nnSVG length scales: mouseHPC") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "lengthscales_nnSVG_mouseHPC_noCovariates")
-ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
-ggsave(paste0(fn, ".png"), width = 5.25, height = 4)
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
