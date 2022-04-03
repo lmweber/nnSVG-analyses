@@ -1,6 +1,6 @@
 #############################
 # Script to plot example SVGs
-# Lukas Weber, Mar 2022
+# Lukas Weber, Apr 2022
 #############################
 
 library(SpatialExperiment)
@@ -73,5 +73,5 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
         axis.ticks = element_blank())
 
 fn <- file.path(dir_plots, "example_genes_humanDLPFC")
-ggsave(paste0(fn, ".png"), width = 6, height = 5)
+ggsave(paste0(fn, ".png"), width = 5.75, height = 5)
 

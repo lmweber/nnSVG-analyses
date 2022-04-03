@@ -1,6 +1,6 @@
 #############################
 # Script to plot example SVGs
-# Lukas Weber, Mar 2022
+# Lukas Weber, Apr 2022
 #############################
 
 library(SpatialExperiment)
@@ -63,7 +63,7 @@ ggplot() +
         axis.ticks = element_blank())
 
 fn <- file.path(dir_plots, "mouseHPC_celltypes")
-ggsave(paste0(fn, ".png"), width = 6.75, height = 5)
+ggsave(paste0(fn, ".png"), width = 6.5, height = 4.75)
 
 
 # plot expression of example genes in CA3 cell type
@@ -75,10 +75,11 @@ df_sub <-
                names_to = "gene", values_to = "counts") %>% 
   mutate(gene = factor(gene, levels = c("Cpne9", "Rgs14")))
 
-
+# add points in two steps to avoid overplotting NA points
 ggplot(df_sub, aes(x = xcoord, y = ycoord, color = counts)) + 
   facet_wrap(~ gene, nrow = 2) + 
-  geom_point(size = 0.1, alpha = 0.5) + 
+  geom_point(size = 0.01) + 
+  geom_point(data = df_sub[df_sub$counts > 0, ], size = 0.01) + 
   coord_fixed() + 
   scale_color_gradientn(trans = "log1p", 
                         colors = c("gray90", mid = "red", high = "black"), 
@@ -92,5 +93,5 @@ ggplot(df_sub, aes(x = xcoord, y = ycoord, color = counts)) +
         axis.ticks = element_blank())
 
 fn <- file.path(dir_plots, "example_genes_mouseHPC")
-ggsave(paste0(fn, ".png"), width = 4, height = 4.5)
+ggsave(paste0(fn, ".png"), width = 3.75, height = 4.25)
 
