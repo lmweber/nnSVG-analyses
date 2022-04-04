@@ -1,19 +1,18 @@
 ####################################
 # Script for scalability simulations
-# Lukas Weber, Feb 2022
+# Lukas Weber, Apr 2022
 ####################################
 
-# nnSVG, human DLPFC dataset, single gene
+# data set: human DLPFC
+# filtering: with filtering of low-expressed genes (using nnSVG default filtering)
 
-# interactive cluster session
-# qrsh -l mem_free=20G,h_vmem=22G,h_fsize=100G -now n
-# module load conda_R/4.1.x
+# single gene
 
 
 library(SpatialExperiment)
 library(STexampleData)
 library(nnSVG)
-library(scry)
+library(scran)
 library(here)
 
 
@@ -52,27 +51,21 @@ for (i in seq_along(n)) {
 
 # starting from spots over tissue
 
-# filter low-expressed genes
-filter_genes <- 1
-n_spots <- ceiling(filter_genes / 100 * ncol(spe))
-ix_remove <- rowSums(counts(spe) > 0) < n_spots
-table(ix_remove)
-message("removing ", sum(ix_remove), " out of ", nrow(spe), " genes due to low expression")
-spe <- spe[!ix_remove, ]
+# filter low-expressed and mitochondrial genes
+# using gene filtering function from nnSVG package
+spe <- filter_genes(
+  spe, 
+  filter_genes_ncounts = 3, 
+  filter_genes_pcspots = 0.5, 
+  filter_mito = TRUE
+)
 dim(spe)
 
-# filter mitochondrial genes
-is_mito <- grepl("(^MT-)|(^mt-)", rowData(spe)$gene_name)
-table(is_mito)
-message("removing ", sum(is_mito), " mitochondrial genes")
-spe <- spe[!is_mito, ]
-dim(spe)
-
-# set seed for reproducibility
+# calculate log-transformed normalized counts using scran package
 set.seed(123)
-
-# calculate deviance residuals using scry package
-spe <- nullResiduals(spe, assay = "counts", fam = "binomial", type = "deviance")
+qclus <- quickCluster(spe)
+spe <- computeSumFactors(spe, cluster = qclus)
+spe <- logNormCounts(spe)
 assayNames(spe)
 
 
@@ -110,9 +103,17 @@ for (i in seq_along(n)) {
   for (j in seq_len(n_iters)) {
     print(paste0("loop iteration i = ", i, ", n[i] = ", n[i], ", j = ", j))
     
-    # skip filtering since already performed above
+    # run nnSVG (with one thread)
     runtime <- system.time({
-      out <- nnSVG(spe_sub, filter_genes = FALSE, filter_mito = FALSE, n_threads = 1)
+      out <- nnSVG(
+        spe_sub, 
+        X = NULL, 
+        assay_name = "logcounts", 
+        n_neighbors = 10, 
+        order = "AMMD", 
+        n_threads = 1, 
+        verbose = FALSE
+      )
     })
     
     # 'elapsed' time is real human time
@@ -127,6 +128,6 @@ for (i in seq_along(n)) {
 # save results
 # ------------
 
-file_runtimes <- here("outputs", "scalability", "runtimes_scalability_nnSVG_DLPFC_singlegene.rds")
+file_runtimes <- here("outputs", "scalability_sims", "runtimes_scalability_nnSVG_DLPFC_singlegene.rds")
 saveRDS(runtimes, file = file_runtimes)
 
