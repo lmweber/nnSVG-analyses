@@ -299,6 +299,8 @@ ann_text_SPARKX <- data.frame(
 # plot comparisons of ranks
 
 # SPARK-X
+# seed for placement of text labels
+set.seed(1)
 ggplot(as.data.frame(df_ranks_SPARKX), 
        aes(x = rank_baseline, y = rank_SPARKX, color = baseline)) + 
   facet_wrap(~ baseline) + 
@@ -306,6 +308,12 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   geom_text(data = ann_text_SPARKX, aes(x = x, y = y, label = label), 
             size = 3.75, color = "black") + 
   scale_color_manual(values = c("darkorange", "firebrick3")) + 
+  geom_point(
+    data = df_ranks_SPARKX %>% filter(gene_name %in% known_genes), 
+    color = "black", size = 1) + 
+  geom_text_repel(
+    data = df_ranks_SPARKX %>% filter(gene_name %in% c("HBB", "IGKC", "NPY" )), 
+    aes(label = gene_name), color = "black", size = 3.5, nudge_x = 50, box.padding = 0.3) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
