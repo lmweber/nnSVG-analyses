@@ -447,7 +447,7 @@ ggplot(as.data.frame(df_ranks_nnSVG),
     color = "black", size = 1) + 
   geom_text_repel(
     data = df_ranks_nnSVG %>% filter(gene_name %in% c("HBB", "IGKC", "NPY" )), 
-    aes(label = gene_name), color = "black", size = 3.5, nudge_x = 50, box.padding = 0.3) + 
+    aes(label = gene_name), color = "black", size = 3.25, nudge_x = 50, box.padding = 0.3) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
@@ -476,7 +476,7 @@ ggplot(as.data.frame(df_ranks_SPARKX),
     color = "black", size = 1) + 
   geom_text_repel(
     data = df_ranks_SPARKX %>% filter(gene_name %in% c("HBB", "IGKC", "NPY" )), 
-    aes(label = gene_name), color = "black", size = 3.5, nudge_x = 50, box.padding = 0.3) + 
+    aes(label = gene_name), color = "black", size = 3.25, nudge_x = 50, box.padding = 0.3) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
