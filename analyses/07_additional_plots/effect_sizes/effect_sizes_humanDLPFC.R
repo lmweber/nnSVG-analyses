@@ -141,6 +141,28 @@ ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
 ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
 
+# proportion spatial variance vs. mean
+ggplot(df_effect, 
+       aes(x = mean_nnSVG, y = prop_sv_nnSVG, color = LR_stat_nnSVG)) + 
+  geom_point(size = 0.75) + 
+  scale_color_viridis(trans = "log10") + 
+  geom_point(data = df_effect %>% filter(is_known), 
+             aes(shape = is_known), color = "red", size = 0.8) + 
+  scale_shape_manual(values = 1, name = "known") + 
+  geom_text_repel(
+    data = df_effect %>% filter(is_known), 
+    aes(label = gene_name), color = "red", size = 3, nudge_x = -0.1, nudge_y = 0.075) + 
+  labs(x = "mean logcounts", 
+       y = "proportion spatial variance", 
+       color = "LR statistic") + 
+  ggtitle("nnSVG: human DLPFC") + 
+  theme_bw()
+
+fn <- file.path(dir_plots, "effectSize_propSV_vs_mean_humanDLPFC")
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
+
+
 # adjusted effect size vs. mean
 ggplot(df_adj_effect, 
        aes(x = mean_nnSVG, y = adj_effect_nnSVG, color = LR_stat_nnSVG)) + 
