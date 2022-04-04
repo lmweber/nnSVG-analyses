@@ -1,6 +1,6 @@
 #####################################################
 # Script to plot runtimes for scalability simulations
-# Lukas Weber, Feb 2022
+# Lukas Weber, Apr 2022
 #####################################################
 
 
@@ -15,9 +15,9 @@ library(ggplot2)
 # ------------
 
 runtimes_nnSVG_DLPFC_singlegene <- readRDS(here(
-  "outputs", "scalability", "runtimes_scalability_nnSVG_DLPFC_singlegene.rds"))
+  "outputs", "scalability_sims", "runtimes_scalability_nnSVG_DLPFC_singlegene.rds"))
 runtimes_nnSVG_mouseHPC_singlegene <- readRDS(here(
-  "outputs", "scalability", "runtimes_scalability_nnSVG_mouseHPC_singlegene.rds"))
+  "outputs", "scalability_sims", "runtimes_scalability_nnSVG_mouseHPC_singlegene.rds"))
 
 mat_runtimes_DLPFC <- do.call("rbind", runtimes_nnSVG_DLPFC_singlegene)
 colnames(mat_runtimes_DLPFC) <- paste0("seed", 1:ncol(mat_runtimes_DLPFC))
@@ -40,10 +40,10 @@ df_runtimes_mouseHPC <- cbind(
 
 # calculate linear slope
 slope_DLPFC <- 
-  (mean(mat_runtimes_DLPFC["1000", ]) - mean(mat_runtimes_DLPFC["500", ])) / (1000 - 500)
+  (median(mat_runtimes_DLPFC["3639", ]) - median(mat_runtimes_DLPFC["1000", ])) / (3639 - 1000)
 # calculate linear and cubic lines starting from first point
 n_spots <- as.numeric(df_runtimes_DLPFC$n_spots)
-lin <- mean(mat_runtimes_DLPFC[1, ]) + (slope_DLPFC * (n_spots - min(n_spots)))
+lin <- median(mat_runtimes_DLPFC[1, ]) + (slope_DLPFC * (n_spots - min(n_spots)))
 cub <- lin + (lin - lin[1])^3
 df_runtimes_DLPFC <- cbind(
   df_runtimes_DLPFC, 
@@ -53,10 +53,10 @@ df_runtimes_DLPFC <- cbind(
 
 # calculate linear slope
 slope_mouseHPC <- 
-  (mean(mat_runtimes_mouseHPC["40000", ]) - mean(mat_runtimes_mouseHPC["20000", ])) / (40000 - 20000)
+  (median(mat_runtimes_mouseHPC["53208", ]) - median(mat_runtimes_mouseHPC["10000", ])) / (53208 - 10000)
 # calculate linear and cubic lines starting from first point
 n_spots <- as.numeric(df_runtimes_mouseHPC$n_spots)
-lin <- mean(mat_runtimes_mouseHPC[1, ]) + (slope_mouseHPC * (n_spots - min(n_spots)))
+lin <- median(mat_runtimes_mouseHPC[1, ]) + (slope_mouseHPC * (n_spots - min(n_spots)))
 cub <- lin + (lin - lin[1])^3
 df_runtimes_mouseHPC <- cbind(
   df_runtimes_mouseHPC, 
@@ -86,11 +86,11 @@ df_trends <- pivot_longer(df_runtimes_DLPFC[, c("n_spots", "linear", "cubic")],
 df_trends$n_spots <- as.numeric(df_trends$n_spots)
 df_trends$trend <- factor(df_trends$trend, levels = c("linear", "cubic"))
 
-# seed for geom_jitter so no points missing
-set.seed(6)
+# seed for geom_jitter
+set.seed(1)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
   geom_boxplot(lwd = 0.75, outlier.shape = NA) + 
-  geom_jitter(width = 100, size = 1.5, alpha = 0.75) + 
+  geom_jitter(width = 100, size = 1, alpha = 0.75) + 
   geom_point(data = df_trends, aes(x = n_spots, y = trend_val, group = NULL), 
              color = "black", alpha = 0.5) + 
   geom_line(data = df_trends, aes(x = n_spots, y = trend_val, linetype = trend, group = NULL), 
@@ -106,7 +106,8 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
         panel.grid.minor.y = element_blank(), 
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-ggsave(here("plots", "scalability", "runtimes_nnSVG_DLPFC_singlegene.png"), width = 6, height = 4.5)
+ggsave(here("plots", "scalability_sims", "runtimes_nnSVG_DLPFC_singlegene.png"), 
+       width = 5, height = 4)
 
 
 # mouseHPC dataset
@@ -126,11 +127,11 @@ df_trends <- pivot_longer(df_runtimes_mouseHPC[, c("n_spots", "linear", "cubic")
 df_trends$n_spots <- as.numeric(df_trends$n_spots)
 df_trends$trend <- factor(df_trends$trend, levels = c("linear", "cubic"))
 
-# seed for geom_jitter so no points missing
+# seed for geom_jitter
 set.seed(6)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
   geom_boxplot(width = 2000, lwd = 0.75, outlier.shape = NA) + 
-  geom_jitter(width = 1000, size = 1.5, alpha = 0.75) + 
+  geom_jitter(width = 1000, size = 1, alpha = 0.75) + 
   geom_point(data = df_trends, aes(x = n_spots, y = trend_val, group = NULL), 
              color = "black", alpha = 0.5) + 
   geom_line(data = df_trends, aes(x = n_spots, y = trend_val, linetype = trend, group = NULL), 
@@ -146,5 +147,6 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
         panel.grid.minor.y = element_blank(), 
         axis.text.x = element_text(size = 7, angle = 90, vjust = 0.5, hjust = 1))
 
-ggsave(here("plots", "scalability", "runtimes_nnSVG_mouseHPC_singlegene.png"), width = 6.25, height = 4.5)
+ggsave(here("plots", "scalability_sims", "runtimes_nnSVG_mouseHPC_singlegene.png"), 
+       width = 5, height = 4)
 
