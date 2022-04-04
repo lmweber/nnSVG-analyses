@@ -67,10 +67,15 @@ df <- data.frame(
 names(n_spots) <- paste0(names(n_spots), "\n(", n_spots, " spots)")
 
 
-ggplot(df, aes(x = n_spots, y = runtime, color = method, shape = dataset)) + 
+# seed for placement of text labels
+set.seed(1)
+ggplot(df, aes(x = n_spots, y = runtime, color = method, shape = dataset, 
+               label = round(runtime))) + 
   geom_point(stroke = 1.25, size = 1.5) + 
   scale_shape_manual(values = c(1, 2, 3)) + 
   scale_color_manual(values = c("blue3", "deepskyblue2")) + 
+  geom_text_repel(nudge_x = 100, size = 3.25, segment.color = NA, box.padding = 0.4, 
+                  show.legend = FALSE) + 
   scale_x_continuous(breaks = n_spots) + 
   scale_y_log10() + 
   labs(x = "dataset", 
