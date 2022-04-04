@@ -97,7 +97,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
             color = "black", alpha = 0.5) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
-  ylim(c(0, 8.6)) + 
+  ylim(c(0, 5)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
   ggtitle("Scalability: nnSVG") + 
@@ -138,7 +138,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
             color = "black", alpha = 0.5) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
-  ylim(c(0, 152)) + 
+  ylim(c(0, 100)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
   ggtitle("Scalability: nnSVG") + 
