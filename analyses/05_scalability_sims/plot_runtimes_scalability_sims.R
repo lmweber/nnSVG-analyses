@@ -53,7 +53,7 @@ df_runtimes_DLPFC <- cbind(
 
 # calculate linear slope
 slope_mouseHPC <- 
-  (median(mat_runtimes_mouseHPC["53208", ]) - median(mat_runtimes_mouseHPC["10000", ])) / (53208 - 10000)
+  (median(mat_runtimes_mouseHPC["40000", ]) - median(mat_runtimes_mouseHPC["5000", ])) / (40000 - 5000)
 # calculate linear and cubic lines starting from first point
 n_spots <- as.numeric(df_runtimes_mouseHPC$n_spots)
 lin <- median(mat_runtimes_mouseHPC[1, ]) + (slope_mouseHPC * (n_spots - min(n_spots)))
@@ -128,7 +128,7 @@ df_trends$n_spots <- as.numeric(df_trends$n_spots)
 df_trends$trend <- factor(df_trends$trend, levels = c("linear", "cubic"))
 
 # seed for geom_jitter
-set.seed(6)
+set.seed(1)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
   geom_boxplot(width = 2000, lwd = 0.75, outlier.shape = NA) + 
   geom_jitter(width = 1000, size = 1, alpha = 0.75) + 
