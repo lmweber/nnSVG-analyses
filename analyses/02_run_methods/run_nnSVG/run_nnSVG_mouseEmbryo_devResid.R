@@ -18,7 +18,7 @@ library(here)
 
 # load data object with preprocessing from previous script
 
-fn <- here("outputs", "preprocessed", "spe_mouseEmbryo_preprocessed.rds")
+fn <- here("outputs", "preprocessed", "spe_mouseEmbryo_preprocessed_noFilt.rds")
 spe <- readRDS(fn)
 
 dim(spe)
