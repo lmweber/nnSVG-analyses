@@ -53,6 +53,52 @@ table(res_list$mouseOB_MoransI$gene_name %in% res_list$mouseOB_nnSVG$gene_name)
 table(res_list$mouseOB_MoransI$gene_name %in% res_list$mouseOB_SPARKX$gene_name)
 
 
+# --------------------------
+# known SVGs in this dataset
+# --------------------------
+
+# known SVGs: Penk, Doc2g, Kctd12, Slc17a7, Cdhr1, Sv2b, Shisa3
+
+known_genes <- c("Penk", "Doc2g", "Kctd12", "Slc17a7", "Cdhr1", "Sv2b", "Shisa3")
+
+df_known <- 
+  full_join(as.data.frame(res_list$mouseOB_nnSVG), 
+            as.data.frame(res_list$mouseOB_SPARKX), 
+            by = c("gene_name")) %>% 
+  full_join(., 
+            as.data.frame(res_list$mouseOB_HVGs), 
+            by = c("gene_name")) %>% 
+  full_join(., 
+            as.data.frame(res_list$mouseOB_MoransI), 
+            by = c("gene_name")) %>% 
+  filter(gene_name %in% known_genes) %>% 
+  pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs", "rank_MoransI"), 
+               names_to = "method", 
+               values_to = "rank") %>% 
+  mutate(method = factor(gsub("^rank_", "", method), 
+                         levels = c("nnSVG", "SPARKX", "HVGs", "MoransI"))) %>% 
+  mutate(gene_name = factor(gene_name, levels = known_genes))
+
+
+# plot ranks
+ggplot(as.data.frame(df_known), 
+       aes(x = gene_name, y = rank, group = method, color = method, 
+           shape = method, label = rank)) + 
+  geom_point(stroke = 1.25, size = 1.5) + 
+  scale_shape_manual(values = c(4, 3, 1, 2)) + 
+  scale_color_manual(values = c("blue3", "deepskyblue2", "darkorange", "firebrick3")) + 
+  scale_y_log10(limits = c(6, 17000)) + 
+  geom_text_repel(nudge_x = 0.35, size = 2, segment.color = NA, box.padding = 0.1, 
+                  show.legend = FALSE) + 
+  labs(x = "gene", y = "rank") + 
+  ggtitle("Example SVGs: mouseOB") + 
+  theme_bw()
+
+fn <- file.path(dir_plots, "example_SVGs_ranks_mouseOB_noFilt")
+ggsave(paste0(fn, ".pdf"), width = 5.5, height = 4)
+ggsave(paste0(fn, ".png"), width = 5.5, height = 4)
+
+
 # ------------------------------------
 # SPARK-X: combined p-values vs. ranks
 # ------------------------------------
