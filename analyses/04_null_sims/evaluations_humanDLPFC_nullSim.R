@@ -1,6 +1,6 @@
 ###################################################
 # Script to calculate evaluations: null simulations
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 ###################################################
 
 # data set: human DLPFC
@@ -13,8 +13,7 @@ library(dplyr)
 library(tidyr)
 library(readr)
 library(ggplot2)
-library(ggrepel)
-library(viridis)
+library(ggnewscale)
 
 
 # directory to save plots
@@ -56,4 +55,55 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
 fn <- file.path(dir_plots, "pvals_nnSVG_humanDLPFC_nullSim")
 ggsave(paste0(fn, ".pdf"), width = 4, height = 3.5)
 ggsave(paste0(fn, ".png"), width = 4, height = 3.5)
+
+
+# -------------
+# error control
+# -------------
+
+# calculate false positives
+
+fp_prop_true <- c(0.01, 0.02, 0.05, 0.1, 0.2)
+
+fp_prop <- rep(NA, length(fp_prop_true))
+names(fp_prop) <- fp_prop_true
+
+for (i in seq_along(fp_prop)) {
+  fp_prop[i] <- mean(df_pvals$pval_nnSVG <= fp_prop_true[i])
+}
+
+df_fpr <- data.frame(
+  expected = as.numeric(names(fp_prop)), 
+  observed = unname(fp_prop), 
+  type = "FPR"
+)
+df_true <- data.frame(
+  expected = as.numeric(names(fp_prop)), 
+  observed = as.numeric(names(fp_prop)), 
+  type = "true"
+)
+
+pal <- c("red", "blue")
+
+ggplot() + 
+  geom_point(data = df_fpr, aes(x = expected, y = observed, color = type), 
+             size = 2.5) + 
+  geom_line(data = df_fpr, aes(x = expected, y = observed, color = type), 
+            linetype = "solid") + 
+  geom_point(data = df_true, aes(x = expected, y = expected, color = type), 
+             size = 2.5) + 
+  geom_line(data = df_true, aes(x = expected, y = expected, color = type), 
+            linetype = "dashed") + 
+  scale_color_manual(values = pal) + 
+  coord_fixed() + 
+  xlim(c(0, 0.2)) + 
+  ylim(c(0, 0.2)) + 
+  ggtitle("Error control: human DLPFC") + 
+  theme_bw() + 
+  theme(legend.title = element_blank(), 
+        panel.grid.minor = element_blank())
+
+fn <- file.path(dir_plots, "error_control_nnSVG_humanDLPFC_nullSim")
+ggsave(paste0(fn, ".pdf"), width = 4.25, height = 3.5)
+ggsave(paste0(fn, ".png"), width = 4.25, height = 3.5)
 
