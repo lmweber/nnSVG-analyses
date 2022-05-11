@@ -104,6 +104,6 @@ ggplot() +
         panel.grid.minor = element_blank())
 
 fn <- file.path(dir_plots, "error_control_nnSVG_mouseOB_nullSim")
-ggsave(paste0(fn, ".pdf"), width = 4.25, height = 3.5)
-ggsave(paste0(fn, ".png"), width = 4.25, height = 3.5)
+ggsave(paste0(fn, ".pdf"), width = 4.5, height = 3.5)
+ggsave(paste0(fn, ".png"), width = 4.5, height = 3.5)
 
