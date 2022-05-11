@@ -73,26 +73,26 @@ for (i in seq_along(fp_prop)) {
 }
 
 df_fpr <- data.frame(
-  expected = as.numeric(names(fp_prop)), 
-  observed = unname(fp_prop), 
-  type = "FPR"
+  proportion = as.numeric(names(fp_prop)), 
+  FPR = unname(fp_prop), 
+  type = "observed"
 )
 df_true <- data.frame(
-  expected = as.numeric(names(fp_prop)), 
-  observed = as.numeric(names(fp_prop)), 
-  type = "true"
+  proportion = as.numeric(names(fp_prop)), 
+  FPR = as.numeric(names(fp_prop)), 
+  type = "expected"
 )
 
-pal <- c("red", "blue")
+pal <- c("blue", "red")
 
 ggplot() + 
-  geom_point(data = df_fpr, aes(x = expected, y = observed, color = type), 
+  geom_point(data = df_fpr, aes(x = proportion, y = FPR, color = type), 
              size = 2.5) + 
-  geom_line(data = df_fpr, aes(x = expected, y = observed, color = type), 
+  geom_line(data = df_fpr, aes(x = proportion, y = FPR, color = type), 
             linetype = "solid") + 
-  geom_point(data = df_true, aes(x = expected, y = expected, color = type), 
+  geom_point(data = df_true, aes(x = proportion, y = FPR, color = type), 
              size = 2.5) + 
-  geom_line(data = df_true, aes(x = expected, y = expected, color = type), 
+  geom_line(data = df_true, aes(x = proportion, y = FPR, color = type), 
             linetype = "dashed") + 
   scale_color_manual(values = pal) + 
   coord_fixed() + 
