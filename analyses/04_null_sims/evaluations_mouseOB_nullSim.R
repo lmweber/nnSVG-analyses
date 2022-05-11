@@ -73,31 +73,31 @@ for (i in seq_along(fp_prop)) {
 }
 
 df_fpr <- data.frame(
-  proportion = as.numeric(names(fp_prop)), 
-  FPR = unname(fp_prop), 
+  cutoff = as.numeric(names(fp_prop)), 
+  proportion = unname(fp_prop), 
   type = "observed"
 )
 df_true <- data.frame(
+  cutoff = as.numeric(names(fp_prop)), 
   proportion = as.numeric(names(fp_prop)), 
-  FPR = as.numeric(names(fp_prop)), 
   type = "expected"
 )
 
 pal <- c("blue", "red")
 
 ggplot() + 
-  geom_point(data = df_fpr, aes(x = proportion, y = FPR, color = type), 
+  geom_point(data = df_fpr, aes(x = cutoff, y = proportion, color = type), 
              size = 2.5) + 
-  geom_line(data = df_fpr, aes(x = proportion, y = FPR, color = type), 
+  geom_line(data = df_fpr, aes(x = cutoff, y = proportion, color = type), 
             linetype = "solid") + 
-  geom_point(data = df_true, aes(x = proportion, y = FPR, color = type), 
-             size = 2.5) + 
-  geom_line(data = df_true, aes(x = proportion, y = FPR, color = type), 
+  geom_line(data = df_true, aes(x = cutoff, y = proportion, color = type), 
             linetype = "dashed") + 
   scale_color_manual(values = pal) + 
   coord_fixed() + 
   xlim(c(0, 0.2)) + 
   ylim(c(0, 0.2)) + 
+  labs(x = "p-value cutoff", 
+       y = "proportion false SVGs") + 
   ggtitle("Error control: mouse OB") + 
   theme_bw() + 
   theme(legend.title = element_blank(), 
