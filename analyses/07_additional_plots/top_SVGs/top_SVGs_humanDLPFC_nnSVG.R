@@ -1,6 +1,6 @@
 ############################
 # Additional plots: top SVGs
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 ############################
 
 # data set: human DLPFC
@@ -80,7 +80,8 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
   ggtitle("Top SVGs: human DLPFC, nnSVG") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
-  theme(panel.grid = element_blank(), 
+  theme(strip.text = element_text(face = "italic"), 
+        panel.grid = element_blank(), 
         axis.title = element_blank(), 
         axis.text = element_blank(), 
         axis.ticks = element_blank())

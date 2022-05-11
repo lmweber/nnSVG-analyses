@@ -1,6 +1,6 @@
 ############################
 # Additional plots: top SVGs
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 ############################
 
 # data set: mouse OB
@@ -78,7 +78,8 @@ ggplot(df, aes(x = x, y = y, color = counts)) +
   ggtitle("Top SVGs: mouse OB, nnSVG") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
-  theme(panel.grid = element_blank(), 
+  theme(strip.text = element_text(face = "italic"), 
+        panel.grid = element_blank(), 
         axis.title = element_blank(), 
         axis.text = element_blank(), 
         axis.ticks = element_blank())

@@ -1,6 +1,6 @@
 #########################
 # Script to plot runtimes
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 #########################
 
 # runtimes for main results
@@ -62,7 +62,8 @@ df <- data.frame(
   n_spots = rep(n_spots, times = 2)
   ) %>% 
   mutate(dataset = factor(dataset, levels = c("mouseOB", "humanDLPFC", "mouseHPC"))) %>% 
-  mutate(method = factor(method, levels = c("nnSVG", "SPARKX")))
+  mutate(method = gsub("SPARKX", "SPARK-X", method)) %>% 
+  mutate(method = factor(method, levels = c("nnSVG", "SPARK-X")))
 
 names(n_spots) <- paste0(names(n_spots), "\n(", n_spots, " spots)")
 
@@ -82,8 +83,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = method, shape = dataset,
        y = "runtime (sec)") + 
   ggtitle("Runtimes") + 
   theme_bw() + 
-  theme(panel.grid.minor.x = element_blank(), 
-        panel.grid.minor.y = element_blank())
+  theme(panel.grid.minor = element_blank())
 
 fn <- file.path(dir_plots, "runtimes_main")
 ggsave(paste0(fn, ".pdf"), width = 6, height = 4)

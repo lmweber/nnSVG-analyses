@@ -1,6 +1,6 @@
 ############################
 # Additional plots: top SVGs
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 ############################
 
 # data set: mouse HPC
@@ -78,7 +78,7 @@ ggplot(df, aes(x = xcoord, y = ycoord, color = counts)) +
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
   theme(title = element_text(size = 20), 
-        strip.text.x = element_text(size = 16), 
+        strip.text = element_text(size = 16, face = "italic"), 
         legend.title = element_text(size = 16), 
         legend.text = element_text(size = 16), 
         panel.grid = element_blank(), 
