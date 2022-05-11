@@ -98,7 +98,8 @@ ggplot() +
   ylim(c(0, 0.2)) + 
   labs(x = "p-value cutoff", 
        y = "proportion false SVGs") + 
-  ggtitle("Error control: human DLPFC") + 
+  ggtitle("Error control: human DLPFC", 
+          subtitle = "null simulation") + 
   theme_bw() + 
   theme(legend.title = element_blank(), 
         panel.grid.minor = element_blank())

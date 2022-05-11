@@ -68,7 +68,7 @@ ggplot(df_fpr, aes(x = dataset, y = proportion)) +
   geom_hline(yintercept = 0.05, linetype = "dashed") + 
   ylim(c(0, 0.05)) + 
   labs(y = "proportion false SVGs") + 
-  ggtitle("Error control") + 
+  ggtitle("Error control: null simulations") + 
   theme_bw() + 
   theme(legend.title = element_blank(), 
         panel.grid.minor = element_blank())
