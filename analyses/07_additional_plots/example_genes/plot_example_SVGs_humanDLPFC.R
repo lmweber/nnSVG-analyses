@@ -57,7 +57,7 @@ df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>%
 
 
 ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) + 
-  facet_wrap(gene ~ bandwidth, nrow = 2) + 
+  facet_wrap(~gene, nrow = 2) + 
   geom_point(size = 0.05) + 
   coord_fixed() + 
   scale_y_reverse() + 
@@ -73,5 +73,5 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
         axis.ticks = element_blank())
 
 fn <- file.path(dir_plots, "example_genes_humanDLPFC")
-ggsave(paste0(fn, ".png"), width = 5.75, height = 5)
+ggsave(paste0(fn, ".png"), width = 5.75, height = 4.5)
 
