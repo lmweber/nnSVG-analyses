@@ -411,6 +411,7 @@ df_pvals <- as.data.frame(res_list$mouseOB_nnSVG)
 # plot p-values
 ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) + 
   geom_histogram(color = "black", fill = "blue3", bins = 30) + 
+  ylim(c(0, 4000)) + 
   labs(x = "p-values", 
        y = "frequency") + 
   ggtitle("nnSVG p-values: mouse OB") + 
