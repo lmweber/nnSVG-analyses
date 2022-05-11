@@ -30,7 +30,7 @@ res_list <- list(
 )
 
 # add method names to all columns except gene IDs and gene names
-colnames(res_list[["mouseOB_nnSVG"]])[-(1:2)] <- paste0(colnames(res_list[["mouseOB_nnSVG"]]), "_nnSVG")[-(1:2)]
+colnames(res_list[["mouseOB_nnSVG"]])[-1] <- paste0(colnames(res_list[["mouseOB_nnSVG"]]), "_nnSVG")[-1]
 
 
 # note filtering
