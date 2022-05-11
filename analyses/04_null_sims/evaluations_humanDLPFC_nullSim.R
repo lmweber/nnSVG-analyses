@@ -46,6 +46,7 @@ df_pvals <- as.data.frame(res_list$humanDLPFC_nnSVG)
 # plot p-values
 ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) + 
   geom_histogram(color = "black", fill = "blue3", bins = 30) + 
+  ylim(c(0, 2500)) + 
   labs(x = "p-values", 
        y = "frequency", 
        title = "nnSVG p-values: human DLPFC", 
