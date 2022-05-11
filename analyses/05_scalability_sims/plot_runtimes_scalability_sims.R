@@ -1,6 +1,6 @@
 #####################################################
 # Script to plot runtimes for scalability simulations
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 #####################################################
 
 
@@ -34,9 +34,9 @@ df_runtimes_mouseHPC <- cbind(
   as.data.frame(mat_runtimes_mouseHPC))
 
 
-# --------------------------
-# add linear and cubic lines
-# --------------------------
+# --------------------------------
+# calculate linear and cubic lines
+# --------------------------------
 
 # calculate linear slope
 slope_DLPFC <- 
@@ -86,6 +86,12 @@ df_trends <- pivot_longer(df_runtimes_DLPFC[, c("n_spots", "linear", "cubic")],
 df_trends$n_spots <- as.numeric(df_trends$n_spots)
 df_trends$trend <- factor(df_trends$trend, levels = c("linear", "cubic"))
 
+# keep only linear trend
+df_trends <- 
+  filter(df_trends, trend == "linear") %>% 
+  mutate(trend = droplevels(trend))
+
+
 # seed for geom_jitter
 set.seed(1)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
@@ -97,10 +103,10 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
             color = "black", alpha = 0.5) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
-  ylim(c(0, 5)) + 
+  ylim(c(0, 4.5)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
-  ggtitle("Scalability: nnSVG") + 
+  ggtitle("Scalability: nnSVG, single gene") + 
   theme_bw() + 
   theme(panel.grid.minor.x = element_blank(), 
         panel.grid.minor.y = element_blank(), 
@@ -127,6 +133,12 @@ df_trends <- pivot_longer(df_runtimes_mouseHPC[, c("n_spots", "linear", "cubic")
 df_trends$n_spots <- as.numeric(df_trends$n_spots)
 df_trends$trend <- factor(df_trends$trend, levels = c("linear", "cubic"))
 
+# keep only linear trend
+df_trends <- 
+  filter(df_trends, trend == "linear") %>% 
+  mutate(trend = droplevels(trend))
+
+
 # seed for geom_jitter
 set.seed(1)
 ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) + 
@@ -141,12 +153,12 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
   ylim(c(0, 100)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
-  ggtitle("Scalability: nnSVG") + 
+  ggtitle("Scalability: nnSVG, single gene") + 
   theme_bw() + 
   theme(panel.grid.minor.x = element_blank(), 
         panel.grid.minor.y = element_blank(), 
         axis.text.x = element_text(size = 7, angle = 90, vjust = 0.5, hjust = 1))
 
 ggsave(here("plots", "scalability_sims", "runtimes_nnSVG_mouseHPC_singlegene.png"), 
-       width = 5, height = 4)
+       width = 5.375, height = 4)
 
