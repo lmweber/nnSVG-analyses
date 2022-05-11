@@ -1,6 +1,6 @@
 ####################################
 # Script to plot ground truth layers
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 ####################################
 
 library(SpatialExperiment)

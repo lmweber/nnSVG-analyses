@@ -1,6 +1,6 @@
 #############################
 # Script to plot example SVGs
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 #############################
 
 library(SpatialExperiment)
@@ -52,7 +52,7 @@ ggplot() +
   geom_point(data = df[df$celltype != "none", ], 
              aes(x = xcoord, y = ycoord, color = celltype), 
              size = 0.01) + 
-  scale_color_manual(values = pal) + 
+  scale_color_manual(values = pal, name = "cell type") + 
   coord_fixed() + 
   ggtitle("Mouse HPC") + 
   guides(color = guide_legend(override.aes = list(size = 2.5))) + 
@@ -84,10 +84,11 @@ ggplot(df_sub, aes(x = xcoord, y = ycoord, color = counts)) +
   scale_color_gradientn(trans = "log1p", 
                         colors = c("gray90", mid = "red", high = "black"), 
                         breaks = c(0, 7, 8), labels = c("0", "", "8")) + 
-  ggtitle("Example SVGs: mouse HPC") + 
+  ggtitle("Selected SVGs: mouse HPC") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
-  theme(panel.grid = element_blank(), 
+  theme(strip.text = element_text(face = "italic"), 
+        panel.grid = element_blank(), 
         axis.title = element_blank(), 
         axis.text = element_blank(), 
         axis.ticks = element_blank())

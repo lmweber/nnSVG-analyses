@@ -1,6 +1,6 @@
 #############################
 # Script to plot example SVGs
-# Lukas Weber, Apr 2022
+# Lukas Weber, May 2022
 #############################
 
 library(SpatialExperiment)
@@ -64,10 +64,11 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
   scale_color_gradientn(trans = "log1p", 
                         colors = c("gray90", mid = "blue", high = "black"), 
                         breaks = c(0, 500, 600), labels = c("0", "", "600")) + 
-  ggtitle("Example SVGs: human DLPFC") + 
+  ggtitle("Selected SVGs: human DLPFC") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
-  theme(panel.grid = element_blank(), 
+  theme(strip.text = element_text(face = "italic"), 
+        panel.grid = element_blank(), 
         axis.title = element_blank(), 
         axis.text = element_blank(), 
         axis.ticks = element_blank())
