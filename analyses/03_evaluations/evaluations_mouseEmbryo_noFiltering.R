@@ -77,8 +77,10 @@ df_known <-
   pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs", "rank_MoransI"), 
                names_to = "method", 
                values_to = "rank") %>% 
-  mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("nnSVG", "SPARKX", "HVGs", "MoransI"))) %>% 
+  mutate(method = factor(gsub("MoransI", "Moran's I", 
+                              gsub("SPARKX", "SPARK-X", 
+                                   gsub("^rank_", "", method))), 
+                         levels = c("nnSVG", "SPARK-X", "HVGs", "Moran's I"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -93,8 +95,9 @@ ggplot(as.data.frame(df_known),
   geom_text_repel(nudge_x = 0.35, size = 2, segment.color = NA, box.padding = 0.1, 
                   show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Example SVGs: mouse embryo") + 
-  theme_bw()
+  ggtitle("Selected SVGs: mouse embryo") + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(face = "italic"))
 
 fn <- file.path(dir_plots, "example_SVGs_ranks_mouseEmbryo_noFilt")
 ggsave(paste0(fn, ".pdf"), width = 7.5, height = 4)
@@ -130,7 +133,7 @@ ggplot(as.data.frame(df_nnSVG),
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 250, y = 7500, size = 3, color = "darkorange2") + 
+           x = 240, y = 7500, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: mouse embryo") + 
   theme_bw()
@@ -169,7 +172,7 @@ ggplot(as.data.frame(df_SPARKX),
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 250, y = 200, size = 3, color = "darkorange2") + 
+           x = 240, y = 200, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouse embryo") + 
   theme_bw()
@@ -253,7 +256,8 @@ df_overlaps <- data.frame(
 
 df_overlaps <- 
   pivot_longer(df_overlaps, cols = c("nnSVG", "SPARKX"), 
-               names_to = "method", values_to = "proportion")
+               names_to = "method", values_to = "proportion") %>% 
+  mutate(method = gsub("SPARKX", "SPARK-X", method))
 
 
 # plot overlaps
@@ -298,7 +302,7 @@ df_ranks_nnSVG_MoransI <-
             as.data.frame(res_list$mouseEmbryo_MoransI), 
             by = c("gene_name")) %>% 
   mutate(rank_baseline = rank_MoransI) %>% 
-  mutate(baseline = "MoransI") %>% 
+  mutate(baseline = "Moran's I") %>% 
   filter(rank_nnSVG <= 1000) %>% 
   filter(rank_baseline <= 1000) %>% 
   select(c("gene_name", "rank_nnSVG", "rank_baseline", "baseline"))
@@ -323,7 +327,7 @@ df_ranks_SPARKX_MoransI <-
             as.data.frame(res_list$mouseEmbryo_MoransI), 
             by = c("gene_name")) %>% 
   mutate(rank_baseline = rank_MoransI) %>% 
-  mutate(baseline = "MoransI") %>% 
+  mutate(baseline = "Moran's I") %>% 
   filter(rank_SPARKX <= 1000) %>% 
   filter(rank_baseline <= 1000) %>% 
   select(c("gene_name", "rank_SPARKX", "rank_baseline", "baseline"))
@@ -348,14 +352,14 @@ ann_text_nnSVG <- data.frame(
   x = 300, 
   y = 25, 
   label = paste0("cor = ", c(round(cor_nnSVG_HVGs, 2), round(cor_nnSVG_MoransI, 2))), 
-  baseline = factor(c("HVGs", "MoransI"), levels = c("HVGs", "MoransI"))
+  baseline = factor(c("HVGs", "Moran's I"), levels = c("HVGs", "Moran's I"))
 )
 
 ann_text_SPARKX <- data.frame(
   x = 300, 
   y = 25, 
   label = paste0("cor = ", c(round(cor_SPARKX_HVGs, 2), round(cor_SPARKX_MoransI, 2))), 
-  baseline = factor(c("HVGs", "MoransI"), levels = c("HVGs", "MoransI"))
+  baseline = factor(c("HVGs", "Moran's I"), levels = c("HVGs", "Moran's I"))
 )
 
 

@@ -75,8 +75,10 @@ df_known <-
   pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs", "rank_MoransI"), 
                names_to = "method", 
                values_to = "rank") %>% 
-  mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("nnSVG", "SPARKX", "HVGs", "MoransI"))) %>% 
+  mutate(method = factor(gsub("MoransI", "Moran's I", 
+                              gsub("SPARKX", "SPARK-X", 
+                                   gsub("^rank_", "", method))), 
+                         levels = c("nnSVG", "SPARK-X", "HVGs", "Moran's I"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -91,8 +93,9 @@ ggplot(as.data.frame(df_known),
   geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, box.padding = 0.1, 
                   show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Example SVGs: mouseHPC") + 
-  theme_bw()
+  ggtitle("Selected SVGs: mouseHPC") + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(face = "italic"))
 
 fn <- file.path(dir_plots, "example_SVGs_ranks_mouseHPC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 4.5, height = 4)
@@ -126,11 +129,12 @@ ggplot(as.data.frame(df_nnSVG),
   geom_point(data = filter(df_nnSVG, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_nnSVG, gene_name %in% known_genes), 
-                  nudge_x = 700, nudge_y = 600, size = 3, color = "firebrick3") + 
+                  nudge_x = 700, nudge_y = 600, size = 3, 
+                  color = "firebrick3", fontface = "italic") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 2800, y = 4000, size = 3, color = "darkorange2") + 
+           x = 3000, y = 4000, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: mouseHPC") + 
   theme_bw()
@@ -167,11 +171,12 @@ ggplot(as.data.frame(df_SPARKX),
   geom_point(data = filter(df_SPARKX, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_SPARKX, gene_name %in% known_genes), 
-                  nudge_x = 700, nudge_y = 15, size = 3, color = "firebrick3") + 
+                  nudge_x = 700, nudge_y = 15, size = 3, 
+                  color = "firebrick3", fontface = "italic") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 3700, y = 120, size = 3, color = "darkorange2") + 
+           x = 4000, y = 120, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouseHPC") + 
   theme_bw()
@@ -202,7 +207,8 @@ ggplot(df_effect,
   scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
     data = df_effect %>% filter(is_known), 
-    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.4, nudge_y = 0.15) + 
+    aes(label = gene_name), color = "red", size = 3, fontface = "italic", 
+    nudge_x = 0.4, nudge_y = 0.15) + 
   ylim(c(0, 1)) + 
   labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
@@ -263,7 +269,8 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
   xlim(c(0, 1)) + 
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
   geom_text_repel(data = ann_text, aes(x = x, y = y, label = label), 
-                  nudge_x = 0.15, nudge_y = 2, color = "red", size = 3) + 
+                  color = "red", size = 3, fontface = "italic", 
+                  nudge_x = 0.15, nudge_y = 3) + 
   xlab("estimated length scale") + 
   ylab("density") + 
   ggtitle("nnSVG length scales: mouseHPC") + 

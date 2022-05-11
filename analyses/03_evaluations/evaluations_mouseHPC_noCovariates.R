@@ -76,8 +76,11 @@ df_known <-
   pivot_longer(c("rank_nnSVG_noCovariates", "rank_SPARKX_noCovariates", "rank_HVGs", "rank_MoransI"), 
                names_to = "method", 
                values_to = "rank") %>% 
-  mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("nnSVG_noCovariates", "SPARKX_noCovariates", "HVGs", "MoransI"))) %>% 
+  mutate(method = factor(gsub("_noCovariates", " (no covariates)", 
+                              gsub("MoransI", "Moran's I", 
+                                   gsub("SPARKX", "SPARK-X", 
+                                        gsub("^rank_", "", method)))), 
+                         levels = c("nnSVG (no covariates)", "SPARK-X (no covariates)", "HVGs", "Moran's I"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -92,8 +95,9 @@ ggplot(as.data.frame(df_known),
   geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, box.padding = 0.1, 
                   show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Example SVGs: mouseHPC (no covariates)") + 
-  theme_bw()
+  ggtitle("Selected SVGs: mouseHPC (no covariates)") + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(face = "italic"))
 
 fn <- file.path(dir_plots, "example_SVGs_ranks_mouseHPC_noCovariates")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4)
@@ -127,11 +131,12 @@ ggplot(as.data.frame(df_nnSVG),
   geom_point(data = filter(df_nnSVG, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_nnSVG, gene_name %in% known_genes), 
-                  nudge_x = 500, nudge_y = 1200, size = 3, color = "firebrick3") + 
+                  nudge_x = 500, nudge_y = 1200, size = 3, 
+                  color = "firebrick3", fontface = "italic") + 
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 5000, y = 7000, size = 3, color = "darkorange2") + 
+           x = 5500, y = 7000, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: mouseHPC") + 
   theme_bw()
@@ -168,11 +173,12 @@ ggplot(as.data.frame(df_SPARKX),
   geom_point(data = filter(df_SPARKX, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_SPARKX, gene_name %in% known_genes), 
-                  nudge_x = 700, nudge_y = 20, size = 3, color = "firebrick3") + 
+                  nudge_x = 700, nudge_y = 20, size = 3, 
+                  color = "firebrick3", fontface = "italic") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 6500, y = 170, size = 3, color = "darkorange2") + 
+           x = 7000, y = 170, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouseHPC") + 
   theme_bw()
@@ -203,7 +209,8 @@ ggplot(df_effect,
   scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
     data = df_effect %>% filter(is_known), 
-    aes(label = gene_name), color = "red", size = 3, nudge_x = 0.4, nudge_y = 0.25) + 
+    aes(label = gene_name), color = "red", size = 3, fontface = "italic", 
+    nudge_x = 0.4, nudge_y = 0.25) + 
   ylim(c(0, 1)) + 
   labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
@@ -264,7 +271,8 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG_noCovariates)) +
   xlim(c(0, 1)) + 
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
   geom_text_repel(data = ann_text, aes(x = x, y = y, label = label), 
-                  nudge_x = 0.13, nudge_y = 3, color = "red", size = 3) + 
+                  color = "red", size = 3, fontface = "italic", 
+                  nudge_x = 0.13, nudge_y = 3) + 
   xlab("estimated length scale") + 
   ylab("density") + 
   ggtitle("nnSVG length scales: mouseHPC") + 

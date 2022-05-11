@@ -75,8 +75,10 @@ df_known <-
   pivot_longer(c("rank_nnSVG", "rank_SPARKX", "rank_HVGs", "rank_MoransI"), 
                names_to = "method", 
                values_to = "rank") %>% 
-  mutate(method = factor(gsub("^rank_", "", method), 
-                         levels = c("nnSVG", "SPARKX", "HVGs", "MoransI"))) %>% 
+  mutate(method = factor(gsub("MoransI", "Moran's I", 
+                              gsub("SPARKX", "SPARK-X", 
+                                   gsub("^rank_", "", method))), 
+                         levels = c("nnSVG", "SPARK-X", "HVGs", "Moran's I"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes))
 
 
@@ -91,8 +93,9 @@ ggplot(as.data.frame(df_known),
   geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, box.padding = 0.1, 
                   show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Example SVGs: mouseHPC") + 
-  theme_bw()
+  ggtitle("Selected SVGs: mouseHPC") + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(face = "italic"))
 
 fn <- file.path(dir_plots, "example_SVGs_ranks_mouseHPC_noFilt")
 ggsave(paste0(fn, ".pdf"), width = 4.5, height = 4)
@@ -126,11 +129,12 @@ ggplot(as.data.frame(df_SPARKX),
   geom_point(data = filter(df_SPARKX, gene_name %in% known_genes), 
              size = 2, color = "firebrick3") + 
   geom_text_repel(data = filter(df_SPARKX, gene_name %in% known_genes), 
-                  nudge_x = 1800, nudge_y = 12, size = 3, color = "firebrick3") + 
+                  nudge_x = 1800, nudge_y = 12, size = 3, 
+                  color = "firebrick3", fontface = "italic") + 
   geom_vline(xintercept = padj_cutoff_SPARKX, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
-           x = 5500, y = 120, size = 3, color = "darkorange2") + 
+           x = 7000, y = 120, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
   ggtitle("SPARK-X: mouseHPC") + 
   theme_bw()
