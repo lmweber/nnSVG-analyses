@@ -84,11 +84,11 @@ df_true <- data.frame(
   type = "expected"
 )
 
-pal <- c("blue", "red")
+pal <- c("black", "red")
 
 ggplot() + 
-  geom_point(data = df_fpr, aes(x = cutoff, y = proportion, color = type), 
-             size = 2.5) + 
+  geom_point(data = df_fpr, aes(x = cutoff, y = proportion), 
+             color = "red", size = 2.5) + 
   geom_line(data = df_fpr, aes(x = cutoff, y = proportion, color = type), 
             linetype = "solid") + 
   geom_line(data = df_true, aes(x = cutoff, y = proportion, color = type), 
