@@ -349,14 +349,14 @@ cor_SPARKX_MoransI <- cor(df_ranks_SPARKX_MoransI$rank_SPARKX,
 
 
 ann_text_nnSVG <- data.frame(
-  x = 300, 
+  x = 275, 
   y = 25, 
   label = paste0("cor = ", c(round(cor_nnSVG_HVGs, 2), round(cor_nnSVG_MoransI, 2))), 
   baseline = factor(c("HVGs", "Moran's I"), levels = c("HVGs", "Moran's I"))
 )
 
 ann_text_SPARKX <- data.frame(
-  x = 300, 
+  x = 275, 
   y = 25, 
   label = paste0("cor = ", c(round(cor_SPARKX_HVGs, 2), round(cor_SPARKX_MoransI, 2))), 
   baseline = factor(c("HVGs", "Moran's I"), levels = c("HVGs", "Moran's I"))
