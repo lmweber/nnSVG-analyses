@@ -96,7 +96,7 @@ ggplot(as.data.frame(df_known),
   annotate("text", label = "large length scale", x = 2, y = 35000, size = 4) + 
   annotate("text", label = "small length scale", x = 5, y = 35000, size = 4) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Selected SVGs: human DLPFC") + 
+  ggtitle("Selected SVGs: human DLPFC (no filtering)") + 
   theme_bw() + 
   theme(axis.text.x = element_text(face = "italic"))
 
@@ -179,7 +179,7 @@ ggplot(as.data.frame(df_SPARKX),
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
            x = 15000, y = 250, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
-  ggtitle("SPARK-X: human DLPFC") + 
+  ggtitle("SPARK-X: human DLPFC (no filtering)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_humanDLPFC_noFilt")
@@ -245,7 +245,7 @@ ggplot(as.data.frame(df_overlaps),
   ylim(c(0, 1)) + 
   xlab("top n genes") + 
   ylab("proportion overlap") + 
-  ggtitle("Overlap SVGs and HVGs: human DLPFC") + 
+  ggtitle("Overlap SVGs and HVGs: human DLPFC (no filtering)") + 
   theme_bw() + 
   theme(panel.grid.minor = element_blank())
 
@@ -325,7 +325,7 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   ylim(c(0, 1000)) + 
   xlab("rank baseline") + 
   ylab("rank SPARK-X") + 
-  ggtitle("Ranks SPARK-X vs. baselines: human DLPFC") + 
+  ggtitle("Ranks SPARK-X vs. baselines: human DLPFC (no filt.)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "ranks_SPARKX_humanDLPFC_noFilt")
@@ -345,7 +345,8 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
   ylim(c(0, 10500)) + 
   labs(x = "p-values", 
        y = "frequency") + 
-  ggtitle("nnSVG p-values: human DLPFC") + 
+  ggtitle("nnSVG p-values: human DLPFC", 
+          subtitle = "no filtering") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_humanDLPFC_noFilt")

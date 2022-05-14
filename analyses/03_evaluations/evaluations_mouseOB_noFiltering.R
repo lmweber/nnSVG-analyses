@@ -93,7 +93,7 @@ ggplot(as.data.frame(df_known),
   geom_text_repel(nudge_x = 0.35, size = 2, segment.color = NA, box.padding = 0.1, 
                   show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Selected SVGs: mouseOB") + 
+  ggtitle("Selected SVGs: mouseOB (no filtering)") + 
   theme_bw() + 
   theme(axis.text.x = element_text(face = "italic"))
 
@@ -133,7 +133,7 @@ ggplot(as.data.frame(df_SPARKX),
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
            x = 5500, y = 11, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
-  ggtitle("SPARK-X: mouse OB") + 
+  ggtitle("SPARK-X: mouse OB (no filtering)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_mouseOB_noFilt")
@@ -199,7 +199,7 @@ ggplot(as.data.frame(df_overlaps),
   ylim(c(0, 1)) + 
   xlab("top n genes") + 
   ylab("proportion overlap") + 
-  ggtitle("Overlap SVGs and HVGs: mouse OB") + 
+  ggtitle("Overlap SVGs and HVGs: mouse OB (no filtering)") + 
   theme_bw() + 
   theme(panel.grid.minor = element_blank())
 
@@ -270,7 +270,7 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   ylim(c(0, 1000)) + 
   xlab("rank baseline") + 
   ylab("rank SPARK-X") + 
-  ggtitle("Ranks SPARK-X vs. baselines: mouse OB") + 
+  ggtitle("Ranks SPARK-X vs. baselines: mouse OB (no filtering)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "ranks_SPARKX_mouseOB_noFilt")
@@ -290,7 +290,8 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
   ylim(c(0, 8500)) + 
   labs(x = "p-values", 
        y = "frequency") + 
-  ggtitle("nnSVG p-values: mouse OB") + 
+  ggtitle("nnSVG p-values: mouse OB", 
+          subtitle = "no filtering") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_mouseOB_noFilt")

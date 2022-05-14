@@ -138,7 +138,7 @@ ggplot(as.data.frame(df_nnSVG),
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
            x = 5500, y = 7000, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
-  ggtitle("nnSVG: mouseHPC") + 
+  ggtitle("nnSVG: mouseHPC (no covariates)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_nnSVG_mouseHPC_noCovariates")
@@ -180,7 +180,7 @@ ggplot(as.data.frame(df_SPARKX),
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
            x = 7000, y = 170, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
-  ggtitle("SPARK-X: mouseHPC") + 
+  ggtitle("SPARK-X: mouseHPC (no covariates)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_mouseHPC_noCovariates")
@@ -215,7 +215,7 @@ ggplot(df_effect,
   labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
        color = "LR statistic") + 
-  ggtitle("nnSVG: mouse HPC") + 
+  ggtitle("nnSVG: mouse HPC (no covariates)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "effect_size_nnSVG_mouseHPC_noCovariates")
@@ -235,7 +235,8 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG_noCovariates)) +
   ylim(c(0, 13750)) + 
   labs(x = "p-values", 
        y = "frequency") + 
-  ggtitle("nnSVG p-values: mouse HPC") + 
+  ggtitle("nnSVG p-values: mouse HPC", 
+          subtitle = "no covariates") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_mouseHPC_noCovariates")
@@ -275,7 +276,7 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG_noCovariates)) +
                   nudge_x = 0.13, nudge_y = 3) + 
   xlab("estimated length scale") + 
   ylab("density") + 
-  ggtitle("nnSVG length scales: mouseHPC") + 
+  ggtitle("nnSVG length scales: mouseHPC (no covariates)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "lengthscales_nnSVG_mouseHPC_noCovariates")

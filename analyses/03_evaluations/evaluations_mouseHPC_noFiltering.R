@@ -93,7 +93,7 @@ ggplot(as.data.frame(df_known),
   geom_text_repel(nudge_x = 0.2, size = 2, segment.color = NA, box.padding = 0.1, 
                   show.legend = FALSE) + 
   labs(x = "gene", y = "rank") + 
-  ggtitle("Selected SVGs: mouseHPC") + 
+  ggtitle("Selected SVGs: mouseHPC (no filtering)") + 
   theme_bw() + 
   theme(axis.text.x = element_text(face = "italic"))
 
@@ -136,7 +136,7 @@ ggplot(as.data.frame(df_SPARKX),
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_SPARKX, ")"), 
            x = 7000, y = 120, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "-log10(combined p-value)") + 
-  ggtitle("SPARK-X: mouseHPC") + 
+  ggtitle("SPARK-X: mouseHPC (no filtering)") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "stat_vs_rank_SPARKX_mouseHPC_noFilt")
@@ -156,7 +156,8 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
   ylim(c(0, 13750)) + 
   labs(x = "p-values", 
        y = "frequency") + 
-  ggtitle("nnSVG p-values: mouse HPC") + 
+  ggtitle("nnSVG p-values: mouse HPC", 
+          subtitle = "no filtering") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_mouseHPC_noFilt")
