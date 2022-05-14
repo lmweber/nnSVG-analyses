@@ -103,6 +103,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
             color = "black", alpha = 0.5) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
+  scale_linetype_manual(values = "dashed") + 
   ylim(c(0, 4.5)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
@@ -150,6 +151,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
             color = "black", alpha = 0.5) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
+  scale_linetype_manual(values = "dashed") + 
   ylim(c(0, 100)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
