@@ -240,8 +240,8 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG_noCovariates)) +
   theme_bw()
 
 fn <- file.path(dir_plots, "pvals_nnSVG_mouseHPC_noCovariates")
-ggsave(paste0(fn, ".pdf"), width = 4, height = 3.25)
-ggsave(paste0(fn, ".png"), width = 4, height = 3.25)
+ggsave(paste0(fn, ".pdf"), width = 4, height = 3.5)
+ggsave(paste0(fn, ".png"), width = 4, height = 3.5)
 
 
 # --------------------------------------
