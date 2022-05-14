@@ -491,7 +491,7 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   ylim(c(0, 1000)) + 
   xlab("rank baseline") + 
   ylab("rank SPARK-X") + 
-  ggtitle("Ranks SPARKX vs. baselines: human DLPFC") + 
+  ggtitle("Ranks SPARK-X vs. baselines: human DLPFC") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "ranks_SPARKX_humanDLPFC_withFilt")

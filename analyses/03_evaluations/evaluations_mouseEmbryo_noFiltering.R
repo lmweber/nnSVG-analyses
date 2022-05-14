@@ -399,7 +399,7 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   ylim(c(0, 351)) + 
   xlab("rank baseline") + 
   ylab("rank SPARK-X") + 
-  ggtitle("Ranks SPARKX vs. baselines: mouse embryo") + 
+  ggtitle("Ranks SPARK-X vs. baselines: mouse embryo") + 
   theme_bw()
 
 fn <- file.path(dir_plots, "ranks_SPARKX_mouseEmbryo_noFilt")
