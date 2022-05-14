@@ -72,6 +72,8 @@ df_known_humanDLPFC <-
   pivot_longer(c("rank_HVGs", "rank_deviance"), 
                names_to = "method", 
                values_to = "rank") %>% 
+  mutate(method = factor(gsub("^rank_", "", method), 
+                         levels = c("HVGs", "deviance"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes_humanDLPFC))
 
 df_known_mouseHPC <- 
@@ -82,6 +84,8 @@ df_known_mouseHPC <-
   pivot_longer(c("rank_HVGs", "rank_deviance"), 
                names_to = "method", 
                values_to = "rank") %>% 
+  mutate(method = factor(gsub("^rank_", "", method), 
+                         levels = c("HVGs", "deviance"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes_mouseHPC))
 
 df_known_mouseOB <- 
@@ -92,6 +96,8 @@ df_known_mouseOB <-
   pivot_longer(c("rank_HVGs", "rank_deviance"), 
                names_to = "method", 
                values_to = "rank") %>% 
+  mutate(method = factor(gsub("^rank_", "", method), 
+                         levels = c("HVGs", "deviance"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes_mouseOB))
 
 df_known_mouseEmbryo <- 
@@ -102,6 +108,8 @@ df_known_mouseEmbryo <-
   pivot_longer(c("rank_HVGs", "rank_deviance"), 
                names_to = "method", 
                values_to = "rank") %>% 
+  mutate(method = factor(gsub("^rank_", "", method), 
+                         levels = c("HVGs", "deviance"))) %>% 
   mutate(gene_name = factor(gene_name, levels = known_genes_mouseEmbryo))
 
 
