@@ -127,12 +127,12 @@ ggplot(as.data.frame(df_known_humanDLPFC),
   geom_point(stroke = 1.25, size = 1.5) + 
   scale_shape_manual(values = c(4, 4)) + 
   scale_color_manual(values = c("blue3", "green4")) + 
-  scale_y_log10(limits = c(3, 650)) + 
+  scale_y_log10(limits = c(3, 750)) + 
   geom_vline(xintercept = 3.5, linetype = "dashed", color = "gray50") + 
   geom_text_repel(nudge_x = 0.35, size = 2, segment.color = NA, box.padding = 0.1, 
                   show.legend = FALSE) + 
-  annotate("text", label = "large length scale", x = 2, y = 650, size = 4) + 
-  annotate("text", label = "small length scale", x = 5, y = 650, size = 4) + 
+  annotate("text", label = "large length scale", x = 2, y = 750, size = 4) + 
+  annotate("text", label = "small length scale", x = 5, y = 750, size = 4) + 
   labs(x = "gene", y = "rank") + 
   ggtitle("Selected SVGs: human DLPFC") + 
   theme_bw() + 
