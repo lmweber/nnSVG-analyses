@@ -107,7 +107,7 @@ ggplot(df_effect,
   scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
     data = df_effect %>% filter(is_known), 
-    aes(label = gene_name), nudge_x = -0.1, nudge_y = 0.3, 
+    aes(label = gene_name), nudge_y = 0.5, 
     color = "red", size = 3, fontface = "italic") + 
   labs(x = "mean logcounts", 
        y = "variance", 
@@ -130,7 +130,7 @@ ggplot(df_effect,
   scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
     data = df_effect %>% filter(is_known), 
-    aes(label = gene_name), nudge_x = -0.1, nudge_y = 0.3, 
+    aes(label = gene_name), nudge_y = 0.3, 
     color = "red", size = 3, fontface = "italic") + 
   labs(x = "mean logcounts", 
        y = "spatial variance (sigma^2)", 
@@ -153,7 +153,7 @@ ggplot(df_effect,
   scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
     data = df_effect %>% filter(is_known), 
-    aes(label = gene_name), nudge_x = -0.1, nudge_y = 0.075, 
+    aes(label = gene_name), nudge_y = 0.075, 
     color = "red", size = 3, fontface = "italic") + 
   labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
@@ -176,7 +176,7 @@ ggplot(df_adj_effect,
   scale_shape_manual(values = 1, name = "known") + 
   geom_text_repel(
     data = df_adj_effect %>% filter(is_known), 
-    aes(label = gene_name), nudge_x = 0, nudge_y = 1000, 
+    aes(label = gene_name), nudge_y = 1000, 
     color = "red", size = 3, fontface = "italic") + 
   labs(x = "mean logcounts", 
        y = "adjusted effect size", 
