@@ -17,7 +17,7 @@ library(viridis)
 
 
 # directory to save plots
-dir_plots <- here(file.path("plots", "deviance_residuals"))
+dir_plots <- here(file.path("plots", "deviance_baseline"))
 
 
 # ------------
