@@ -1,6 +1,6 @@
 ###################################
 # Script to run preprocessing steps
-# Lukas Weber, Mar 2022
+# Lukas Weber, Jan 2023
 ###################################
 
 # dataset: Visium human DLPFC
@@ -81,9 +81,8 @@ assayNames(spe)
 
 
 # calculate log-transformed normalized counts using scran package
-set.seed(123)
-qclus <- quickCluster(spe)
-spe <- computeSumFactors(spe, cluster = qclus)
+# using library size normalization
+spe <- computeLibraryFactors(spe)
 spe <- logNormCounts(spe)
 
 assayNames(spe)
