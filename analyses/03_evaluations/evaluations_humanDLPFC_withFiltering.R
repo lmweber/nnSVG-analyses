@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, May 2022
+# Lukas Weber, Jan 2023
 #################################
 
 # data set: human DLPFC
@@ -181,7 +181,7 @@ ggplot(as.data.frame(df_nnSVG),
   geom_vline(xintercept = padj_cutoff_nnSVG, 
              linetype = "dashed", color = "darkorange2") + 
   annotate("text", label = paste0("adjusted p-value = 0.05\n(rank ", padj_cutoff_nnSVG, ")"), 
-           x = 2800, y = 5000, size = 3.5, color = "darkorange2") + 
+           x = 2900, y = 5000, size = 3.5, color = "darkorange2") + 
   labs(x = "rank", y = "likelihood ratio statistic") + 
   ggtitle("nnSVG: human DLPFC") + 
   theme_bw()
@@ -272,7 +272,7 @@ ggplot(df_effect,
   geom_text_repel(
     data = df_effect %>% filter(is_known), 
     aes(label = gene_name), color = "red", size = 3, fontface = "italic", 
-    nudge_x = 0.4, nudge_y = 0.05) + 
+    nudge_x = 0.45, nudge_y = 0.055) + 
   ylim(c(0, 1)) + 
   labs(x = "mean logcounts", 
        y = "proportion spatial variance", 
@@ -537,7 +537,7 @@ ls_known
 
 ann_text <- data.frame(
   x = unname(ls_known), 
-  y =  c(0.075, 2, 0.95, 6.25, 5.75, 5.7), 
+  y =  c(0.1, 2, 0.8, 5.95, 5.6, 5.25), 
   label = paste0(names(ls_known), " = ", format(round(ls_known, 3), nsmall = 3))
 )
 
@@ -548,7 +548,7 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
   geom_point(data = ann_text, aes(x = x, y = y), color = "red", size = 2) + 
   geom_text_repel(data = ann_text, aes(x = x, y = y, label = label), 
                   color = "red", size = 3, fontface = "italic", 
-                  nudge_x = 0.16, nudge_y = 0.1) + 
+                  nudge_x = c(0.05, rep(0.15, 5)), nudge_y = c(0.4, rep(0.1, 5))) + 
   xlab("estimated length scale") + 
   ylab("density") + 
   ggtitle("nnSVG length scales: human DLPFC") + 
