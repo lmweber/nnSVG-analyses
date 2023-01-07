@@ -1,6 +1,6 @@
 #####################################################
 # Script to plot runtimes for scalability simulations
-# Lukas Weber, May 2022
+# Lukas Weber, Jan 2023
 #####################################################
 
 
@@ -104,7 +104,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
   scale_linetype_manual(values = "dashed") + 
-  ylim(c(0, 4.5)) + 
+  ylim(c(0, 7.5)) + 
   labs(x = "number of spots", 
        y = "runtime (sec)") + 
   ggtitle("Scalability: nnSVG, single gene") + 

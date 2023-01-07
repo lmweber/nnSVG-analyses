@@ -1,6 +1,6 @@
 ###################################################
 # Script to calculate evaluations: null simulations
-# Lukas Weber, May 2022
+# Lukas Weber, Jan 2023
 ###################################################
 
 # data set: human DLPFC
