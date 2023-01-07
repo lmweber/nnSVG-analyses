@@ -11,11 +11,12 @@ library(SpatialExperiment)
 library(here)
 library(scater)
 library(scran)
+library(mclust)
 library(ggplot2)
 
 
 # directory to save plots
-dir_plots <- here(file.path("plots", "clustering_comparison"))
+dir_plots <- here(file.path("plots", "downstream_clustering"))
 
 
 # ------------
@@ -27,14 +28,14 @@ dir_plots <- here(file.path("plots", "clustering_comparison"))
 # note choice of filtering per method
 spe_list <- list(
   humanDLPFC_nnSVG = readRDS(here("outputs", "results", "spe_humanDLPFC_nnSVG.rds")), 
-  humanDLPFC_SPARKX = readRDS(here("outputs", "results", "spe_humanDLPFC_SPARKX.rds")), 
+  humanDLPFC_SPARKX = readRDS(here("outputs", "results", "spe_humanDLPFC_SPARKX_noFilt.rds")), 
   humanDLPFC_HVGs = readRDS(here("outputs", "results", "spe_humanDLPFC_HVGs_noFilt.rds")), 
   humanDLPFC_MoransI = readRDS(here("outputs", "results", "spe_humanDLPFC_MoransI_noFilt.rds"))
 )
 
 res_list <- list(
   humanDLPFC_nnSVG = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_nnSVG.rds"))), 
-  humanDLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_SPARKX.rds"))), 
+  humanDLPFC_SPARKX = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_SPARKX_noFilt.rds"))), 
   humanDLPFC_HVGs = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_HVGs_noFilt.rds"))), 
   humanDLPFC_MoransI = rowData(readRDS(here("outputs", "results", "spe_humanDLPFC_MoransI_noFilt.rds")))
 )
@@ -46,10 +47,9 @@ colnames(res_list[["humanDLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["hu
 colnames(res_list[["humanDLPFC_MoransI"]])[-(1:2)] <- paste0(colnames(res_list[["humanDLPFC_MoransI"]]), "_MoransI")[-(1:2)]
 
 
-# note filtering per method: same for both nnSVG and SPARK-X
+# note filtering per method
 
 table(res_list$humanDLPFC_SPARKX$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
-all(res_list$humanDLPFC_nnSVG$gene_id == res_list$humanDLPFC_SPARKX$gene_id)
 
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_SPARKX$gene_id)
@@ -75,6 +75,8 @@ spe <- spe_list$humanDLPFC_nnSVG
 
 # dimensionality reduction
 
+# note: selected random seeds to get equal number of clusters per method
+
 # compute PCA
 set.seed(123)
 spe <- runPCA(spe, subset_row = top)
@@ -88,14 +90,13 @@ colnames(reducedDim(spe, "UMAP")) <- paste0("UMAP", 1:2)
 
 # graph-based clustering
 set.seed(123)
-# note: selected k and random seeds to get equal number of clusters per method
-g <- buildSNNGraph(spe, k = 5, use.dimred = "PCA")
+g <- buildSNNGraph(spe, k = 10, use.dimred = "PCA")
 g_walk <- igraph::cluster_walktrap(g)
 clus <- g_walk$membership
 colLabels(spe) <- factor(clus)
 
 
-# store object for plotting
+# store object
 spe_out$spe_nnSVG <- spe
 
 
@@ -113,8 +114,10 @@ spe <- spe_list$humanDLPFC_SPARKX
 
 # dimensionality reduction
 
+# note: selected random seeds to get equal number of clusters per method
+
 # compute PCA
-set.seed(123)
+set.seed(123456)
 spe <- runPCA(spe, subset_row = top)
 # compute UMAP on top 50 PCs
 set.seed(123)
@@ -126,14 +129,13 @@ colnames(reducedDim(spe, "UMAP")) <- paste0("UMAP", 1:2)
 
 # graph-based clustering
 set.seed(123)
-# note: selected k and random seeds to get equal number of clusters per method
 g <- buildSNNGraph(spe, k = 10, use.dimred = "PCA")
 g_walk <- igraph::cluster_walktrap(g)
 clus <- g_walk$membership
 colLabels(spe) <- factor(clus)
 
 
-# store object for plotting
+# store object
 spe_out$spe_SPARKX <- spe
 
 
@@ -151,8 +153,10 @@ spe <- spe_list$humanDLPFC_HVGs
 
 # dimensionality reduction
 
+# note: selected random seeds to get equal number of clusters per method
+
 # compute PCA
-set.seed(12345)
+set.seed(2)
 spe <- runPCA(spe, subset_row = top)
 # compute UMAP on top 50 PCs
 set.seed(123)
@@ -164,14 +168,13 @@ colnames(reducedDim(spe, "UMAP")) <- paste0("UMAP", 1:2)
 
 # graph-based clustering
 set.seed(123)
-# note: selected k and random seeds to get equal number of clusters per method
-g <- buildSNNGraph(spe, k = 4, use.dimred = "PCA")
+g <- buildSNNGraph(spe, k = 10, use.dimred = "PCA")
 g_walk <- igraph::cluster_walktrap(g)
 clus <- g_walk$membership
 colLabels(spe) <- factor(clus)
 
 
-# store object for plotting
+# store object
 spe_out$spe_HVGs <- spe
 
 
@@ -189,8 +192,10 @@ spe <- spe_list$humanDLPFC_MoransI
 
 # dimensionality reduction
 
+# note: selected random seeds to get equal number of clusters per method
+
 # compute PCA
-set.seed(1)
+set.seed(1234567)
 spe <- runPCA(spe, subset_row = top)
 # compute UMAP on top 50 PCs
 set.seed(123)
@@ -202,29 +207,44 @@ colnames(reducedDim(spe, "UMAP")) <- paste0("UMAP", 1:2)
 
 # graph-based clustering
 set.seed(123)
-# note: selected k and random seeds to get equal number of clusters per method
 g <- buildSNNGraph(spe, k = 10, use.dimred = "PCA")
 g_walk <- igraph::cluster_walktrap(g)
 clus <- g_walk$membership
 colLabels(spe) <- factor(clus)
 
 
-# store object for plotting
+# store object
 spe_out$spe_MoransI <- spe
 
 
-# ---------------------
-# evaluations and plots
-# ---------------------
+# --------------
+# match clusters
+# --------------
 
+# LIBD layer colors palette
+pal <- c("#F0027F", "#377EB8", "#4DAF4A", "#984EA3", "#FFD700", "#FF7F00", "#1A1A1A", "#666666")
+
+# match clusters to ground truth layers for each method
+
+colData(spe_out$spe_nnSVG)$label <- factor(
+  colData(spe_out$spe_nnSVG)$label, levels = c(5, 8, 1, 7, 2, 6, 3, 4))
+colData(spe_out$spe_SPARKX)$label <- factor(
+  colData(spe_out$spe_SPARKX)$label, levels = c(1, 6, 2, 8, 3, 4, 7, 5))
+colData(spe_out$spe_HVGs)$label <- factor(
+  colData(spe_out$spe_HVGs)$label, levels = c(1, 8, 2, 4, 3, 6, 7, 5))
+colData(spe_out$spe_MoransI)$label <- factor(
+  colData(spe_out$spe_MoransI)$label, levels = c(5, 2, 8, 3, 4, 7, 1, 6))
+
+
+# ----------
+# spot plots
+# ----------
 
 ### to do: combined plot showing spot plots
 ### to do: calculate adjusted Rand index and plot summary
 
-pal <- unname(palette.colors(12, "Polychrome 36"))
-
 plotSpots(spe_out$spe_nnSVG, annotate = "label", palette = pal)
-plotSpots(spe_out$spe_HVGs, annotate = "label", palette = pal)
 plotSpots(spe_out$spe_SPARKX, annotate = "label", palette = pal)
+plotSpots(spe_out$spe_HVGs, annotate = "label", palette = pal)
 plotSpots(spe_out$spe_MoransI, annotate = "label", palette = pal)
 
