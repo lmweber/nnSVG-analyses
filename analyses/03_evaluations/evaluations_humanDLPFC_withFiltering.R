@@ -505,13 +505,13 @@ ggsave(paste0(fn, ".pdf"), width = 5.25, height = 2.75)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 2.75)
 
 
-# plot comparisons of ranks with length scales
+# plot comparisons of ranks with length scales (small length scales)
 
 # nnSVG
 # seed for placement of text labels
 set.seed(1)
 ggplot(as.data.frame(df_ranks_nnSVG), 
-       aes(x = rank_baseline, y = rank_nnSVG, color = lengthscale <= 0.1)) + 
+       aes(x = rank_baseline, y = rank_nnSVG, color = lengthscale < 0.15)) + 
   facet_wrap(~ baseline) + 
   geom_point(size = 0.75) + 
   geom_text(data = ann_text_nnSVG, aes(x = x, y = y, label = label), 
@@ -529,9 +529,38 @@ ggplot(as.data.frame(df_ranks_nnSVG),
   ggtitle("Ranks nnSVG vs. baselines: human DLPFC") + 
   theme_bw()
 
-fn <- file.path(dir_plots, "ranks_withLengthscale_nnSVG_humanDLPFC_withFilt")
+fn <- file.path(dir_plots, "ranks_withLengthscaleSmall_nnSVG_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.75, height = 2.75)
 ggsave(paste0(fn, ".png"), width = 5.75, height = 2.75)
+
+
+# plot comparisons of ranks with length scales (large length scales)
+
+# nnSVG
+# seed for placement of text labels
+set.seed(1)
+ggplot(as.data.frame(df_ranks_nnSVG), 
+       aes(x = rank_baseline, y = rank_nnSVG, color = lengthscale >= 0.15)) + 
+  facet_wrap(~ baseline) + 
+  geom_point(size = 0.75) + 
+  geom_text(data = ann_text_nnSVG, aes(x = x, y = y, label = label), 
+            size = 3.75, color = "black") + 
+  scale_color_manual(values = c("darkgoldenrod1", "royalblue")) + 
+  geom_text_repel(
+    data = df_ranks_nnSVG %>% filter(gene_name %in% known_genes), 
+    aes(label = gene_name), color = "black", size = 3.25, fontface = "italic", 
+    nudge_x = 100, nudge_y = 100, box.padding = 0.5) + 
+  coord_fixed() + 
+  xlim(c(0, 1000)) + 
+  ylim(c(0, 1000)) + 
+  xlab("rank baseline") + 
+  ylab("rank nnSVG") + 
+  ggtitle("Ranks nnSVG vs. baselines: human DLPFC") + 
+  theme_bw()
+
+fn <- file.path(dir_plots, "ranks_withLengthscaleLarge_nnSVG_humanDLPFC_withFilt")
+ggsave(paste0(fn, ".pdf"), width = 5.9, height = 2.75)
+ggsave(paste0(fn, ".png"), width = 5.9, height = 2.75)
 
 
 # plot comparisons of ranks with effect sizes
