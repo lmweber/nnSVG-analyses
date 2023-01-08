@@ -635,7 +635,9 @@ ann_text <- data.frame(
   label = paste0(names(ls_known), " = ", format(round(ls_known, 3), nsmall = 3))
 )
 
+
 # plot bandwidth l (inverse of phi, scaled to distances 0 to 1)
+
 ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) + 
   geom_density(color = "black", fill = "skyblue") + 
   xlim(c(0, 1)) + 
@@ -649,6 +651,39 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
   theme_bw()
 
 fn <- file.path(dir_plots, "lengthscales_nnSVG_humanDLPFC_withFilt")
+ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
+ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
+
+
+# boxplot of ranks for genes with very low bandwidth l
+
+threshold <- 0.01
+n_small <- sum(df_bandwidth$l_nnSVG < threshold)
+n_large <- sum(df_bandwidth$l_nnSVG >= threshold)
+levs <- paste0(c("small (n = ", "large (n = "), c(n_small, n_large), c(")", ")"))
+
+df <- df_bandwidth %>% 
+  select(c("gene_id", "gene_name", "l_nnSVG", "rank_nnSVG")) %>% 
+  mutate(small_lengthscale = 
+           factor(ifelse(l_nnSVG < threshold, levs[1], levs[2]), levels = levs))
+
+# number of genes and range of ranks
+table(df$small_lengthscale)
+summary(df$rank_nnSVG[df$small_lengthscale == levs[1]])
+
+ggplot(as.data.frame(df), aes(x = small_lengthscale, y = rank_nnSVG, 
+                              fill = small_lengthscale)) + 
+  geom_violin(width = 0.5) + 
+  geom_boxplot(width = 0.1, color = "black", alpha = 0.2, show.legend = FALSE) + 
+  scale_fill_manual(values = c("red3", "darkgoldenrod1")) + 
+  labs(x = "length scale", 
+       y = "rank", 
+       fill = "length scale") + 
+  ggtitle("nnSVG length scales: human DLPFC", 
+          subtitle = "Small (< 0.01) vs. large (>= 0.01) length scales") + 
+  theme_bw()
+
+fn <- file.path(dir_plots, "lengthscales_nnSVG_smallVsLarge_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
 ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
 
