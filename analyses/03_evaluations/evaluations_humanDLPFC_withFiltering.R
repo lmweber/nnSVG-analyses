@@ -367,9 +367,12 @@ df_ranks_nnSVG_HVGs <-
             by = c("gene_id", "gene_name")) %>% 
   mutate(rank_baseline = rank_HVGs) %>% 
   mutate(baseline = "HVGs") %>% 
+  mutate(lengthscale =  1 / phi_nnSVG) %>% 
+  mutate(effectsize = prop_sv_nnSVG) %>% 
   filter(rank_nnSVG <= 1000) %>% 
   filter(rank_baseline <= 1000) %>% 
-  select(c("gene_id", "gene_name", "rank_nnSVG", "rank_baseline", "baseline"))
+  select(c("gene_id", "gene_name", "rank_nnSVG", "rank_baseline", "baseline", 
+           "lengthscale", "effectsize"))
 
 df_ranks_nnSVG_MoransI <- 
   full_join(as.data.frame(res_list$humanDLPFC_nnSVG), 
@@ -377,9 +380,12 @@ df_ranks_nnSVG_MoransI <-
             by = c("gene_id", "gene_name")) %>% 
   mutate(rank_baseline = rank_MoransI) %>% 
   mutate(baseline = "Moran's I") %>% 
+  mutate(lengthscale =  1 / phi_nnSVG) %>% 
+  mutate(effectsize = prop_sv_nnSVG) %>% 
   filter(rank_nnSVG <= 1000) %>% 
   filter(rank_baseline <= 1000) %>% 
-  select(c("gene_id", "gene_name", "rank_nnSVG", "rank_baseline", "baseline"))
+  select(c("gene_id", "gene_name", "rank_nnSVG", "rank_baseline", "baseline", 
+           "lengthscale", "effectsize"))
 
 df_ranks_nnSVG <- full_join(df_ranks_nnSVG_HVGs, df_ranks_nnSVG_MoransI)
 
@@ -495,6 +501,65 @@ ggplot(as.data.frame(df_ranks_SPARKX),
   theme_bw()
 
 fn <- file.path(dir_plots, "ranks_SPARKX_humanDLPFC_withFilt")
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 2.75)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 2.75)
+
+
+# plot comparisons of ranks with length scales
+
+# nnSVG
+# seed for placement of text labels
+set.seed(1)
+ggplot(as.data.frame(df_ranks_nnSVG), 
+       aes(x = rank_baseline, y = rank_nnSVG, color = lengthscale <= 0.1)) + 
+  facet_wrap(~ baseline) + 
+  geom_point(size = 0.75) + 
+  geom_text(data = ann_text_nnSVG, aes(x = x, y = y, label = label), 
+            size = 3.75, color = "black") + 
+  scale_color_manual(values = c("darkgoldenrod1", "red3")) + 
+  geom_text_repel(
+    data = df_ranks_nnSVG %>% filter(gene_name %in% known_genes), 
+    aes(label = gene_name), color = "black", size = 3.25, fontface = "italic", 
+    nudge_x = 100, nudge_y = 100, box.padding = 0.5) + 
+  coord_fixed() + 
+  xlim(c(0, 1000)) + 
+  ylim(c(0, 1000)) + 
+  xlab("rank baseline") + 
+  ylab("rank nnSVG") + 
+  ggtitle("Ranks nnSVG vs. baselines: human DLPFC") + 
+  theme_bw()
+
+fn <- file.path(dir_plots, "ranks_withLengthscale_nnSVG_humanDLPFC_withFilt")
+ggsave(paste0(fn, ".pdf"), width = 5.75, height = 2.75)
+ggsave(paste0(fn, ".png"), width = 5.75, height = 2.75)
+
+
+# plot comparisons of ranks with effect sizes
+
+# nnSVG
+# seed for placement of text labels
+set.seed(1)
+ggplot(as.data.frame(df_ranks_nnSVG), 
+       aes(x = rank_baseline, y = rank_nnSVG, color = effectsize)) + 
+  facet_wrap(~ baseline) + 
+  geom_point(size = 0.75) + 
+  geom_text(data = ann_text_nnSVG, aes(x = x, y = y, label = label), 
+            size = 3.75, color = "black") + 
+  scale_color_viridis(direction = -1) + 
+  #scale_color_manual(values = c("darkgoldenrod1", "red3")) + 
+  geom_text_repel(
+    data = df_ranks_nnSVG %>% filter(gene_name %in% known_genes), 
+    aes(label = gene_name), color = "black", size = 3.25, fontface = "italic", 
+    nudge_x = 100, nudge_y = 100, box.padding = 0.5) + 
+  coord_fixed() + 
+  xlim(c(0, 1000)) + 
+  ylim(c(0, 1000)) + 
+  xlab("rank baseline") + 
+  ylab("rank nnSVG") + 
+  ggtitle("Ranks nnSVG vs. baselines: human DLPFC") + 
+  theme_bw()
+
+fn <- file.path(dir_plots, "ranks_withEffectsize_nnSVG_humanDLPFC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5.25, height = 2.75)
 ggsave(paste0(fn, ".png"), width = 5.25, height = 2.75)
 
