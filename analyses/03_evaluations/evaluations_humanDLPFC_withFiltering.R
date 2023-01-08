@@ -423,15 +423,15 @@ cor_SPARKX_MoransI <- cor(df_ranks_SPARKX_MoransI$rank_SPARKX,
 
 
 ann_text_nnSVG <- data.frame(
-  x = 800, 
-  y = 50, 
+  x = 220, 
+  y = 950, 
   label = paste0("cor = ", c(round(cor_nnSVG_HVGs, 2), round(cor_nnSVG_MoransI, 2))), 
   baseline = factor(c("HVGs", "Moran's I"), levels = c("HVGs", "Moran's I"))
 )
 
 ann_text_SPARKX <- data.frame(
-  x = 800, 
-  y = 50, 
+  x = 220, 
+  y = 950, 
   label = paste0("cor = ", c(round(cor_SPARKX_HVGs, 2), round(cor_SPARKX_MoransI, 2))), 
   baseline = factor(c("HVGs", "Moran's I"), levels = c("HVGs", "Moran's I"))
 )
@@ -453,9 +453,9 @@ ggplot(as.data.frame(df_ranks_nnSVG),
     data = df_ranks_nnSVG %>% filter(gene_name %in% known_genes), 
     color = "black", size = 1) + 
   geom_text_repel(
-    data = df_ranks_nnSVG %>% filter(gene_name %in% c("HBB", "IGKC", "NPY" )), 
+    data = df_ranks_nnSVG %>% filter(gene_name %in% known_genes), 
     aes(label = gene_name), color = "black", size = 3.25, fontface = "italic", 
-    nudge_x = 50, box.padding = 0.2) + 
+    nudge_x = 100, nudge_y = 100, box.padding = 0.5) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
@@ -483,9 +483,9 @@ ggplot(as.data.frame(df_ranks_SPARKX),
     data = df_ranks_SPARKX %>% filter(gene_name %in% known_genes), 
     color = "black", size = 1) + 
   geom_text_repel(
-    data = df_ranks_SPARKX %>% filter(gene_name %in% c("HBB", "IGKC", "NPY" )), 
+    data = df_ranks_SPARKX %>% filter(gene_name %in% known_genes), 
     aes(label = gene_name), color = "black", size = 3.25, fontface = "italic", 
-    nudge_x = 50, box.padding = 0.2) + 
+    nudge_x = 100, nudge_y = 100, box.padding = 0.5) + 
   coord_fixed() + 
   xlim(c(0, 1000)) + 
   ylim(c(0, 1000)) + 
