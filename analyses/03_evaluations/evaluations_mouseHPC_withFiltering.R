@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, May 2022
+# Lukas Weber, Feb 2023
 #################################
 
 # data set: mouse HPC
@@ -11,6 +11,7 @@ library(SpatialExperiment)
 library(here)
 library(dplyr)
 library(tidyr)
+library(tibble)
 library(readr)
 library(ggplot2)
 library(ggrepel)
@@ -279,4 +280,72 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
 fn <- file.path(dir_plots, "lengthscales_nnSVG_mouseHPC_withFilt")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
 ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
+
+
+# ---------------------------
+# extended list of known SVGs
+# ---------------------------
+
+# extended list of known SVGs in this dataset (Cable et al. 2021, Supp Table 2)
+
+fn_extended <- here("inputs", "RCTD", "Cable2021_RCTD_SuppTable2.csv")
+tbl_extended <- read_csv(fn_extended)
+
+extended_genes <- as.data.frame(na.omit(tbl_extended[, 1]))[, 1]
+
+# number of genes in extended list: 74
+length(extended_genes)
+
+df_extended <- 
+  full_join(as.data.frame(res_list$mouseHPC_nnSVG), 
+            as.data.frame(res_list$mouseHPC_SPARKX), 
+            by = c("gene_name")) %>% 
+  full_join(., 
+            as.data.frame(res_list$mouseHPC_HVGs), 
+            by = c("gene_name")) %>% 
+  full_join(., 
+            as.data.frame(res_list$mouseHPC_MoransI), 
+            by = c("gene_name")) %>% 
+  filter(gene_name %in% extended_genes)
+
+# top-ranked gene from nnSVG: Crym (rank 30)
+df_extended[which.min(df_extended$rank_nnSVG), ]
+# worst-ranked gene from nnSVG: Add2 (rank 8801)
+df_extended[which.max(df_extended$rank_nnSVG), ]
+
+# number of these genes identified within top 1000 SVGs for each method
+tbl_withinTop1000 <- t(rbind(
+  nnSVG = table(df_extended$rank_nnSVG <= 1000, useNA = "always"), 
+  SPARKX = table(df_extended$rank_SPARKX <= 1000, useNA = "always"), 
+  HVGs = table(df_extended$rank_HVGs <= 1000, useNA = "always"), 
+  MoransI = table(df_extended$rank_MoransI <= 1000, useNA = "always")))
+
+df_withinTop1000 <- as.data.frame(t(data.frame(
+  yes = tbl_withinTop1000["TRUE", ], 
+  no = colSums(tbl_withinTop1000[-which(rownames(tbl_withinTop1000) == "TRUE"), ])))) %>% 
+  rownames_to_column("identified") %>% 
+  mutate(identified = factor(identified)) %>% 
+  pivot_longer(!identified, names_to = "method", values_to = "number") %>% 
+  mutate(method = factor(gsub("MoransI", "Moran's I", 
+                              gsub("SPARKX", "SPARK-X", 
+                                   gsub("^rank_", "", method))), 
+                         levels = c("nnSVG", "SPARK-X", "HVGs", "Moran's I")))
+
+
+# stacked barplot showing how many genes identified within top 1000 SVGs for each method
+ggplot(as.data.frame(df_withinTop1000), 
+       aes(x = method, y = number, fill = method, color = method, alpha = identified)) + 
+  geom_bar(position = "stack", stat = "identity") + 
+  scale_fill_manual(values = c("blue3", "deepskyblue2", "darkorange", "firebrick3")) + 
+  scale_color_manual(values = c("blue3", "deepskyblue2", "darkorange", "firebrick3")) + 
+  scale_alpha_discrete(range = c(0.2, 1)) + 
+  ylab("number of genes") + 
+  ggtitle("Extended list of SVGs: mouseHPC") + 
+  theme_bw() + 
+  theme(axis.title.x = element_blank(), 
+        panel.grid = element_blank())
+
+fn <- file.path(dir_plots, "extended_SVGs_identifiedByMethod")
+ggsave(paste0(fn, ".pdf"), width = 4.5, height = 3.5)
+ggsave(paste0(fn, ".png"), width = 4.5, height = 3.5)
 
