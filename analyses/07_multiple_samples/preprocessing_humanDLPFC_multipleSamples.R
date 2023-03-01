@@ -51,6 +51,6 @@ table(is_mito)
 # save object
 # -----------
 
-fn <- here("outputs", "preprocessed", "spe_humanDLPFC_multipleSamples_preprocessed.rds")
+fn <- here("outputs", "multiple_samples", "spe_humanDLPFC_multipleSamples_preprocessed.rds")
 saveRDS(spe, file = fn)
 
