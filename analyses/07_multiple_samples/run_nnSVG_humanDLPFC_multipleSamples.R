@@ -1,6 +1,6 @@
 #######################################
 # Multiple samples: script to run nnSVG
-# Lukas Weber, Feb 2023
+# Lukas Weber, Mar 2023
 #######################################
 
 # dataset: Visium human DLPFC (multiple samples)
