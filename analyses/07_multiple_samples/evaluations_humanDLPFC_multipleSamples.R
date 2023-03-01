@@ -142,20 +142,26 @@ ggsave(paste0(fn, ".png"), width = 4.25, height = 4.5)
 # -------------------------------
 
 # reshape correlation matrix for plotting
-melted_cormat <- melt(t(mat_cors), value.name = "cor", na.rm = TRUE)
+mat_cors_plot <- mat_cors
+diag(mat_cors_plot) <- 1
+
+melted_cormat <- melt(mat_cors_plot, value.name = "cor", na.rm = TRUE)
 melted_cormat$Var1 <- factor(melted_cormat$Var1, levels = sample_ids)
-melted_cormat$Var2 <- factor(melted_cormat$Var2, levels = rev(sample_ids))
+melted_cormat$Var2 <- factor(melted_cormat$Var2, levels = sample_ids)
 
 min_cor <- min(mat_cors, na.rm = TRUE)
 max_cor <- max(mat_cors, na.rm = TRUE)
 mid_cor <- mean(c(min_cor, max_cor))
 
 # plot correlation matrix
-ggplot(data = melted_cormat, aes(x = Var1, y = Var2, fill = cor)) + 
+ggplot(data = melted_cormat, aes(x = Var1, y = Var2, 
+                                 label = format(round(cor, digits = 2), nsmall = 2), 
+                                 fill = cor)) + 
   geom_tile(color = "white") + 
   scale_fill_gradient2(low = "gold", mid = "darkorange", high = "firebrick3", 
                        midpoint = mid_cor, limit = c(min_cor, max_cor), 
                        name = "Spearman\ncorrelation") + 
+  geom_text(color = "black", size = 2.6) + 
   coord_fixed() + 
   ggtitle("Sample-to-sample rank correlations") + 
   theme_bw() + 
