@@ -45,22 +45,6 @@ n_samples
 # gene filtering
 # --------------
 
-# filter low-expressed genes
-
-# filter out genes with extremely low expression
-# using simple threshold on total UMI counts summed across all spots
-# threshold of 10 UMI counts per sample
-
-n_umis <- 120
-ix_low_genes <- rowSums(counts(spe)) < n_umis
-table(ix_low_genes)
-
-spe <- spe[!ix_low_genes, ]
-dim(spe)
-
-
-# filter any new zeros created after filtering low-expressed genes
-
 # remove genes with zero expression
 ix_zero_genes <- rowSums(counts(spe)) == 0
 table(ix_zero_genes)
