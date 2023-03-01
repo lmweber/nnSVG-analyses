@@ -1,7 +1,7 @@
-###################################
-# Script to run preprocessing steps
+#################################
+# Multiple samples: preprocessing
 # Lukas Weber, Feb 2023
-###################################
+#################################
 
 # dataset: Visium human DLPFC (multiple samples)
 
