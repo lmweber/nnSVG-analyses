@@ -161,15 +161,14 @@ ggplot(data = melted_cormat, aes(x = Var1, y = Var2,
   scale_fill_gradient2(low = "gold", mid = "darkorange", high = "firebrick3", 
                        midpoint = mid_cor, limit = c(min_cor, max_cor), 
                        name = "Spearman\ncorrelation") + 
-  geom_text(color = "black", size = 2.6) + 
+  geom_text(color = "black", size = 2.75) + 
   coord_fixed() + 
+  labs(x = "sample", y = "sample") + 
   ggtitle("Sample-to-sample rank correlations") + 
   theme_bw() + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5), 
-        axis.title.x = element_blank(), 
-        axis.title.y = element_blank())
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 fn <- file.path(dir_plots, "ranks_heatmap_multipleSamples")
-ggsave(paste0(fn, ".pdf"), width = 5, height = 4.25)
-ggsave(paste0(fn, ".png"), width = 5, height = 4.25)
+ggsave(paste0(fn, ".pdf"), width = 5.25, height = 4.5)
+ggsave(paste0(fn, ".png"), width = 5.25, height = 4.5)
 
