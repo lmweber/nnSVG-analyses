@@ -14,6 +14,8 @@ library(scran)
 library(scater)
 library(here)
 
+dir_sims <- here("outputs", "simulations")
+
 
 # ---------
 # load data
@@ -304,8 +306,6 @@ spe_sim_smallBandwidth_lowExpr <- fn_buildSimulatedData(maskSmallBandwidth, lowE
 # -----------------------
 # save simulated datasets
 # -----------------------
-
-dir_sims <- here("outputs", "simulations")
 
 saveRDS(spe_sim_largeBandwidth_fullExpr, file.path(dir_sims, "spe_sim_largeBandwidth_fullExpr.rds"))
 saveRDS(spe_sim_largeBandwidth_medExpr, file.path(dir_sims, "spe_sim_largeBandwidth_medExpr.rds"))
