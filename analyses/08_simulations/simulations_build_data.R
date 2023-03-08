@@ -1,10 +1,10 @@
-######################################
-# Simulations: build simulated dataset
+#######################################
+# Simulations: build simulated datasets
 # Lukas Weber, Mar 2023
-######################################
+#######################################
 
-# this script builds a simulated dataset using empirical parameters from the
-# human DLPFC dataset
+# this script builds simulated datasets based on empirical parameters from the
+# Visium human DLPFC dataset
 
 
 library(SpatialExperiment)
