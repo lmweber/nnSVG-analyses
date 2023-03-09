@@ -58,7 +58,7 @@ for (s in seq_along(sim_names)) {
     n_threads = 10
   )
   
-  print(paste0("Completed simulation ", sim_names[s]))
+  print(paste0("Completed simulation: ", sim_names[s]))
   
   # store results
   res_list[[s]] <- rowData(spe)
