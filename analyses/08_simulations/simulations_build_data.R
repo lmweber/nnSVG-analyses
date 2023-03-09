@@ -109,8 +109,8 @@ mediumExpression <- 1/3 * (par_meanLogcountsExpressed - par_meanLogcountsNotExpr
 fullExpression <- 1 * par_meanLogcountsExpressed
 
 # shuffling of coordinates for ablation simulations
-propShufflePerIteration <- 0.1
-numShuffleIterations <- 10
+numShuffles <- 10
+propEachShuffle <- 0.2
 
 
 # -------------------
@@ -317,4 +317,53 @@ saveRDS(spe_sim_medBandwidth_lowExpr, file.path(dir_sims, "spe_sim_medBandwidth_
 saveRDS(spe_sim_smallBandwidth_fullExpr, file.path(dir_sims, "spe_sim_smallBandwidth_fullExpr.rds"))
 saveRDS(spe_sim_smallBandwidth_medExpr, file.path(dir_sims, "spe_sim_smallBandwidth_medExpr.rds"))
 saveRDS(spe_sim_smallBandwidth_lowExpr, file.path(dir_sims, "spe_sim_smallBandwidth_lowExpr.rds"))
+
+
+# ----------------------------------
+# create shuffled simulated datasets
+# ----------------------------------
+
+# create shuffled simulated datasets for ablation simulations
+# using "medium bandwidth, medium expression" simulation as base
+
+spe_shuffleBase <- spe_sim_medBandwidth_medExpr
+
+list_shuffles <- as.list(rep(NA, length = numShuffles + 1))
+names(list_shuffles) <- sprintf("shuffle%02d", 0:numShuffles)
+
+# shuffle coordinates n times
+
+nEachShuffle <- floor(propEachShuffle * n_spots)
+
+list_shuffles[[1]] <- spe_shuffleBase
+
+# set seed
+set.seed(123)
+
+for (i in 1:numShuffles) {
+  
+  # start from previous shuffle
+  spe_shuffle <- list_shuffles[[i]]
+  
+  # permute proportion of spatial coordinates
+  ix <- sample(seq_len(n_spots), nEachShuffle)
+  ix_perm <- sample(ix)
+  perm <- seq_len(n_spots)
+  perm[ix] <- ix_perm
+  
+  spatialCoords(spe_shuffle) <- spatialCoords(spe_shuffle)[perm, ]
+  
+  list_shuffles[[i + 1]] <- spe_shuffle
+}
+
+
+# --------------------------------
+# save shuffled simulated datasets
+# --------------------------------
+
+fns_shuffles <- paste0("spe_sim_", names(list_shuffles), ".rds")
+
+for (j in (seq_len(numShuffles + 1))) {
+  saveRDS(list_shuffles[[j]], file.path(dir_sims, fns_shuffles[j]))
+}
 
