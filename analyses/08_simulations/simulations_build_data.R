@@ -223,10 +223,10 @@ fn_createNoiseGene <- function() {
 
 # expressed genes
 
-fn_createExpressedGene <- function() {
+fn_createExpressedGene <- function(meanExpression) {
   # sample random values
   logexpr <- rnorm(n_spots, 
-                   mean = par_meanLogcountsExpressed, 
+                   mean = meanExpression, 
                    sd = sqrt(par_varLogcountsExpressed))
   # truncate values to achieve sparsity
   q <- quantile(logexpr, par_sparsityExpressedRegion)
@@ -265,7 +265,7 @@ fn_buildSimulatedData <- function(mask, expressionStrength) {
   for (g in seq_len(n_genes)) {
     logcounts[g, ] <- fn_createNoiseGene()
     if (rowdata$expressed[g]) {
-      logcounts[g, ][mask] <- (fn_createExpressedGene() * expressionStrength)[mask]
+      logcounts[g, ][mask] <- (fn_createExpressedGene(expressionStrength))[mask]
     }
   }
   
