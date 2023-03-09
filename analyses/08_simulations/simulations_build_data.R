@@ -264,10 +264,9 @@ fn_buildSimulatedData <- function(mask, expressionStrength) {
   logcounts <- matrix(NA, nrow = n_genes, ncol = n_spots)
   set.seed(123)
   for (g in seq_len(n_genes)) {
-    if (!rowdata$expressed[g]) {
-      logcounts[g, ] <- fn_createNoiseGene()
-    } else if (rowdata$expressed[g]) {
-      logcounts[g, ] <- fn_createExpressedGene() * expressionStrength
+    logcounts[g, ] <- fn_createNoiseGene()
+    if (rowdata$expressed[g]) {
+      logcounts[g, ][mask] <- (fn_createExpressedGene() * expressionStrength)[mask]
     }
   }
   
