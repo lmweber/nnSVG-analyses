@@ -262,7 +262,6 @@ fn_buildSimulatedData <- function(mask, expressionStrength) {
   spatialcoords <- coords
   
   logcounts <- matrix(NA, nrow = n_genes, ncol = n_spots)
-  set.seed(123)
   for (g in seq_len(n_genes)) {
     logcounts[g, ] <- fn_createNoiseGene()
     if (rowdata$expressed[g]) {
