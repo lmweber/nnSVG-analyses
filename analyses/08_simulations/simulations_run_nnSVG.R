@@ -53,7 +53,7 @@ for (s in seq_along(sim_names)) {
   
   # run nnSVG
   set.seed(123)
-  spe_sub <- nnSVG(
+  spe <- nnSVG(
     spe, 
     n_threads = 10
   )
