@@ -103,10 +103,10 @@ n_genes <- 1000
 n_genes_nonExpressed <- 900
 n_genes_expressed <- 100
 
-# strength of expression (relative to MOBP in WM region)
-lowExpression <- 0.2
-mediumExpression <- 0.5
-fullExpression <- 1
+# strength of expression (relative to MOBP in WM vs. non-WM region)
+lowExpression <- 0.1 * (par_meanLogcountsExpressed - par_meanLogcountsNotExpressed) + par_meanLogcountsNotExpressed
+mediumExpression <- 1/3 * (par_meanLogcountsExpressed - par_meanLogcountsNotExpressed) + par_meanLogcountsNotExpressed
+fullExpression <- 1 * par_meanLogcountsExpressed
 
 # shuffling of coordinates for ablation simulations
 propShufflePerIteration <- 0.1
