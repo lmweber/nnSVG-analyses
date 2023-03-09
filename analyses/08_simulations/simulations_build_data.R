@@ -94,7 +94,7 @@ par_sparsityNotExpressedRegion  # 0.6353167
 # additional simulation parameters
 
 # radius of expressed regions
-smallBandwidthRadius <- 0.05
+smallBandwidthRadius <- 0.025
 mediumBandwidthRadius <- 0.125
 largeBandwidthRadius <- 0.25
 
@@ -104,8 +104,8 @@ n_genes_nonExpressed <- 900
 n_genes_expressed <- 100
 
 # strength of expression (relative to MOBP in WM region)
-lowExpression <- 1/3
-mediumExpression <- 2/3
+lowExpression <- 0.2
+mediumExpression <- 0.5
 fullExpression <- 1
 
 # shuffling of coordinates for ablation simulations
