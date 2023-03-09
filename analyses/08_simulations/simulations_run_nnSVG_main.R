@@ -1,7 +1,7 @@
-########################
-# Simulations: run nnSVG
+###########################################
+# Simulations: run nnSVG - main simulations
 # Lukas Weber, Mar 2023
-########################
+###########################################
 
 # interactive session on compute cluster
 
