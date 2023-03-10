@@ -50,7 +50,7 @@ names(res_list) <- sim_names_shuffle
 for (s in seq_along(sim_names_shuffle)) {
   
   # load simulated dataset
-  spe <- readRDS(here(dir_sims, paste0("spe_", sim_names_shuffle[s], ".rds")))
+  spe <- readRDS(here(dir_sims, "shuffle", paste0("spe_", sim_names_shuffle[s], ".rds")))
   
   # note: no additional filtering for simulated datasets
   
@@ -72,6 +72,6 @@ for (s in seq_along(sim_names_shuffle)) {
 # save results
 # ------------
 
-file <- file.path(dir_sims, "res_simulations_shuffle.rds")
+file <- file.path(dir_sims, "shuffle", "res_simulations_shuffle.rds")
 saveRDS(res_list, file = file)
 

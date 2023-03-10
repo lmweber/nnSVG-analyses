@@ -48,7 +48,7 @@ names(res_list) <- sim_names
 for (s in seq_along(sim_names)) {
   
   # load simulated dataset
-  spe <- readRDS(here(dir_sims, paste0("spe_", sim_names[s], ".rds")))
+  spe <- readRDS(here(dir_sims, "main", paste0("spe_", sim_names[s], ".rds")))
   
   # note: no additional filtering for simulated datasets
   
@@ -70,6 +70,6 @@ for (s in seq_along(sim_names)) {
 # save results
 # ------------
 
-file <- file.path(dir_sims, "res_simulations.rds")
+file <- file.path(dir_sims, "main", "res_simulations.rds")
 saveRDS(res_list, file = file)
 

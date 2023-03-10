@@ -306,17 +306,17 @@ spe_sim_smallBandwidth_lowExpr <- fn_buildSimulatedData(maskSmallBandwidth, lowE
 # save simulated datasets
 # -----------------------
 
-saveRDS(spe_sim_largeBandwidth_fullExpr, file.path(dir_sims, "spe_sim_largeBandwidth_fullExpr.rds"))
-saveRDS(spe_sim_largeBandwidth_medExpr, file.path(dir_sims, "spe_sim_largeBandwidth_medExpr.rds"))
-saveRDS(spe_sim_largeBandwidth_lowExpr, file.path(dir_sims, "spe_sim_largeBandwidth_lowExpr.rds"))
+saveRDS(spe_sim_largeBandwidth_fullExpr, file.path(dir_sims, "main", "spe_sim_largeBandwidth_fullExpr.rds"))
+saveRDS(spe_sim_largeBandwidth_medExpr, file.path(dir_sims, "main", "spe_sim_largeBandwidth_medExpr.rds"))
+saveRDS(spe_sim_largeBandwidth_lowExpr, file.path(dir_sims, "main", "spe_sim_largeBandwidth_lowExpr.rds"))
 
-saveRDS(spe_sim_medBandwidth_fullExpr, file.path(dir_sims, "spe_sim_medBandwidth_fullExpr.rds"))
-saveRDS(spe_sim_medBandwidth_medExpr, file.path(dir_sims, "spe_sim_medBandwidth_medExpr.rds"))
-saveRDS(spe_sim_medBandwidth_lowExpr, file.path(dir_sims, "spe_sim_medBandwidth_lowExpr.rds"))
+saveRDS(spe_sim_medBandwidth_fullExpr, file.path(dir_sims, "main", "spe_sim_medBandwidth_fullExpr.rds"))
+saveRDS(spe_sim_medBandwidth_medExpr, file.path(dir_sims, "main", "spe_sim_medBandwidth_medExpr.rds"))
+saveRDS(spe_sim_medBandwidth_lowExpr, file.path(dir_sims, "main", "spe_sim_medBandwidth_lowExpr.rds"))
 
-saveRDS(spe_sim_smallBandwidth_fullExpr, file.path(dir_sims, "spe_sim_smallBandwidth_fullExpr.rds"))
-saveRDS(spe_sim_smallBandwidth_medExpr, file.path(dir_sims, "spe_sim_smallBandwidth_medExpr.rds"))
-saveRDS(spe_sim_smallBandwidth_lowExpr, file.path(dir_sims, "spe_sim_smallBandwidth_lowExpr.rds"))
+saveRDS(spe_sim_smallBandwidth_fullExpr, file.path(dir_sims, "main", "spe_sim_smallBandwidth_fullExpr.rds"))
+saveRDS(spe_sim_smallBandwidth_medExpr, file.path(dir_sims, "main", "spe_sim_smallBandwidth_medExpr.rds"))
+saveRDS(spe_sim_smallBandwidth_lowExpr, file.path(dir_sims, "main", "spe_sim_smallBandwidth_lowExpr.rds"))
 
 
 # ----------------------------------
@@ -364,6 +364,6 @@ for (i in 1:numShuffles) {
 fns_shuffles <- paste0("spe_sim_", names(list_shuffles), ".rds")
 
 for (j in (seq_len(numShuffles + 1))) {
-  saveRDS(list_shuffles[[j]], file.path(dir_sims, fns_shuffles[j]))
+  saveRDS(list_shuffles[[j]], file.path(dir_sims, "shuffle", fns_shuffles[j]))
 }
 
