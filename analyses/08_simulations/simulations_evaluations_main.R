@@ -19,7 +19,7 @@ dir_plots <- here("plots", "simulations")
 # load results
 # ------------
 
-res_list <- readRDS(here(dir_sims, "main", "res_simulations.rds"))
+res_list <- readRDS(here(dir_sims, "main", "res_simulations_main.rds"))
 
 length(res_list)
 

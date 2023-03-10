@@ -70,6 +70,6 @@ for (s in seq_along(sim_names)) {
 # save results
 # ------------
 
-file <- file.path(dir_sims, "main", "res_simulations.rds")
+file <- file.path(dir_sims, "main", "res_simulations_main.rds")
 saveRDS(res_list, file = file)
 
