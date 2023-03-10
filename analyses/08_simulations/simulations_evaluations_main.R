@@ -1,7 +1,7 @@
-######################################
-# Simulations: performance evaluations
+#########################################################
+# Simulations: performance evaluations - main simulations
 # Lukas Weber, Mar 2023
-######################################
+#########################################################
 
 
 library(SpatialExperiment)
@@ -108,7 +108,7 @@ ggplot(df_plot, aes(x = FPR, y = TPR, color = threshold)) +
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-fn <- file.path(dir_plots, "main", "simulations_performance")
+fn <- file.path(dir_plots, "simulations_performance")
 ggsave(paste0(fn, ".pdf"), width = 6, height = 5.5)
 ggsave(paste0(fn, ".png"), width = 6, height = 5.5)
 
