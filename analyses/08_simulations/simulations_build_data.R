@@ -110,7 +110,7 @@ fullExpression <- 1 * par_meanLogcountsExpressed
 
 # shuffling of coordinates for ablation simulations
 numShuffles <- 10
-propEachShuffle <- 0.2
+propEachShuffle <- seq(0, 1, by = 0.1)
 
 
 # -------------------
@@ -331,7 +331,7 @@ spe_shuffleBase <- spe_sim_medBandwidth_medExpr
 list_shuffles <- as.list(rep(NA, length = numShuffles + 1))
 names(list_shuffles) <- sprintf("shuffle%02d", 0:numShuffles)
 
-# shuffle coordinates n times
+# number of coordinates to shuffle each time
 
 nEachShuffle <- floor(propEachShuffle * n_spots)
 
@@ -342,11 +342,10 @@ set.seed(123)
 
 for (i in 1:numShuffles) {
   
-  # start from previous shuffle
-  spe_shuffle <- list_shuffles[[i]]
+  spe_shuffle <- spe_shuffleBase
   
   # permute proportion of spatial coordinates
-  ix <- sample(seq_len(n_spots), nEachShuffle)
+  ix <- sample(seq_len(n_spots), nEachShuffle[i + 1])
   ix_perm <- sample(ix)
   perm <- seq_len(n_spots)
   perm[ix] <- ix_perm
