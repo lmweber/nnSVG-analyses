@@ -126,8 +126,8 @@ ggplot(df_plot_main,
   scale_alpha_continuous(range = range(df_plot_main$alpha), breaks = c(1, 0.5, 0.2), 
                          name = "expression\nstrength", labels = c("full", "medium", "low")) + 
   ggtitle("Simulated datasets") + 
-  guides(color = guide_legend(override.aes = list(size = 2), order = 1), 
-         alpha = guide_legend(override.aes = list(size = 2, color = "darkorange"))) + 
+  guides(color = guide_legend(override.aes = list(size = 2.5), order = 1), 
+         alpha = guide_legend(override.aes = list(size = 2.5, color = "darkorange"))) + 
   theme_bw() + 
   theme(panel.grid = element_blank(), 
         axis.text.x = element_text(angle = 90, vjust = 0.5))
