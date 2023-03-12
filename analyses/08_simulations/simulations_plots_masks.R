@@ -112,10 +112,9 @@ df_plot_main$sim_name <- factor(df_plot_main$sim_name,
 df_plot_main$expression_strength <- factor(df_plot_main$expression_strength, 
                                            levels = c("full", "med", "low"))
 # arbitrary alpha values for best visualization in plots only
-df_plot_main$alpha <- NA
-df_plot_main$alpha[df_plot_main$expression_strength == "full"] <- 1
-df_plot_main$alpha[df_plot_main$expression_strength == "med"] <- 0.5
-df_plot_main$alpha[df_plot_main$expression_strength == "low"] <- 0.2
+df_plot_main$alpha <- 1
+df_plot_main$alpha[df_plot_main$mask & df_plot_main$expression_strength == "med"] <- 0.5
+df_plot_main$alpha[df_plot_main$mask & df_plot_main$expression_strength == "low"] <- 0.2
 
 
 ggplot(df_plot_main, 
