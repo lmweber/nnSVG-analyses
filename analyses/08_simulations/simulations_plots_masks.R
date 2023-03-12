@@ -154,7 +154,7 @@ df_plot_shuffle$sim_name <- factor(df_plot_shuffle$sim_name,
 ggplot(df_plot_shuffle, 
        aes(x = x, y = y, color = mask)) + 
   facet_wrap(~ sim_name, ncol = 4) + 
-  geom_point(size = 0.1) + 
+  geom_point(size = 0.01) + 
   coord_fixed() + 
   scale_color_manual(values = c("dodgerblue", "darkorange")) + 
   ggtitle("Simulated datasets: shuffled coordinates") + 
