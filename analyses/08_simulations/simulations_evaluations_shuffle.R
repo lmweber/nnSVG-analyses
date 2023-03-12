@@ -34,7 +34,7 @@ sim_names
 # compare sensitivity vs. number of shuffle iterations
 
 # p-value thresholds
-thresholds <- c(0.05, 0.1)
+thresholds <- c(0.01, 0.05, 0.1)
 
 metrics <- c("TPR", "FPR")
 
@@ -86,7 +86,10 @@ res_perf
 
 # reshape data frame
 df_plot <- res_perf
-df_plot$simulation <- factor(df_plot$simulation, levels = sim_names)
+
+x_labs <- paste0(as.numeric(gsub("shuffle", "", sim_names)) * 10, "% shuffled")
+
+df_plot$simulation <- factor(df_plot$simulation, levels = sim_names, labels = x_labs)
 df_plot$metric <- factor(df_plot$metric, levels = metrics)
 df_plot$threshold <- factor(df_plot$threshold, levels = thresholds)
 
@@ -98,12 +101,12 @@ ggplot(df_plot,
        aes(x = simulation, y = TPR, group = threshold, color = threshold)) + 
   geom_point(size = 2.25) + 
   geom_line() + 
-  scale_color_manual(values = c("firebrick1", "purple3"), 
+  scale_color_manual(values = c("orange1", "firebrick1", "purple3"), 
                      name = "p-value\nthreshold") + 
   ylim(c(0, 1)) + 
   ggtitle("nnSVG performance") + 
   theme_bw() + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
 fn <- file.path(dir_plots, "simulations_shuffle_TPR")
 ggsave(paste0(fn, ".pdf"), width = 5.5, height = 4)
