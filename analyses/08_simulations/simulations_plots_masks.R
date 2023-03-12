@@ -15,9 +15,9 @@ dir_sims <- here("outputs", "simulations")
 dir_plots <- here("plots", "simulations")
 
 
-# ---------------------------------
-# filenames for simulation datasets
-# ---------------------------------
+# --------------------------------
+# filenames for simulated datasets
+# --------------------------------
 
 sim_names_main <- c(
   "sim_largeBandwidth_fullExpr", 
@@ -30,7 +30,6 @@ sim_names_main <- c(
   "sim_smallBandwidth_medExpr", 
   "sim_smallBandwidth_lowExpr"
 )
-
 
 sim_names_shuffle <- c(
   "sim_shuffle00", 
@@ -102,9 +101,9 @@ for (s in seq_along(sim_names_shuffle)) {
 }
 
 
-# -----------------------------
-# plot spatial coordinate masks
-# -----------------------------
+# -----------------------------------------------
+# plot spatial coordinate masks: main simulations
+# -----------------------------------------------
 
 df_plot_main <- do.call("rbind", res_list_main)
 rownames(df_plot_main) <- NULL
@@ -121,7 +120,7 @@ df_plot_main$alpha[df_plot_main$expression_strength == "low"] <- 0.2
 
 ggplot(df_plot_main, 
        aes(x = x, y = y, color = mask, alpha = alpha)) + 
-  facet_wrap(~ sim_name) + 
+  facet_wrap(~ sim_name, nrow = 3) + 
   geom_point(size = 0.2) + 
   coord_fixed() + 
   scale_color_manual(values = c("dodgerblue", "darkorange")) + 
@@ -136,4 +135,35 @@ ggplot(df_plot_main,
 fn <- file.path(dir_plots, "simulations_masks_main")
 ggsave(paste0(fn, ".pdf"), width = 7, height = 7)
 ggsave(paste0(fn, ".png"), width = 7, height = 7)
+
+
+# ---------------------------------------------------
+# plot spatial coordinate masks: shuffled simulations
+# ---------------------------------------------------
+
+df_plot_shuffle <- do.call("rbind", res_list_shuffle)
+rownames(df_plot_shuffle) <- NULL
+
+sim_labs <- paste0(as.numeric(
+  gsub("sim_shuffle", "", sim_names_shuffle)) * 10, "% shuffled")
+
+df_plot_shuffle$sim_name <- factor(df_plot_shuffle$sim_name, 
+                                   levels = sim_names_shuffle, labels = sim_labs)
+
+
+ggplot(df_plot_shuffle, 
+       aes(x = x, y = y, color = mask)) + 
+  facet_wrap(~ sim_name, ncol = 4) + 
+  geom_point(size = 0.1) + 
+  coord_fixed() + 
+  scale_color_manual(values = c("dodgerblue", "darkorange")) + 
+  ggtitle("Simulated datasets: shuffled coordinates") + 
+  guides(color = guide_legend(override.aes = list(size = 2))) + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+fn <- file.path(dir_plots, "simulations_masks_shuffle")
+ggsave(paste0(fn, ".pdf"), width = 7, height = 5.6)
+ggsave(paste0(fn, ".png"), width = 7, height = 5.6)
 

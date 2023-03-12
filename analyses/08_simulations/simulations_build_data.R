@@ -351,7 +351,7 @@ for (i in 1:numShuffles) {
   perm[ix] <- ix_perm
   
   spatialCoords(spe_shuffle) <- spatialCoords(spe_shuffle)[perm, ]
-  colData(spe_shuffle)$mask <- colData(spe_shuffle)$mask[perm]
+  colData(spe_shuffle)$mask_shuffle <- colData(spe_shuffle)$mask[perm]
   
   list_shuffles[[i + 1]] <- spe_shuffle
 }
