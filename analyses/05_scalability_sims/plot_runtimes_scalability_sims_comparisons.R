@@ -86,7 +86,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = method, shape = method,
   scale_y_continuous(trans = scales::trans_new("cubrt", function(x) x^(1/3), function(x) x^3), 
                      limits = c(0, 500)) + 
   labs(x = "number of spots", 
-       y = "runtime (sec)") + 
+       y = "runtime (sec) (cubic scale)") + 
   ggtitle("Scalability comparisons") + 
   theme_bw() + 
   theme(panel.grid.minor.x = element_blank(), 
