@@ -12,7 +12,6 @@
 library(SpatialExperiment)
 library(STexampleData)
 library(nnSVG)
-library(scater)
 library(scran)
 library(SPARK)
 library(here)

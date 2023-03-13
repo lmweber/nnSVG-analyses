@@ -1,9 +1,9 @@
 ####################################
 # Script for scalability simulations
-# Lukas Weber, Mar 2023
+# Lukas Weber, Jan 2023
 ####################################
 
-# method: SPARK
+# method: SpatialDE (using R/Bioconductor wrapper package 'spatialDE')
 # data set: human DLPFC
 
 # two genes (note SPARK / SPARK-X model fitting requires at least 2 genes)
@@ -13,7 +13,7 @@ library(SpatialExperiment)
 library(STexampleData)
 library(nnSVG)
 library(scran)
-library(SPARK)
+library(spatialDE)
 library(here)
 
 
@@ -80,11 +80,12 @@ spe <- spe[ix_gene, ]
 dim(spe)
 
 
-# -----------------
-# run SPARK in loop
-# -----------------
+# ---------------------
+# run SpatialDE in loop
+# ---------------------
 
-# run SPARK in loop for each subsampled set of spots
+# run SpatialDE in loop for each subsampled set of spots
+# note: using R/Bioconductor wrapper package 'spatialDE'
 
 runtimes <- as.list(rep(NA, length(n)))
 names(runtimes) <- n
@@ -96,6 +97,10 @@ for (i in seq_along(n)) {
   spe_sub <- spe[, ix[[i]]]
   runtimes_i <- rep(NA, n_iters)
   
+  # filter out zeros (required by SpatialDE)
+  ix_zeros <- colSums(counts(spe_sub)) == 0
+  spe_sub <- spe_sub[, !ix_zeros]
+  
   # seed for reproducibility
   # (note: set seed outside loop to allow variability across runs)
   set.seed(123)
@@ -105,27 +110,25 @@ for (i in seq_along(n)) {
     
     runtime <- system.time({
       
-      # create SPARK object and run SPARK (with one thread)
-      # using code from SPARK vignette
+      # run SpatialDE
+      # using code from SpatialDE vignette
       
-      # create SPARK object
-      spark <- CreateSPARKObject(counts = as.matrix(counts(spe_sub)), 
-                                 location = as.data.frame(spatialCoords(spe_sub)), 
-                                 percentage = 0.01, 
-                                 min_total_counts = 1)
-      spark@lib_size <- apply(spark@counts, 2, sum)
+      sample_info <- data.frame(
+        spatialCoords(spe_sub), 
+        total_counts = colSums(counts(spe_sub))
+      )
+      colnames(sample_info)[1:2] <- c("x", "y")
+      X <- sample_info[, c("x", "y")]
       
-      # estimate parameters under null
-      spark <- spark.vc(spark, 
-                        covariates = NULL, 
-                        lib_size = spark@lib_size, 
-                        num_core = 1, 
-                        verbose = FALSE)
+      resid_expr <- regress_out(
+        as.matrix(logcounts(spe_sub)), 
+        sample_info = sample_info
+      )
       
-      # calculate p-values
-      spark <- spark.test(spark, 
-                          check_positive = TRUE, 
-                          verbose = FALSE)
+      out <- spatialDE::run(
+        resid_expr, 
+        coordinates = X
+      )
     })
     
     # 'elapsed' time is real human time
@@ -140,6 +143,6 @@ for (i in seq_along(n)) {
 # save results
 # ------------
 
-file_runtimes <- here("outputs", "scalability_sims", "runtimes_scalability_SPARK_DLPFC_twogenes.rds")
+file_runtimes <- here("outputs", "scalability_sims", "runtimes_scalability_SpatialDE_DLPFC_twogenes.rds")
 saveRDS(runtimes, file = file_runtimes)
 
