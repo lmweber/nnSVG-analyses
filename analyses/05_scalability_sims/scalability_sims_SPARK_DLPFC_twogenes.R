@@ -112,8 +112,8 @@ for (i in seq_along(n)) {
       # create SPARK object
       spark <- CreateSPARKObject(counts = as.matrix(counts(spe_sub)), 
                                  location = as.data.frame(spatialCoords(spe_sub)), 
-                                 percentage = 0.1, 
-                                 min_total_counts = 10)
+                                 percentage = 0.01, 
+                                 min_total_counts = 1)
       spark@lib_size <- apply(spark@counts, 2, sum)
       
       # estimate parameters under null
@@ -129,8 +129,11 @@ for (i in seq_along(n)) {
                           verbose = FALSE)
     })
     
-    runtimes[[i]] <- runtimes_i
+    # 'elapsed' time is real human time
+    runtimes_i[j] <- runtime[["elapsed"]]
   }
+  
+  runtimes[[i]] <- runtimes_i
 }
 
 
