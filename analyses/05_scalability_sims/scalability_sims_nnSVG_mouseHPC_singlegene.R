@@ -3,6 +3,7 @@
 # Lukas Weber, Apr 2022
 ####################################
 
+# method: nnSVG
 # data set: mouse HPC
 # filtering: with filtering of low-expressed genes (using nnSVG default filtering)
 

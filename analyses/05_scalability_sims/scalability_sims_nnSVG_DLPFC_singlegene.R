@@ -3,6 +3,7 @@
 # Lukas Weber, Jan 2023
 ####################################
 
+# method: nnSVG
 # data set: human DLPFC
 # filtering: with filtering of low-expressed genes (using nnSVG default filtering)
 

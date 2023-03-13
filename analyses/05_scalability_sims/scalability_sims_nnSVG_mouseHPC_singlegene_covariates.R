@@ -3,7 +3,8 @@
 # Lukas Weber, Mar 2023
 ####################################
 
-# data set: mouse HPC (with and without covariates)
+# method: nnSVG (with and without covariates)
+# data set: mouse HPC
 # filtering: with filtering of low-expressed genes (using nnSVG default filtering)
 
 # single gene
