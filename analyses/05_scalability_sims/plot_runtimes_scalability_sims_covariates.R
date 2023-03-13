@@ -1,6 +1,6 @@
 #####################################################
 # Script to plot runtimes for scalability simulations
-# Lukas Weber, Jan 2023
+# Lukas Weber, Mar 2023
 #####################################################
 
 # with and without covariates
