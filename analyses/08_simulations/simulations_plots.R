@@ -210,7 +210,6 @@ ggplot(df_plot_shuffle,
   coord_fixed() + 
   scale_color_viridis_c(name = "logcounts") + 
   ggtitle("Simulated datasets: shuffled coordinates (expression)") + 
-  guides(color = guide_legend(override.aes = list(size = 2))) + 
   theme_bw() + 
   theme(panel.grid = element_blank(), 
         axis.text.x = element_text(angle = 90, vjust = 0.5))
