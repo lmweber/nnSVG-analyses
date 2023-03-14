@@ -190,7 +190,7 @@ ggplot(df_plot_shuffle,
   geom_point(size = 0.01) + 
   coord_fixed() + 
   scale_color_manual(values = c("dodgerblue", "darkorange")) + 
-  ggtitle("Simulated datasets: shuffled coordinates") + 
+  ggtitle("Simulated datasets (shuffled coordinates): spatial coordinate masks") + 
   guides(color = guide_legend(override.aes = list(size = 2))) + 
   theme_bw() + 
   theme(panel.grid = element_blank(), 
@@ -209,7 +209,7 @@ ggplot(df_plot_shuffle,
   geom_point(size = 0.01) + 
   coord_fixed() + 
   scale_color_viridis_c(name = "logcounts") + 
-  ggtitle("Simulated datasets: shuffled coordinates (expression)") + 
+  ggtitle("Simulated datasets (shuffled coordinates): expression") + 
   theme_bw() + 
   theme(panel.grid = element_blank(), 
         axis.text.x = element_text(angle = 90, vjust = 0.5))
