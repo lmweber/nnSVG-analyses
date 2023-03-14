@@ -98,7 +98,8 @@ ggplot(df_plot, aes(x = FPR, y = TPR, color = threshold)) +
   facet_wrap(~ simulation, nrow = 3) + 
   geom_point(size = 2.25) + 
   scale_color_manual(values = c("orange1", "firebrick1", "purple3"), 
-                     name = "p-value\nthreshold") + 
+                     name = "p-value\nthreshold", 
+                     guide = guide_legend(reverse = TRUE)) + 
   #geom_vline(xintercept = thresholds[1], color = "orange1", lty = 2) + 
   #geom_vline(xintercept = thresholds[2], color = "firebrick1", lty = 2) + 
   #geom_vline(xintercept = thresholds[3], color = "purple3", lty = 2) + 

@@ -102,7 +102,8 @@ ggplot(df_plot,
   geom_point(size = 2.25) + 
   geom_line() + 
   scale_color_manual(values = c("orange1", "firebrick1", "purple3"), 
-                     name = "p-value\nthreshold") + 
+                     name = "p-value\nthreshold", 
+                     guide = guide_legend(reverse = TRUE)) + 
   ylim(c(0, 1)) + 
   ggtitle("nnSVG performance") + 
   theme_bw() + 
