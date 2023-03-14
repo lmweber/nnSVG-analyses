@@ -1,7 +1,7 @@
-################################################
-# Simulations: plots of spatial coordinate masks
+####################################################################
+# Simulations: plots - spatial coordinate masks and expression plots
 # Lukas Weber, Mar 2023
-################################################
+####################################################################
 
 
 library(SpatialExperiment)
@@ -9,6 +9,7 @@ library(here)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(viridisLite)
 
 
 dir_sims <- here("outputs", "simulations")
@@ -46,9 +47,9 @@ sim_names_shuffle <- c(
 )
 
 
-# ----------------------------------
-# load spatial coordinates and masks
-# ----------------------------------
+# -----------------------------------------------------------
+# load spatial coordinates and masks; example gene expression
+# -----------------------------------------------------------
 
 # main simulations
 
@@ -65,11 +66,16 @@ for (s in seq_along(sim_names_main)) {
   mask <- colData(spe)$mask
   stopifnot(nrow(spatial_coords) == nrow(mask))
   
+  # expression of example expressed gene
+  ix_example <- which(rowData(spe)$expressed)[1]
+  expr_example <- logcounts(spe)[ix_example, ]
+  
   res <- data.frame(
     spatial_coords, 
     mask, 
     sim_name = sim_names_main[s], 
-    expression_strength = gsub("^.*Bandwidth_", "", gsub("Expr$", "", sim_names_main[s]))
+    expression_strength = gsub("^.*Bandwidth_", "", gsub("Expr$", "", sim_names_main[s])), 
+    expr_example = expr_example
   )
   
   res_list_main[[s]] <- res
@@ -91,19 +97,24 @@ for (s in seq_along(sim_names_shuffle)) {
   mask <- colData(spe)$mask
   stopifnot(nrow(spatial_coords) == nrow(mask))
   
+  # expression of example expressed gene
+  ix_example <- which(rowData(spe)$expressed)[1]
+  expr_example <- logcounts(spe)[ix_example, ]
+  
   res <- data.frame(
     spatial_coords, 
     mask, 
-    sim_name = sim_names_shuffle[s]
+    sim_name = sim_names_shuffle[s], 
+    expr_example = expr_example
   )
   
   res_list_shuffle[[s]] <- res
 }
 
 
-# -----------------------------------------------
-# plot spatial coordinate masks: main simulations
-# -----------------------------------------------
+# -----------------------
+# plots: main simulations
+# -----------------------
 
 df_plot_main <- do.call("rbind", res_list_main)
 rownames(df_plot_main) <- NULL
@@ -117,6 +128,8 @@ df_plot_main$alpha[df_plot_main$mask & df_plot_main$expression_strength == "med"
 df_plot_main$alpha[df_plot_main$mask & df_plot_main$expression_strength == "low"] <- 0.2
 
 
+# plot spatial coordinate masks
+
 ggplot(df_plot_main, 
        aes(x = x, y = y, color = mask, alpha = alpha)) + 
   facet_wrap(~ sim_name, nrow = 3) + 
@@ -125,7 +138,7 @@ ggplot(df_plot_main,
   scale_color_manual(values = c("dodgerblue", "darkorange")) + 
   scale_alpha_continuous(range = range(df_plot_main$alpha), breaks = c(1, 0.5, 0.2), 
                          name = "expression\nstrength", labels = c("full", "medium", "low")) + 
-  ggtitle("Simulated datasets") + 
+  ggtitle("Simulated datasets: spatial coordinate masks") + 
   guides(color = guide_legend(override.aes = list(size = 2.5), order = 1), 
          alpha = guide_legend(override.aes = list(size = 2.5, color = "darkorange"))) + 
   theme_bw() + 
@@ -137,9 +150,27 @@ ggsave(paste0(fn, ".pdf"), width = 7, height = 7)
 ggsave(paste0(fn, ".png"), width = 7, height = 7)
 
 
-# ---------------------------------------------------
-# plot spatial coordinate masks: shuffled simulations
-# ---------------------------------------------------
+# expression plot
+
+ggplot(df_plot_main, 
+       aes(x = x, y = y, color = expr_example)) + 
+  facet_wrap(~ sim_name, nrow = 3) + 
+  geom_point(size = 0.2) + 
+  coord_fixed() + 
+  scale_color_viridis_c(name = "logcounts") + 
+  ggtitle("Simulated datasets: expression") + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+fn <- file.path(dir_plots, "simulations_expression_main")
+ggsave(paste0(fn, ".pdf"), width = 7, height = 7)
+ggsave(paste0(fn, ".png"), width = 7, height = 7)
+
+
+# ---------------------------
+# plots: shuffled simulations
+# ---------------------------
 
 df_plot_shuffle <- do.call("rbind", res_list_shuffle)
 rownames(df_plot_shuffle) <- NULL
@@ -150,6 +181,8 @@ sim_labs <- paste0(as.numeric(
 df_plot_shuffle$sim_name <- factor(df_plot_shuffle$sim_name, 
                                    levels = sim_names_shuffle, labels = sim_labs)
 
+
+# plot spatial coordinate masks
 
 ggplot(df_plot_shuffle, 
        aes(x = x, y = y, color = mask)) + 
@@ -164,6 +197,25 @@ ggplot(df_plot_shuffle,
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 fn <- file.path(dir_plots, "simulations_masks_shuffle")
+ggsave(paste0(fn, ".pdf"), width = 7, height = 5.6)
+ggsave(paste0(fn, ".png"), width = 7, height = 5.6)
+
+
+# expression plot
+
+ggplot(df_plot_shuffle, 
+       aes(x = x, y = y, color = expr_example)) + 
+  facet_wrap(~ sim_name, ncol = 4) + 
+  geom_point(size = 0.01) + 
+  coord_fixed() + 
+  scale_color_viridis_c(name = "logcounts") + 
+  ggtitle("Simulated datasets: shuffled coordinates (expression)") + 
+  guides(color = guide_legend(override.aes = list(size = 2))) + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), 
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+fn <- file.path(dir_plots, "simulations_expression_shuffle")
 ggsave(paste0(fn, ".pdf"), width = 7, height = 5.6)
 ggsave(paste0(fn, ".png"), width = 7, height = 5.6)
 
