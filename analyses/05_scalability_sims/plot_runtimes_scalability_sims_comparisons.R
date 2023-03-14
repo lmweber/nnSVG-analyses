@@ -81,7 +81,7 @@ ggplot(df, aes(x = n_spots, y = runtime, color = method, shape = method,
                group = interaction(n_spots, method))) + 
   geom_point(stroke = 1.25, size = 2) + 
   scale_color_manual(values = pal) + 
-  scale_shape_manual(values = c(4, 1, 3, 2)) + 
+  scale_shape_manual(values = c(4, 3, 1, 2)) + 
   scale_x_continuous(breaks = x_vals) + 
   scale_y_continuous(trans = scales::trans_new("cubrt", function(x) x^(1/3), function(x) x^3), 
                      limits = c(0, 500), 
