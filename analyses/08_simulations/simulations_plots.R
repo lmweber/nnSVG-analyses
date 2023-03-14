@@ -150,7 +150,7 @@ ggsave(paste0(fn, ".pdf"), width = 7, height = 7)
 ggsave(paste0(fn, ".png"), width = 7, height = 7)
 
 
-# expression plot
+# expression plots
 
 ggplot(df_plot_main, 
        aes(x = x, y = y, color = expr_example)) + 
@@ -201,7 +201,7 @@ ggsave(paste0(fn, ".pdf"), width = 7, height = 5.6)
 ggsave(paste0(fn, ".png"), width = 7, height = 5.6)
 
 
-# expression plot
+# expression plots
 
 ggplot(df_plot_shuffle, 
        aes(x = x, y = y, color = expr_example)) + 
