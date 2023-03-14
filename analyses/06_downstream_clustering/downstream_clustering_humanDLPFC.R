@@ -1,6 +1,6 @@
 #############################################
 # Script for downstream clustering comparison
-# Lukas Weber, Jan 2023
+# Lukas Weber, Mar 2023
 #############################################
 
 # data set: human DLPFC
@@ -11,12 +11,9 @@ library(SpatialExperiment)
 library(here)
 library(scater)
 library(scran)
-library(mclust)
-library(ggplot2)
 
 
-# directory to save plots
-dir_plots <- here(file.path("plots", "downstream_clustering"))
+dir_clustering <- here("outputs", "downstream_clustering")
 
 
 # ------------
@@ -217,125 +214,30 @@ colLabels(spe) <- factor(clus)
 spe_out$spe_MoransI <- spe
 
 
-# --------------
-# match clusters
-# --------------
+# ------------
+# save results
+# ------------
 
-# match clusters to ground truth layers for each method
+# save colData and spatialCoords instead of full SPE objects to save space
 
-match_nnSVG <- c(5, 8, 1, 7, 2, 6, 3, 4)
-colData(spe_out$spe_nnSVG)$label <- factor(
-  colData(spe_out$spe_nnSVG)$label, levels = match_nnSVG)
+coldata_out <- spatialcoords_out <- list()
 
-match_SPARKX <- c(1, 6, 2, 8, 3, 4, 7, 5)
-colData(spe_out$spe_SPARKX)$label <- factor(
-  colData(spe_out$spe_SPARKX)$label, levels = match_SPARKX)
+coldata_out$nnSVG <- colData(spe_out$spe_nnSVG)
+coldata_out$SPARKX <- colData(spe_out$spe_SPARKX)
+coldata_out$HVGs <- colData(spe_out$spe_HVGs)
+coldata_out$MoransI <- colData(spe_out$spe_MoransI)
 
-match_HVGs <- c(1, 8, 2, 4, 3, 6, 7, 5)
-colData(spe_out$spe_HVGs)$label <- factor(
-  colData(spe_out$spe_HVGs)$label, levels = match_HVGs)
+spatialcoords_out$nnSVG <- spatialCoords(spe_out$spe_nnSVG)
+spatialcoords_out$SPARKX <- spatialCoords(spe_out$spe_SPARKX)
+spatialcoords_out$HVGs <- spatialCoords(spe_out$spe_HVGs)
+spatialcoords_out$MoransI <- spatialCoords(spe_out$spe_MoransI)
 
-match_MoransI <- c(5, 2, 8, 3, 4, 7, 1, 6)
-colData(spe_out$spe_MoransI)$label <- factor(
-  colData(spe_out$spe_MoransI)$label, levels = match_MoransI)
-
-
-# ----------
-# spot plots
-# ----------
-
-# plot clustering
-
-# LIBD layer colors palette
-pal <- c("#F0027F", "#377EB8", "#4DAF4A", "#984EA3", "#FFD700", "#FF7F00", "#1A1A1A", "#666666")
-
-for (i in seq_along(spe_out)) {
-  
-  df <- as.data.frame(cbind(colData(spe_out[[i]]), spatialCoords(spe_out[[i]])))
-  
-  ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, 
-                 color = label)) + 
-    geom_point(size = 0.3) + 
-    coord_fixed() + 
-    scale_y_reverse() + 
-    scale_color_manual(values = pal, name = "label") + 
-    guides(color = guide_legend(override.aes = list(size = 2))) + 
-    ggtitle("Clustering", 
-            subtitle = paste0("Human DLPFC: ", gsub("spe_", "", names(spe_out[i])))) + 
-    theme_bw() + 
-    theme(panel.grid = element_blank(), 
-          axis.title = element_blank(), 
-          axis.text = element_blank(), 
-          axis.ticks = element_blank())
-  
-  fn <- file.path(dir_plots, 
-                  paste0("clustering_humanDLPFC_", gsub("spe_", "", names(spe_out[i]))))
-  ggsave(paste0(fn, ".pdf"), width = 4, height = 4.25)
-  ggsave(paste0(fn, ".png"), width = 4, height = 4.25)
-}
-
-
-# -------------------
-# adjusted Rand index
-# -------------------
-
-# calculate adjusted Rand index to evaluate clustering performance
-
-
-# re-label factor levels combine clusters 7 and 8 into a single cluster
-# representing white matter
-
-colData(spe_out$spe_nnSVG)$label <- factor(
-  colData(spe_out$spe_nnSVG)$label, labels = c(paste0("Layer", 1:6), rep("WM", 2)))
-
-colData(spe_out$spe_SPARKX)$label <- factor(
-  colData(spe_out$spe_SPARKX)$label, labels = c(paste0("Layer", 1:6), rep("WM", 2)))
-
-colData(spe_out$spe_HVGs)$label <- factor(
-  colData(spe_out$spe_HVGs)$label, labels = c(paste0("Layer", 1:6), rep("WM", 2)))
-
-colData(spe_out$spe_MoransI)$label <- factor(
-  colData(spe_out$spe_MoransI)$label, labels = c(paste0("Layer", 1:6), rep("WM", 2)))
-
-
-# calculate adjusted Rand index
-
-ari_nnSVG <- adjustedRandIndex(colData(spe_out$spe_nnSVG)$label, 
-                               colData(spe_out$spe_nnSVG)$ground_truth)
-
-ari_SPARKX <- adjustedRandIndex(colData(spe_out$spe_SPARKX)$label, 
-                                colData(spe_out$spe_SPARKX)$ground_truth)
-
-ari_HVGs <- adjustedRandIndex(colData(spe_out$spe_HVGs)$label, 
-                              colData(spe_out$spe_HVGs)$ground_truth)
-
-ari_MoransI <- adjustedRandIndex(colData(spe_out$spe_MoransI)$label, 
-                                 colData(spe_out$spe_MoransI)$ground_truth)
-
-
-# plot adjusted Rand index
-
-df <- data.frame(
-  method = c("nnSVG", "SPARKX", "HVGs", "MoransI"), 
-  ARI = c(ari_nnSVG, ari_SPARKX, ari_HVGs, ari_MoransI)
+res_out <- list(
+  coldata_out = coldata_out, 
+  spatialcoords_out = spatialcoords_out
 )
-df$method <- factor(df$method, levels = df$method)
 
 
-pal_methods <- c("blue3", "deepskyblue2", "darkorange", "firebrick3")
-
-
-ggplot(df, aes(x = method, y = ARI, shape = method, color = method)) + 
-  geom_point(stroke = 1.5, size = 2) + 
-  scale_shape_manual(values = c(4, 3, 1, 2)) + 
-  scale_color_manual(values = pal_methods) + 
-  ylim(c(0, 1)) + 
-  ggtitle("Downstream clustering performance") + 
-  labs(y = "Adjusted Rand Index") + 
-  theme_bw() + 
-  theme(axis.title.x = element_blank())
-
-fn <- file.path(dir_plots, "summary_clustering_performance_ARI")
-ggsave(paste0(fn, ".pdf"), width = 4.75, height = 3.5)
-ggsave(paste0(fn, ".png"), width = 4.75, height = 3.5)
+fn <- here(dir_clustering, "res_downstream_clustering.rds")
+saveRDS(res_out, file = fn)
 
