@@ -567,6 +567,7 @@ ggsave(paste0(fn, ".png"), width = 5.9, height = 2.75)
 
 # nnSVG
 # seed for placement of text labels
+additional_genes <- c("CALM1", "CST3")
 set.seed(1)
 ggplot(as.data.frame(df_ranks_nnSVG), 
        aes(x = rank_baseline, y = rank_nnSVG, color = effectsize)) + 
@@ -578,6 +579,10 @@ ggplot(as.data.frame(df_ranks_nnSVG),
   #scale_color_manual(values = c("darkgoldenrod1", "red3")) + 
   geom_text_repel(
     data = df_ranks_nnSVG %>% filter(gene_name %in% known_genes), 
+    aes(label = gene_name), color = "black", size = 3.25, fontface = "italic", 
+    nudge_x = 100, nudge_y = 100, box.padding = 0.5) + 
+  geom_text_repel(
+    data = df_ranks_nnSVG %>% filter(baseline == "HVGs" & gene_name %in% additional_genes), 
     aes(label = gene_name), color = "black", size = 3.25, fontface = "italic", 
     nudge_x = 100, nudge_y = 100, box.padding = 0.5) + 
   coord_fixed() + 
