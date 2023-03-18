@@ -109,8 +109,8 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
   coord_fixed() + 
   scale_y_reverse() + 
   scale_color_gradientn(trans = "log1p", 
-                        colors = c("gray90", mid = "blue", high = "black"), 
-                        breaks = c(0, 45, 50), labels = c("0", "", "50")) + 
+                        colors = c("gray90", high = "blue"), 
+                        breaks = c(0, 50), labels = c("0", "50")) + 
   ggtitle("Additional SVGs: human DLPFC") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
