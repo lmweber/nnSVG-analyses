@@ -34,7 +34,7 @@ ix_known <- ix_known[known_genes]
 ix_known
 
 # additional genes
-additional_genes <- c("CALM1", "CST3")
+additional_genes <- c("CALM1", "CST3", "IGHM", "HBA2")
 
 ix_additional <- which(rowData(spe)$gene_name %in% additional_genes)
 names(ix_additional) <- rowData(spe)$gene_name[ix_additional]
@@ -54,6 +54,8 @@ colData(spe)$NPY <- counts(spe)[ix_known["NPY"], ]
 
 colData(spe)$CALM1 <- counts(spe)[ix_additional["CALM1"], ]
 colData(spe)$CST3 <- counts(spe)[ix_additional["CST3"], ]
+colData(spe)$IGHM <- counts(spe)[ix_additional["IGHM"], ]
+colData(spe)$HBA2 <- counts(spe)[ix_additional["HBA2"], ]
 
 
 # expression plots
@@ -104,13 +106,13 @@ df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>%
 
 
 ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) + 
-  facet_wrap(~ gene, nrow = 1) + 
+  facet_wrap(~ gene, nrow = 2) + 
   geom_point(size = 0.05) + 
   coord_fixed() + 
   scale_y_reverse() + 
   scale_color_gradientn(trans = "log1p", 
                         colors = c("gray90", high = "blue"), 
-                        breaks = c(0, 50), labels = c("0", "50")) + 
+                        breaks = c(0, 57), labels = c("0", "57")) + 
   ggtitle("Additional SVGs: human DLPFC") + 
   theme_bw() + 
   guides(color = guide_colorbar(ticks = FALSE)) + 
@@ -121,5 +123,5 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
         axis.ticks = element_blank())
 
 fn <- file.path(dir_plots, "additional_genes_humanDLPFC")
-ggsave(paste0(fn, ".png"), width = 4.25, height = 2.5)
+ggsave(paste0(fn, ".png"), width = 4.25, height = 4.5)
 
