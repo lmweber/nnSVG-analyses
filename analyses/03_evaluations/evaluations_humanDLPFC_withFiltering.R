@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, Jan 2023
+# Lukas Weber, Mar 2023
 #################################
 
 # data set: human DLPFC
@@ -675,7 +675,7 @@ ggplot(as.data.frame(df), aes(x = small_lengthscale, y = rank_nnSVG,
                               fill = small_lengthscale)) + 
   geom_violin(width = 0.5) + 
   geom_boxplot(width = 0.1, color = "black", alpha = 0.2, show.legend = FALSE) + 
-  scale_fill_manual(values = c("red3", "darkgoldenrod1")) + 
+  scale_fill_manual(values = c("purple3", "darkgoldenrod1")) + 
   labs(x = "length scale", 
        y = "rank", 
        fill = "length scale") + 
