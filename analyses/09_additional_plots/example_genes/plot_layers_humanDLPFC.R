@@ -1,6 +1,6 @@
 ####################################
 # Script to plot ground truth layers
-# Lukas Weber, May 2022
+# Lukas Weber, Mar 2023
 ####################################
 
 library(SpatialExperiment)
@@ -55,7 +55,7 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres,
   coord_fixed() + 
   scale_y_reverse() + 
   scale_color_manual(values = pal, name = "label") + 
-  ggtitle("Ground truth labels: human DLPFC") + 
+  ggtitle("Annotated labels: human DLPFC") + 
   theme_bw() + 
   theme(panel.grid = element_blank(), 
         axis.title = element_blank(), 
@@ -73,7 +73,7 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres,
   coord_fixed() + 
   scale_y_reverse() + 
   scale_color_manual(values = c("firebrick1", "gray20", "gray50"), name = "label") + 
-  ggtitle("Ground truth labels: human DLPFC") + 
+  ggtitle("Annotated labels: human DLPFC") + 
   theme_bw() + 
   theme(panel.grid = element_blank(), 
         axis.title = element_blank(), 
