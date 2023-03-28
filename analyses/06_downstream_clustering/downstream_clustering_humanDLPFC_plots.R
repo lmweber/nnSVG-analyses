@@ -76,7 +76,8 @@ for (i in seq_along(coldata_out)) {
     guides(color = guide_legend(override.aes = list(size = 2))) + 
     ggtitle("Clustering", 
             subtitle = paste0("Human DLPFC: ", 
-                              gsub("SPARKX", "SPARK-X", names(coldata_out[i])))) + 
+                              gsub("MoransI", "Moran's I", 
+                                   gsub("SPARKX", "SPARK-X", names(coldata_out[i]))))) + 
     theme_bw() + 
     theme(panel.grid = element_blank(), 
           axis.title = element_blank(), 
@@ -136,7 +137,8 @@ df <- data.frame(
 )
 df$method <- factor(df$method, 
                     levels = df$method, 
-                    labels = gsub("SPARKX", "SPARK-X", df$method))
+                    labels = gsub("MoransI", "Moran's I", 
+                                  gsub("SPARKX", "SPARK-X", df$method)))
 
 
 pal_methods <- c("blue3", "deepskyblue2", "darkorange", "firebrick3")
