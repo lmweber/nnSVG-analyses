@@ -103,6 +103,9 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
              color = "black", alpha = 0.5) + 
   geom_line(data = df_trends, aes(x = n_spots, y = trend_val, linetype = trend, group = NULL), 
             color = "black", alpha = 0.5) + 
+  guides(color = guide_legend(order = 1), 
+         group = guide_legend(order = 1), 
+         linetype = guide_legend(order = 2)) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
   scale_linetype_manual(values = "dashed") + 
@@ -151,6 +154,9 @@ ggplot(df, aes(x = n_spots, y = runtime, color = dataset, group = n_spots)) +
              color = "black", alpha = 0.5) + 
   geom_line(data = df_trends, aes(x = n_spots, y = trend_val, linetype = trend, group = NULL), 
             color = "black", alpha = 0.5) + 
+  guides(color = guide_legend(order = 1), 
+         group = guide_legend(order = 1), 
+         linetype = guide_legend(order = 2)) + 
   scale_color_manual(values = pal) + 
   scale_x_continuous(breaks = x_vals) + 
   scale_linetype_manual(values = "dashed") + 
