@@ -21,5 +21,5 @@ The code in this repository is organized into subdirectories in the [analyses/](
 
 A preprint describing `nnSVG` is available from bioRxiv:
 
-- [Weber L.M. et al. (2022), "nnSVG: scalable identification of spatially variable genes using nearest-neighbor Gaussian processes", bioRxiv](https://www.biorxiv.org/content/10.1101/2022.05.16.492124v1)
+- [Weber L.M. et al. (2022), "nnSVG: scalable identification of spatially variable genes using nearest-neighbor Gaussian processes", bioRxiv](https://www.biorxiv.org/content/10.1101/2022.05.16.492124v2)
 
