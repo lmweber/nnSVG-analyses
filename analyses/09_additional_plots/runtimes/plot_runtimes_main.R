@@ -1,7 +1,7 @@
-#########################
+###############################
 # Script to plot runtimes
-# Lukas Weber, May 2022
-#########################
+# Lukas Weber, updated Jun 2023
+###############################
 
 # runtimes for main results
 # filtering: with filtering of low-expressed genes (using nnSVG default filtering)
@@ -49,6 +49,19 @@ n_genes <- c(
   mouseOB = nrow(readRDS(here("outputs", "results", "spe_mouseOB_nnSVG.rds")))
 )
 n_genes
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S20D.RData"
+
+save(res_runtimes, 
+     n_spots, 
+     n_genes, 
+     file = here(dir_sd, fn_sd))
 
 
 # -------------

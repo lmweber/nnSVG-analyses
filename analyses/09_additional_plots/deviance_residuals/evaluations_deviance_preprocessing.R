@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, May 2022
+# Lukas Weber, updated Jun 2023
 #################################
 
 # deviance residuals preprocessing for nnSVG
@@ -51,6 +51,16 @@ table(res_list$humanDLPFC_nnSVG_devResid$gene_id %in% res_list$humanDLPFC_nnSVG$
 table(res_list$mouseHPC_nnSVG_devResid$gene_name %in% res_list$mouseHPC_nnSVG$gene_name)
 table(res_list$mouseOB_nnSVG_devResid$gene_name %in% res_list$mouseOB_nnSVG$gene_name)
 table(res_list$mouseEmbryo_nnSVG_devResid$gene_name %in% res_list$mouseEmbryo_nnSVG$gene_name)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S22ABCD.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
 
 
 # --------------------------

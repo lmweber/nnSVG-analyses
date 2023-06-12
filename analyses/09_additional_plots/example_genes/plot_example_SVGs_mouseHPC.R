@@ -1,7 +1,7 @@
-#############################
+###############################
 # Script to plot example SVGs
-# Lukas Weber, Feb 2023
-#############################
+# Lukas Weber, updated Jun 2023
+###############################
 
 library(SpatialExperiment)
 library(STexampleData)
@@ -161,4 +161,16 @@ ggplot(df_sub_Add2, aes(x = xcoord, y = ycoord, color = counts)) +
 
 fn <- file.path(dir_plots, "extended_SVGs_Add2_mouseHPC")
 ggsave(paste0(fn, ".png"), width = 3.75, height = 2.1)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_2AB.RData"
+
+save(df, 
+     df_sub, 
+     file = here(dir_sd, fn_sd))
 

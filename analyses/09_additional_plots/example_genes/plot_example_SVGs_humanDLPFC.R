@@ -1,7 +1,7 @@
-#############################
+###############################
 # Script to plot example SVGs
-# Lukas Weber, May 2022
-#############################
+# Lukas Weber, updated Jun 2023
+###############################
 
 library(SpatialExperiment)
 library(STexampleData)
@@ -62,7 +62,7 @@ colData(spe)$HBA2 <- counts(spe)[ix_additional["HBA2"], ]
 
 # known genes
 
-df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>% 
+df_main <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>% 
   select(c("barcode_id", "in_tissue", known_genes, 
            "pxl_col_in_fullres", "pxl_row_in_fullres")) %>% 
   filter(in_tissue == 1) %>% 
@@ -73,7 +73,8 @@ df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>%
     ifelse(gene %in% c("MOBP", "PCP4", "SNAP25"), "large length scale", "small length scale")))
 
 
-ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) + 
+ggplot(df_main, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, 
+                    color = counts)) + 
   facet_wrap(~ gene, nrow = 2) + 
   geom_point(size = 0.05) + 
   coord_fixed() + 
@@ -96,7 +97,7 @@ ggsave(paste0(fn, ".png"), width = 5.75, height = 4.5)
 
 # additional genes
 
-df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>% 
+df_additional <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>% 
   select(c("barcode_id", "in_tissue", additional_genes, 
            "pxl_col_in_fullres", "pxl_row_in_fullres")) %>% 
   filter(in_tissue == 1) %>% 
@@ -105,7 +106,8 @@ df <- as.data.frame(cbind(colData(spe), spatialCoords(spe))) %>%
   mutate(gene = factor(gene, levels = additional_genes))
 
 
-ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) + 
+ggplot(df_additional, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, 
+                          color = counts)) + 
   facet_wrap(~ gene, nrow = 2) + 
   geom_point(size = 0.05) + 
   coord_fixed() + 
@@ -124,4 +126,16 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = counts)) 
 
 fn <- file.path(dir_plots, "additional_genes_humanDLPFC")
 ggsave(paste0(fn, ".png"), width = 4.25, height = 4.5)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_1A_S3D.RData"
+
+save(df_main, 
+     df_additional, 
+     file = here(dir_sd, fn_sd))
 

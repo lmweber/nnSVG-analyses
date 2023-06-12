@@ -1,7 +1,7 @@
-############################
+###############################
 # Additional plots: top SVGs
-# Lukas Weber, May 2022
-############################
+# Lukas Weber, updated Jun 2023
+###############################
 
 # data set: mouse HPC
 # filtering: with filtering of low-expressed genes (using nnSVG default filtering)
@@ -88,4 +88,14 @@ ggplot(df, aes(x = xcoord, y = ycoord, color = counts)) +
 
 fn <- file.path(dir_plots, "top_SVGs_mouseHPC_SPARKX")
 ggsave(paste0(fn, ".png"), width = 14, height = 13)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S14.RData"
+
+save(df, file = here(dir_sd, fn_sd))
 

@@ -1,6 +1,6 @@
 ####################################
 # Script to plot ground truth layers
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Jun 2023
 ####################################
 
 library(SpatialExperiment)
@@ -82,4 +82,14 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres,
 
 fn <- file.path(dir_plots, "ground_truth_collapsed_humanDLPFC")
 ggsave(paste0(fn, ".png"), width = 4, height = 3.75)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S1AB.RData"
+
+save(df, file = here(dir_sd, fn_sd))
 

@@ -1,6 +1,6 @@
 ######################################################
 # Script to plot ground truth layers: multiple samples
-# Lukas Weber, March 2023
+# Lukas Weber, updated Jun 2023
 ######################################################
 
 library(SpatialExperiment)
@@ -82,4 +82,14 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres,
 
 fn <- file.path(dir_plots, "ground_truth_humanDLPFC_multiple_samples")
 ggsave(paste0(fn, ".png"), width = 8.25, height = 6.25)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S23B.RData"
+
+save(df, file = here(dir_sd, fn_sd))
 

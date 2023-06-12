@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, May 2022
+# Lukas Weber, updated Jun 2023
 #################################
 
 # data set: human DLPFC
@@ -37,6 +37,16 @@ colnames(res_list[["humanDLPFC_HVGs"]])[-(1:2)] <- paste0(colnames(res_list[["hu
 
 
 table(res_list$humanDLPFC_HVGs$gene_id %in% res_list$humanDLPFC_nnSVG$gene_id)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S24ABC.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
 
 
 # ------------

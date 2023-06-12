@@ -1,6 +1,6 @@
 #############################################################
 # Simulations: performance evaluations - shuffled simulations
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Jun 2023
 #############################################################
 
 
@@ -25,6 +25,16 @@ length(res_list)
 
 sim_names <- gsub("^sim_", "", names(res_list))
 sim_names
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S17C.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
 
 
 # -----------------------------

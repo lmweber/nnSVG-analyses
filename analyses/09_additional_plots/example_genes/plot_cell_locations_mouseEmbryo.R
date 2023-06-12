@@ -1,6 +1,6 @@
 ###############################
 # Script to plot cell locations
-# Lukas Weber, May 2022
+# Lukas Weber, updated Jun 2023
 ###############################
 
 library(SpatialExperiment)
@@ -43,4 +43,14 @@ ggplot(df, aes(x = x, y = y)) +
 
 fn <- file.path(dir_plots, "cell_locations_mouseEmbryo")
 ggsave(paste0(fn, ".png"), width = 3, height = 4.25)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S9A.RData"
+
+save(df, file = here(dir_sd, fn_sd))
 

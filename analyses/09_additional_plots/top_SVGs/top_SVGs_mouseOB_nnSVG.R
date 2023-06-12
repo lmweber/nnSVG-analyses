@@ -1,7 +1,7 @@
-############################
+###############################
 # Additional plots: top SVGs
-# Lukas Weber, May 2022
-############################
+# Lukas Weber, updated Jun 2023
+###############################
 
 # data set: mouse OB
 # filtering: with filtering of low-expressed genes (using nnSVG default filtering)
@@ -86,4 +86,14 @@ ggplot(df, aes(x = x, y = y, color = counts)) +
 
 fn <- file.path(dir_plots, "top_SVGs_mouseOB_nnSVG")
 ggsave(paste0(fn, ".png"), width = 8.25, height = 8.5)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S8.RData"
+
+save(df, file = here(dir_sd, fn_sd))
 

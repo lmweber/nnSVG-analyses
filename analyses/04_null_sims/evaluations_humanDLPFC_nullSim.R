@@ -1,6 +1,6 @@
 ###################################################
 # Script to calculate evaluations: null simulations
-# Lukas Weber, Jan 2023
+# Lukas Weber, updated Jun 2023
 ###################################################
 
 # data set: human DLPFC
@@ -35,6 +35,16 @@ colnames(res_list[["humanDLPFC_nnSVG"]])[-(1:2)] <- paste0(colnames(res_list[["h
 
 # note filtering
 dim(res_list$humanDLPFC_nnSVG)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S18A.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
 
 
 # ---------------------

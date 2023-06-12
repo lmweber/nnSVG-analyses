@@ -1,6 +1,6 @@
 #####################################################
 # Script to plot runtimes for scalability simulations
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Jun 2023
 #####################################################
 
 # comparisons between methods
@@ -52,6 +52,20 @@ df_runtimes_SpatialDE <- cbind(
   n_spots = rownames(mat_runtimes_SpatialDE), 
   method = "SpatialDE", 
   as.data.frame(mat_runtimes_SpatialDE))
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S20C.RData"
+
+save(runtimes_nnSVG_DLPFC_twogenes, 
+     runtimes_SPARKX_DLPFC_twogenes, 
+     runtimes_SPARK_DLPFC_twogenes, 
+     runtimes_SpatialDE_DLPFC_twogenes, 
+     file = here(dir_sd, fn_sd))
 
 
 # --------------

@@ -1,6 +1,6 @@
 #####################################################
 # Script to plot runtimes for scalability simulations
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Jun 2023
 #####################################################
 
 
@@ -32,6 +32,18 @@ df_runtimes_mouseHPC <- cbind(
   n_spots = rownames(mat_runtimes_mouseHPC), 
   dataset = "mouseHPC", 
   as.data.frame(mat_runtimes_mouseHPC))
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_3AB.RData"
+
+save(runtimes_nnSVG_DLPFC_singlegene, 
+     runtimes_nnSVG_mouseHPC_singlegene, 
+     file = here(dir_sd, fn_sd))
 
 
 # --------------------------------

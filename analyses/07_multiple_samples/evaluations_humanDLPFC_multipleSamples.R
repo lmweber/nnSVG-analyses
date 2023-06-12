@@ -1,6 +1,6 @@
 ###############################
 # Multiple samples: evaluations
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Jun 2023
 ###############################
 
 # dataset: Visium human DLPFC (multiple samples)
@@ -29,6 +29,16 @@ length(res_list)
 
 sample_ids <- names(res_list)
 sample_ids
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S23ACD.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
 
 
 # ----------------------------------------

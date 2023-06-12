@@ -54,6 +54,16 @@ table(res_list$mouseHPC_MoransI$gene_name %in% res_list$mouseHPC_nnSVG_noCovaria
 table(res_list$mouseHPC_MoransI$gene_name %in% res_list$mouseHPC_SPARKX_noCovariates$gene_name)
 
 
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S11DEF.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
+
+
 # --------------------------
 # known SVGs in this dataset
 # --------------------------
@@ -282,14 +292,4 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG_noCovariates)) +
 fn <- file.path(dir_plots, "lengthscales_nnSVG_mouseHPC_noCovariates")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
 ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
-
-
-# ---------------------------------------------
-# save source data file for publication figures
-# ---------------------------------------------
-
-dir_sd <- here("outputs", "source_data")
-fn_sd <- "Source_Data_Figs_S11DEF.rds"
-
-saveRDS(res_list, here(dir_sd, fn_sd))
 

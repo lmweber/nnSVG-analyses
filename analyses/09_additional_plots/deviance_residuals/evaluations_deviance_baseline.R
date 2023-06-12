@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, May 2022
+# Lukas Weber, updated Jun 2023
 #################################
 
 # deviance residuals baseline method
@@ -51,6 +51,16 @@ table(res_list$humanDLPFC_deviance$gene_id %in% res_list$humanDLPFC_HVGs$gene_id
 table(res_list$mouseHPC_deviance$gene_name %in% res_list$mouseHPC_HVGs$gene_name)
 table(res_list$mouseOB_deviance$gene_name %in% res_list$mouseOB_HVGs$gene_name)
 table(res_list$mouseEmbryo_deviance$gene_name %in% res_list$mouseEmbryo_HVGs$gene_name)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S21ABCD.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
 
 
 # --------------------------

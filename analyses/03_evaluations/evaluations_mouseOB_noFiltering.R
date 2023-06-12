@@ -53,6 +53,16 @@ table(res_list$mouseOB_MoransI$gene_name %in% res_list$mouseOB_nnSVG$gene_name)
 table(res_list$mouseOB_MoransI$gene_name %in% res_list$mouseOB_SPARKX$gene_name)
 
 
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S19E.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
+
+
 # --------------------------
 # known SVGs in this dataset
 # --------------------------
@@ -297,14 +307,4 @@ ggplot(as.data.frame(df_pvals), aes(x = pval_nnSVG)) +
 fn <- file.path(dir_plots, "pvals_nnSVG_mouseOB_noFilt")
 ggsave(paste0(fn, ".pdf"), width = 4, height = 3.5)
 ggsave(paste0(fn, ".png"), width = 4, height = 3.5)
-
-
-# ---------------------------------------------
-# save source data file for publication figures
-# ---------------------------------------------
-
-dir_sd <- here("outputs", "source_data")
-fn_sd <- "Source_Data_Figs_S19E.rds"
-
-saveRDS(res_list, here(dir_sd, fn_sd))
 

@@ -54,6 +54,16 @@ table(res_list$mouseHPC_MoransI$gene_name %in% res_list$mouseHPC_nnSVG$gene_name
 table(res_list$mouseHPC_MoransI$gene_name %in% res_list$mouseHPC_SPARKX$gene_name)
 
 
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_2CD_S11B_S12_S19C.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
+
+
 # --------------------------
 # known SVGs in this dataset
 # --------------------------
@@ -348,14 +358,4 @@ ggplot(as.data.frame(df_withinTop1000),
 fn <- file.path(dir_plots, "extended_SVGs_identifiedByMethod")
 ggsave(paste0(fn, ".pdf"), width = 4.5, height = 3.5)
 ggsave(paste0(fn, ".png"), width = 4.5, height = 3.5)
-
-
-# ---------------------------------------------
-# save source data file for publication figures
-# ---------------------------------------------
-
-dir_sd <- here("outputs", "source_data")
-fn_sd <- "Source_Data_Figs_2CD_S11B_S12_S19C.rds"
-
-saveRDS(res_list, here(dir_sd, fn_sd))
 

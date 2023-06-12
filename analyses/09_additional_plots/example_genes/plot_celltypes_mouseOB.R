@@ -1,6 +1,6 @@
 #################################
 # Script to plot cell type layers
-# Lukas Weber, May 2022
+# Lukas Weber, updated Jun 2023
 #################################
 
 library(SpatialExperiment)
@@ -48,4 +48,14 @@ ggplot(df, aes(x = x, y = y, color = layer)) +
 
 fn <- file.path(dir_plots, "mouseOB_layers")
 ggsave(paste0(fn, ".png"), width = 5.25, height = 3.25)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S7A.RData"
+
+save(df, file = here(dir_sd, fn_sd))
 

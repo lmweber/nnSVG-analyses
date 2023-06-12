@@ -1,6 +1,6 @@
 ###################################################
 # Script to calculate evaluations: null simulations
-# Lukas Weber, May 2022
+# Lukas Weber, updated Jun 2023
 ###################################################
 
 # data set: mouse OB
@@ -35,6 +35,16 @@ colnames(res_list[["mouseOB_nnSVG"]])[-1] <- paste0(colnames(res_list[["mouseOB_
 
 # note filtering
 dim(res_list$mouseOB_nnSVG)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S18B.RData"
+
+save(res_list, file = here(dir_sd, fn_sd))
 
 
 # ---------------------

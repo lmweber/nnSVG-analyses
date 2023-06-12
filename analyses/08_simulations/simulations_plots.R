@@ -1,6 +1,6 @@
 ####################################################################
 # Simulations: plots - spatial coordinate masks and expression plots
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Jun 2023
 ####################################################################
 
 
@@ -110,6 +110,18 @@ for (s in seq_along(sim_names_shuffle)) {
   
   res_list_shuffle[[s]] <- res
 }
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S16AB_S17AB.RData"
+
+save(res_list_main, 
+     res_list_shuffle, 
+     file = here(dir_sd, fn_sd))
 
 
 # -----------------------
