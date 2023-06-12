@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, Jan 2023
+# Lukas Weber, updated Jun 2023
 #################################
 
 # data set: human DLPFC
@@ -396,4 +396,14 @@ ggplot(as.data.frame(df), aes(x = small_lengthscale, y = rank_nnSVG,
 fn <- file.path(dir_plots, "lengthscales_nnSVG_smallVsLarge_humanDLPFC_noFilt")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
 ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S2ACF_S19D_S4A.rds"
+
+saveRDS(res_list, here(dir_sd, fn_sd))
 

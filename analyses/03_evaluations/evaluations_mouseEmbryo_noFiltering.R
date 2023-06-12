@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, May 2022
+# Lukas Weber, updated Jun 2023
 #################################
 
 # data set: mouse embryo
@@ -427,4 +427,14 @@ ggplot(as.data.frame(df_bandwidth), aes(x = l_nnSVG)) +
 fn <- file.path(dir_plots, "lengthscales_nnSVG_mouseEmbryo_noFilt")
 ggsave(paste0(fn, ".pdf"), width = 5, height = 3.75)
 ggsave(paste0(fn, ".png"), width = 5, height = 3.75)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_S7BCDEFGHI.rds"
+
+saveRDS(res_list, here(dir_sd, fn_sd))
 

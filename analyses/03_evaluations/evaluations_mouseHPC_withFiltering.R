@@ -1,6 +1,6 @@
 #################################
 # Script to calculate evaluations
-# Lukas Weber, Feb 2023
+# Lukas Weber, updated Jun 2023
 #################################
 
 # data set: mouse HPC
@@ -348,4 +348,14 @@ ggplot(as.data.frame(df_withinTop1000),
 fn <- file.path(dir_plots, "extended_SVGs_identifiedByMethod")
 ggsave(paste0(fn, ".pdf"), width = 4.5, height = 3.5)
 ggsave(paste0(fn, ".png"), width = 4.5, height = 3.5)
+
+
+# ---------------------------------------------
+# save source data file for publication figures
+# ---------------------------------------------
+
+dir_sd <- here("outputs", "source_data")
+fn_sd <- "Source_Data_Figs_2CD_S11B_S12_S19C.rds"
+
+saveRDS(res_list, here(dir_sd, fn_sd))
 
