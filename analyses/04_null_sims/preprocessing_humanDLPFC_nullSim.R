@@ -1,6 +1,6 @@
 #####################################################
 # Script to run preprocessing steps: null simulations
-# Lukas Weber, Jan 2023
+# Lukas Weber, updated Jan 2023
 #####################################################
 
 # dataset: Visium human DLPFC

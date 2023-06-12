@@ -1,6 +1,6 @@
 ####################################
 # Script for scalability simulations
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Mar 2023
 ####################################
 
 # method: SPARK-X

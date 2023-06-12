@@ -1,6 +1,6 @@
 ###################################
 # Script to run preprocessing steps
-# Lukas Weber, May 2022
+# Lukas Weber, updated May 2022
 ###################################
 
 # dataset: seqFISH mouse embryo

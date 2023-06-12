@@ -1,6 +1,6 @@
 #######################################
 # Simulations: build simulated datasets
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Mar 2023
 #######################################
 
 # this script builds simulated datasets based on empirical parameters from the

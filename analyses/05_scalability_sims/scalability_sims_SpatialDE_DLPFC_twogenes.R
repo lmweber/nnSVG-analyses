@@ -1,6 +1,6 @@
 ####################################
 # Script for scalability simulations
-# Lukas Weber, Jan 2023
+# Lukas Weber, updated Jan 2023
 ####################################
 
 # method: SpatialDE (using R/Bioconductor wrapper package 'spatialDE')

@@ -1,6 +1,6 @@
 ####################################
 # Script for scalability simulations
-# Lukas Weber, Apr 2022
+# Lukas Weber, updated Apr 2022
 ####################################
 
 # method: nnSVG

@@ -1,6 +1,6 @@
 #############################################
 # Script for downstream clustering comparison
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Mar 2023
 #############################################
 
 # data set: human DLPFC

@@ -1,6 +1,6 @@
 #####################################################
 # Script to run preprocessing steps: null simulations
-# Lukas Weber, Mar 2022
+# Lukas Weber, updated Mar 2022
 #####################################################
 
 # dataset: ST mouse OB

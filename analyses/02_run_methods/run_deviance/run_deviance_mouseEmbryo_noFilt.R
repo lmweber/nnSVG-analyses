@@ -1,7 +1,7 @@
-#######################
+###############################
 # Script to run method
-# Lukas Weber, May 2022
-#######################
+# Lukas Weber, updated May 2022
+###############################
 
 # method: deviance
 # dataset: seqFISH mouse embryo, without filtering low-expressed genes

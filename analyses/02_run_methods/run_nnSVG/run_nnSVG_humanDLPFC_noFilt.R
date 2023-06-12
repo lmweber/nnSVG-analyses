@@ -1,7 +1,7 @@
-#######################
+###############################
 # Script to run method
-# Lukas Weber, Mar 2022
-#######################
+# Lukas Weber, updated Mar 2022
+###############################
 
 # method: nnSVG
 # dataset: Visium human DLPFC, without filtering low-expressed genes

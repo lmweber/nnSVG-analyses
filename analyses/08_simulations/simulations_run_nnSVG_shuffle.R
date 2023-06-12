@@ -1,6 +1,6 @@
 ###############################################
 # Simulations: run nnSVG - shuffled simulations
-# Lukas Weber, Mar 2023
+# Lukas Weber, updated Mar 2023
 ###############################################
 
 # interactive session on compute cluster

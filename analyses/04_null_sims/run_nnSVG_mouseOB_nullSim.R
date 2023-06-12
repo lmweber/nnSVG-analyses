@@ -1,6 +1,6 @@
 ########################################
 # Script to run method: null simulations
-# Lukas Weber, Mar 2022
+# Lukas Weber, updated Mar 2022
 ########################################
 
 # method: nnSVG
