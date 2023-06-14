@@ -1,11 +1,11 @@
 # nnSVG-analyses
 
-This repository contains code scripts to reproduce analyses and figures in our paper "nnSVG: scalable identification of spatially variable genes using nearest-neighbor Gaussian processes".
+This repository contains code scripts to reproduce analyses and figures in our paper "nnSVG for the scalable identification of spatially variable genes using nearest-neighbor Gaussian processes".
 
 
 ## nnSVG
 
-`nnSVG` is a method for scalable identification of spatially variable genes (SVGs) in spatially-resolved transcriptomics data.
+`nnSVG` is a method for computationally scalable identification of spatially variable genes (SVGs) in spatially-resolved transcriptomics data.
 
 `nnSVG` is available as an R package from [Bioconductor](https://bioconductor.org/packages/nnSVG) and [GitHub](https://github.com/lmweber/nnSVG).
 
