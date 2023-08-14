@@ -28,7 +28,7 @@ R objects (`.RData` files) containing source data to reproduce individual figure
 
 ## Citation
 
-A preprint describing `nnSVG` is available from bioRxiv:
+`nnSVG` is described in the following paper:
 
-- [Weber L.M. et al. (2022), "nnSVG: scalable identification of spatially variable genes using nearest-neighbor Gaussian processes", bioRxiv](https://www.biorxiv.org/content/10.1101/2022.05.16.492124v2)
+- [Weber L.M. et al. (2023), "nnSVG for the scalable identification of spatially variable genes using nearest-neighbor Gaussian processes", Nature Communications](https://www.nature.com/articles/s41467-023-39748-z)
 
